@@ -249,14 +249,14 @@ $("demoBtn").addEventListener("click",()=>{
 });
 
 function counter(field,list=records){const c={};list.forEach(r=>{const k=r[field]||"未填写";c[k]=(c[k]||0)+1});return c}
-function top(obj){return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]||null}
+function topEntry(obj){return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]||null}
 function rankHTML(obj){
  const e=Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,8); if(!e.length)return '<div class="muted">暂无数据</div>';
  const m=e[0][1]||1; return e.map(([k,v])=>`<div class="rankrow"><span>${esc(k)}</span><div class="bar"><div class="fill" style="width:${Math.max(5,v/m*100)}%"></div></div><b>${v}</b></div>`).join("");
 }
 function renderDashboard(){
  const total=records.length,k=records.reduce((s,r)=>s+num(r.kills),0),d=records.reduce((s,r)=>s+num(r.deaths),0),wins=records.filter(success).length;
- const tw=top(counter("weapon")),tc=top(counter("cause",records.filter(r=>r.cause!=="无 / 未死亡")));
+ const tw=topEntry(counter("weapon")),tc=topEntry(counter("cause",records.filter(r=>r.cause!=="无 / 未死亡")));
  $("stTotal").textContent=total;$("stKills").textContent=k;$("stKD").textContent=d?(k/d).toFixed(2):k.toFixed(2);$("stWin").textContent=pct(wins,total)+"%";
  $("stWeapon").textContent=tw?tw[0]:"暂无";$("stCause").textContent=tc?tc[0]:"暂无";
  let ins=[];
@@ -289,7 +289,7 @@ function renderRecords(){
 ["fSearch","fGame","fResult","fCause","fSquad"].forEach(id=>{$(id).addEventListener("input",renderRecords);$(id).addEventListener("change",renderRecords)});
 
 function perf(field){
- const g={};records.forEach(r=>{const k=r[field]||"未填写";g[k]??={games:0,k:0,d:0,w:0};g[k].games++;g[k].k+=num(r.kills);g[k].d+=num(r.deaths);g[k].w+=success(r)?1:0});
+ const g={};records.forEach(r=>{const k=r[field]||"未填写";if(!g[k])g[k]={games:0,k:0,d:0,w:0};g[k].games++;g[k].k+=num(r.kills);g[k].d+=num(r.deaths);g[k].w+=success(r)?1:0});
  return Object.entries(g).sort((a,b)=>b[1].games-a[1].games).slice(0,10).map(([k,v])=>`<div class="rankrow"><span>${esc(k)}</span><span class="muted">${v.games} 局 · K/D ${v.d?(v.k/v.d).toFixed(2):v.k.toFixed(2)} · 成功率 ${pct(v.w,v.games)}%</span><b>${v.k}K</b></div>`).join("")||'<div class="muted">暂无数据</div>';
 }
 function renderAnalytics(){$("anaGames").innerHTML=perf("game");$("anaWeapons").innerHTML=perf("weapon");$("anaSquad").innerHTML=perf("squad")}
