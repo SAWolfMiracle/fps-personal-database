@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="FPS DB">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icon-180.png">
+<title>FPS Personal Database</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#0b0f14;--panel:#121821;--panel2:#0e141b;--line:#283241;
+  --text:#e9eef5;--muted:#91a0b2;--accent:#5c8edb;--good:#79d8a7;--bad:#ff7e75;--warn:#f2c85b;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+body{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+button,input,select,textarea{font:inherit;color:inherit}
+button{touch-action:manipulation}
+.wrap{max-width:1180px;margin:auto;padding:18px}
+header{margin-bottom:16px}
+h1{font-size:28px;margin:0 0 6px}.sub{color:var(--muted);font-size:14px;line-height:1.5}
+.desktop-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.tabbtn,.btn{
+  border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:10px 14px;cursor:pointer
+}
+.tabbtn.active{background:#193155;border-color:#426b9f}
+.section{display:none}.section.active{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stat span{color:var(--muted);font-size:12px;display:block}.stat b{font-size:21px;display:block;margin-top:5px}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea,.filter{
+  width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;outline:none
+}
+.field textarea{min-height:96px;resize:vertical}.span2{grid-column:span 2}.span4{grid-column:span 4}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn.primary{background:#1f4478;border-color:#4775b6}.btn.danger{background:#3a2027;border-color:#6a3943}
+.filters{display:grid;grid-template-columns:1.5fr repeat(4,1fr);gap:8px;margin-bottom:10px}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:1100px;font-size:13px}
+th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:#10161e;color:var(--muted);position:sticky;top:0}
+.pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 7px}
+.good{color:var(--good)}.bad{color:var(--bad)}.muted{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.rankrow{display:grid;grid-template-columns:minmax(100px,1fr) 2fr auto;gap:8px;align-items:center;margin:8px 0}
+.bar{height:8px;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#0a0f15}.fill{height:100%;background:var(--accent)}
+.mobile-nav{
+  display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;
+  background:rgba(11,15,20,.94);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom))
+}
+.mobile-nav button{flex:1;background:transparent;border:0;color:var(--muted);padding:8px 2px;font-size:12px}
+.mobile-nav button.active{color:#fff}.mobile-nav strong{display:block;font-size:18px;margin-bottom:2px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#18212c;border:1px solid var(--line);padding:9px 13px;border-radius:10px;opacity:0;pointer-events:none;transition:.2s;z-index:100}
+.toast.show{opacity:1}
+@media(max-width:800px){
+  .wrap{padding:14px}.desktop-tabs{display:none}.mobile-nav{display:flex}
+  .stats{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr 1fr}
+  .span2,.span4{grid-column:span 2}.filters{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}
+  h1{font-size:25px}
+}
+@media(max-width:520px){
+  .form-grid,.filters{grid-template-columns:1fr}.span2,.span4{grid-column:span 1}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>FPS Personal Database</h1>
+  <div class="sub">跨游戏记录 · 武器表现 · 死因复盘 · 本地离线保存</div>
+  <div class="desktop-tabs" id="desktopTabs"></div>
+</header>
+
+<section id="dashboard" class="section active">
+  <div class="stats">
+    <div class="stat"><span>总记录</span><b id="stTotal">0</b></div>
+    <div class="stat"><span>总击杀</span><b id="stKills">0</b></div>
+    <div class="stat"><span>平均 K/D</span><b id="stKD">0.00</b></div>
+    <div class="stat"><span>胜利 / 撤离率</span><b id="stWin">0%</b></div>
+    <div class="stat"><span>最常用武器</span><b id="stWeapon">暂无</b></div>
+    <div class="stat"><span>最常见死因</span><b id="stCause">暂无</b></div>
+  </div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="card"><h3>当前结论</h3><div id="insights" class="muted"></div></div>
+    <div class="card"><h3>最近 10 局</h3><div id="recent"></div></div>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>游戏分布</h3><div id="rankGame"></div></div>
+    <div class="card"><h3>武器使用</h3><div id="rankWeapon"></div></div>
+  </div>
+</section>
+
+<section id="add" class="section">
+  <div class="card">
+    <h2>录入一局</h2>
+    <div class="form-grid">
+      <div class="field"><label>游戏</label><input id="game" list="games" placeholder="三角洲行动"></div>
+      <div class="field"><label>模式</label><input id="mode" placeholder="常规 / 机密 / 排位..."></div>
+      <div class="field"><label>地图</label><input id="map" placeholder="地图名"></div>
+      <div class="field"><label>结果</label><select id="result"><option>胜利</option><option>撤离</option><option>失败</option><option>阵亡</option><option>平局</option><option>其他</option></select></div>
+
+      <div class="field"><label>击杀</label><input id="kills" type="number" min="0" value="0"></div>
+      <div class="field"><label>死亡</label><input id="deaths" type="number" min="0" value="1"></div>
+      <div class="field"><label>助攻</label><input id="assists" type="number" min="0" value="0"></div>
+      <div class="field"><label>队伍</label><select id="squad"><option>单排</option><option>双排</option><option>三排</option><option>四排</option><option>五人+</option><option>不适用</option></select></div>
+
+      <div class="field"><label>角色 / 干员</label><input id="role" placeholder="无名 / Nøkk / 突击..."></div>
+      <div class="field"><label>主武器</label><input id="weapon" placeholder="K416 / AK12 / M4..."></div>
+      <div class="field"><label>副武器</label><input id="secondary" placeholder="G18C / 手枪..."></div>
+      <div class="field"><label>弹药 / 弹种</label><input id="ammo" placeholder="蓝 / 紫 / M855A1..."></div>
+
+      <div class="field"><label>护甲 / 装备</label><input id="armor" placeholder="金甲 / 三甲 / 无"></div>
+      <div class="field"><label>交战距离</label><select id="range"><option>0–15m</option><option>15–40m</option><option>40–80m</option><option>80m+</option><option>混合</option></select></div>
+      <div class="field"><label>打法</label><select id="style"><option>正面推进</option><option>绕后</option><option>架枪</option><option>狙击</option><option>游击</option><option>混合</option><option>其他</option></select></div>
+      <div class="field"><label>主要死亡原因</label><select id="cause">
+        <option>无 / 未死亡</option><option>正面连续接敌</option><option>换弹时被冲</option><option>信息不足 / 没发现敌人</option>
+        <option>路线不熟 / 绕后迷路</option><option>贪物资 / 贪枪 / 停留过久</option><option>距离不适配武器</option>
+        <option>弹药 / 护甲劣势</option><option>枪法 / 操作失误</option><option>站位 / 掩体问题</option><option>队友脱节</option>
+        <option>被第三方 / 多队夹击</option><option>其他</option>
+      </select></div>
+
+      <div class="field span2"><label>标签</label><input id="tags" placeholder="单三, 满改, 近战"></div>
+      <div class="field span2"><label>经济 / 成本</label><input id="cost" type="number" min="0" placeholder="可选"></div>
+      <div class="field span4"><label>一句话复盘</label><textarea id="note" placeholder="例：打倒两人后原地换弹，第三个人直接贴脸。"></textarea></div>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="saveBtn">保存这一局</button>
+      <button class="btn" id="demoBtn">填三角洲示例</button>
+      <button class="btn" id="clearBtn">清空表单</button>
+    </div>
+  </div>
+</section>
+
+<section id="records" class="section">
+  <div class="card">
+    <h2>记录</h2>
+    <div class="filters">
+      <input class="filter" id="fSearch" placeholder="搜索游戏 / 武器 / 地图 / 标签">
+      <select class="filter" id="fGame"><option value="">全部游戏</option></select>
+      <select class="filter" id="fResult"><option value="">全部结果</option></select>
+      <select class="filter" id="fCause"><option value="">全部死因</option></select>
+      <select class="filter" id="fSquad"><option value="">全部队伍</option></select>
+    </div>
+    <div class="tablewrap">
+      <table><thead><tr>
+        <th>时间</th><th>游戏</th><th>模式</th><th>地图</th><th>结果</th><th>K/D/A</th><th>队伍</th><th>角色</th>
+        <th>主武器</th><th>距离</th><th>打法</th><th>死因</th><th>标签</th><th>复盘</th><th>操作</th>
+      </tr></thead><tbody id="tbody"></tbody></table>
+    </div>
+  </div>
+</section>
+
+<section id="analytics" class="section">
+  <div class="grid2">
+    <div class="card"><h3>游戏表现</h3><div id="anaGames"></div></div>
+    <div class="card"><h3>武器表现</h3><div id="anaWeapons"></div></div>
+  </div>
+  <div class="card"><h3>队伍规模</h3><div id="anaSquad"></div></div>
+</section>
+
+<section id="data" class="section">
+  <div class="card">
+    <h2>数据管理</h2>
+    <div class="actions">
+      <button class="btn primary" id="exportJsonBtn">导出 JSON</button>
+      <button class="btn" id="exportCsvBtn">导出 CSV</button>
+      <label class="btn">导入 JSON<input id="importFile" type="file" accept=".json,application/json" hidden></label>
+      <button class="btn danger" id="clearAllBtn">清空全部</button>
+    </div>
+    <p class="muted">PWA 安装后仍可离线使用。数据保存在当前浏览器 / 主屏幕 App 的本地存储中；换设备前请导出 JSON。</p>
+  </div>
+  <div class="card">
+    <h3>安装到 iPhone 主屏幕</h3>
+    <div class="muted">Safari 打开部署后的网址 → 分享 → 添加到主屏幕。之后会以独立 App 形式启动。</div>
+  </div>
+</section>
+
+<datalist id="games">
+<option value="三角洲行动"><option value="彩虹六号：围攻"><option value="Ready or Not">
+<option value="Counter-Strike 2"><option value="VALORANT"><option value="Escape from Tarkov">
+<option value="Call of Duty"><option value="Battlefield"><option value="Apex Legends"><option value="PUBG">
+</datalist>
+</div>
+
+<nav class="mobile-nav" id="mobileNav"></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY="fps_database_pwa_v1";
+const tabs=[
+  ["dashboard","⌂","总览"],["add","＋","录入"],["records","≡","记录"],["analytics","▦","分析"],["data","⋯","数据"]
+];
+let records=JSON.parse(localStorage.getItem(KEY)||"[]");
+
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+const num=v=>Number.isFinite(Number(v))?Number(v):0;
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const success=r=>["胜利","撤离"].includes(r.result);
+const uniq=a=>[...new Set(a.filter(Boolean))].sort((x,y)=>String(x).localeCompare(String(y),"zh-CN"));
+
+function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1300)}
+
+function makeTabs(){
+  $("desktopTabs").innerHTML=tabs.map(([id,icon,label],i)=>`<button class="tabbtn ${i===0?"active":""}" data-tab="${id}">${label}</button>`).join("");
+  $("mobileNav").innerHTML=tabs.map(([id,icon,label],i)=>`<button class="${i===0?"active":""}" data-tab="${id}"><strong>${icon}</strong>${label}</button>`).join("");
+  document.querySelectorAll("[data-tab]").forEach(b=>b.addEventListener("click",()=>switchTab(b.dataset.tab)));
+}
+function switchTab(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===id));
+  document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function save(){localStorage.setItem(KEY,JSON.stringify(records));renderAll()}
+function getForm(){
+ return {
+   id:(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random()),ts:Date.now(),time:new Date().toLocaleString(),
+   game:$("game").value.trim()||"未填写",mode:$("mode").value.trim()||"未填写",map:$("map").value.trim()||"未填写",
+   result:$("result").value,kills:num($("kills").value),deaths:num($("deaths").value),assists:num($("assists").value),
+   squad:$("squad").value,role:$("role").value.trim()||"未填写",weapon:$("weapon").value.trim()||"未填写",
+   secondary:$("secondary").value.trim()||"未填写",ammo:$("ammo").value.trim()||"未填写",armor:$("armor").value.trim()||"未填写",
+   range:$("range").value,style:$("style").value,cause:$("cause").value,
+   tags:$("tags").value.split(/[,，]/).map(x=>x.trim()).filter(Boolean),
+   cost:$("cost").value===""?null:num($("cost").value),note:$("note").value.trim()
+ };
+}
+function clearForm(){
+ ["game","mode","map","role","weapon","secondary","ammo","armor","tags","cost","note"].forEach(id=>$(id).value="");
+ $("kills").value=0;$("deaths").value=1;$("assists").value=0;
+ $("result").value="胜利";$("squad").value="单排";$("range").value="0–15m";$("style").value="正面推进";$("cause").value="无 / 未死亡";
+}
+$("saveBtn").addEventListener("click",()=>{records.unshift(getForm());save();$("note").value="";toast("已保存");switchTab("dashboard")});
+$("clearBtn").addEventListener("click",clearForm);
+$("demoBtn").addEventListener("click",()=>{
+ $("game").value="三角洲行动";$("mode").value="常规";$("result").value="阵亡";$("kills").value=2;$("deaths").value=1;
+ $("squad").value="单排";$("role").value="无名";$("weapon").value="K416";$("secondary").value="G18C";$("ammo").value="蓝";
+ $("armor").value="金甲";$("range").value="0–15m";$("style").value="正面推进";$("cause").value="换弹时被冲";
+ $("tags").value="单三, 近战";$("note").value="30发打倒两个，换弹时第三个人贴脸冲进来。";toast("已填入示例");
+});
+
+function counter(field,list=records){const c={};list.forEach(r=>{const k=r[field]||"未填写";c[k]=(c[k]||0)+1});return c}
+function top(obj){return Object.entries(obj).sort((a,b)=>b[1]-a[1])[0]||null}
+function rankHTML(obj){
+ const e=Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,8); if(!e.length)return '<div class="muted">暂无数据</div>';
+ const m=e[0][1]||1; return e.map(([k,v])=>`<div class="rankrow"><span>${esc(k)}</span><div class="bar"><div class="fill" style="width:${Math.max(5,v/m*100)}%"></div></div><b>${v}</b></div>`).join("");
+}
+function renderDashboard(){
+ const total=records.length,k=records.reduce((s,r)=>s+num(r.kills),0),d=records.reduce((s,r)=>s+num(r.deaths),0),wins=records.filter(success).length;
+ const tw=top(counter("weapon")),tc=top(counter("cause",records.filter(r=>r.cause!=="无 / 未死亡")));
+ $("stTotal").textContent=total;$("stKills").textContent=k;$("stKD").textContent=d?(k/d).toFixed(2):k.toFixed(2);$("stWin").textContent=pct(wins,total)+"%";
+ $("stWeapon").textContent=tw?tw[0]:"暂无";$("stCause").textContent=tc?tc[0]:"暂无";
+ let ins=[];
+ if(total<5)ins.push("当前样本较少，先记录 5–10 局再看稳定趋势。");
+ if(tc&&total>=5){const rel=records.filter(r=>r.cause!=="无 / 未死亡").length;ins.push(`最常见死因：${esc(tc[0])}（${pct(tc[1],rel)}%）。`)}
+ const solo=records.filter(r=>r.squad==="单排"),trio=records.filter(r=>r.squad==="三排");
+ if(solo.length>=3&&trio.length>=3)ins.push(`单排成功率 ${pct(solo.filter(success).length,solo.length)}%；三排成功率 ${pct(trio.filter(success).length,trio.length)}%。仅描述当前样本。`);
+ $("insights").innerHTML=ins.map(x=>"• "+x).join("<br>")||"暂无可分析内容。";
+ $("recent").innerHTML=records.slice(0,10).map(r=>`<div style="display:grid;grid-template-columns:95px 1fr auto;gap:7px;padding:7px 0;border-bottom:1px solid var(--line)"><span class="muted">${esc(r.time)}</span><span>${esc(r.game)} · ${esc(r.weapon)}</span><span class="pill ${success(r)?"good":"bad"}">${esc(r.result)}</span></div>`).join("")||'<div class="muted">暂无记录</div>';
+ $("rankGame").innerHTML=rankHTML(counter("game"));$("rankWeapon").innerHTML=rankHTML(counter("weapon"));
+}
+function populate(id,arr,label){const e=$(id),cur=e.value;e.innerHTML=`<option value="">${label}</option>`+arr.map(v=>`<option>${esc(v)}</option>`).join("");if(arr.includes(cur))e.value=cur}
+function filtered(){
+ const q=$("fSearch").value.trim().toLowerCase();
+ return records.filter(r=>{
+  const hay=[r.game,r.mode,r.map,r.result,r.role,r.weapon,r.secondary,r.ammo,r.armor,r.range,r.style,r.cause,(r.tags||[]).join(" "),r.note].join(" ").toLowerCase();
+  return(!q||hay.includes(q))&&(!$("fGame").value||r.game===$("fGame").value)&&(!$("fResult").value||r.result===$("fResult").value)&&(!$("fCause").value||r.cause===$("fCause").value)&&(!$("fSquad").value||r.squad===$("fSquad").value);
+ })
+}
+function renderRecords(){
+ populate("fGame",uniq(records.map(r=>r.game)),"全部游戏");populate("fResult",uniq(records.map(r=>r.result)),"全部结果");
+ populate("fCause",uniq(records.map(r=>r.cause)),"全部死因");populate("fSquad",uniq(records.map(r=>r.squad)),"全部队伍");
+ $("tbody").innerHTML=filtered().map(r=>`<tr>
+  <td>${esc(r.time)}</td><td>${esc(r.game)}</td><td>${esc(r.mode)}</td><td>${esc(r.map)}</td><td><span class="pill ${success(r)?"good":"bad"}">${esc(r.result)}</span></td>
+  <td>${num(r.kills)}/${num(r.deaths)}/${num(r.assists)}</td><td>${esc(r.squad)}</td><td>${esc(r.role)}</td><td>${esc(r.weapon)}</td><td>${esc(r.range)}</td>
+  <td>${esc(r.style)}</td><td>${esc(r.cause)}</td><td>${(r.tags||[]).map(t=>"#"+esc(t)).join(" ")}</td><td>${esc(r.note)}</td>
+  <td><button class="btn danger" data-del="${esc(r.id)}">删</button></td></tr>`).join("")||'<tr><td colspan="15" class="muted">没有记录。</td></tr>';
+ document.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>{if(confirm("删除这条记录？")){records=records.filter(r=>r.id!==b.dataset.del);save()}}));
+}
+["fSearch","fGame","fResult","fCause","fSquad"].forEach(id=>{$(id).addEventListener("input",renderRecords);$(id).addEventListener("change",renderRecords)});
+
+function perf(field){
+ const g={};records.forEach(r=>{const k=r[field]||"未填写";g[k]??={games:0,k:0,d:0,w:0};g[k].games++;g[k].k+=num(r.kills);g[k].d+=num(r.deaths);g[k].w+=success(r)?1:0});
+ return Object.entries(g).sort((a,b)=>b[1].games-a[1].games).slice(0,10).map(([k,v])=>`<div class="rankrow"><span>${esc(k)}</span><span class="muted">${v.games} 局 · K/D ${v.d?(v.k/v.d).toFixed(2):v.k.toFixed(2)} · 成功率 ${pct(v.w,v.games)}%</span><b>${v.k}K</b></div>`).join("")||'<div class="muted">暂无数据</div>';
+}
+function renderAnalytics(){$("anaGames").innerHTML=perf("game");$("anaWeapons").innerHTML=perf("weapon");$("anaSquad").innerHTML=perf("squad")}
+
+function download(blob,name){const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+$("exportJsonBtn").addEventListener("click",()=>download(new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),records},null,2)],{type:"application/json"}),"fps-database.json"));
+$("exportCsvBtn").addEventListener("click",()=>{
+ const h=["time","game","mode","map","result","kills","deaths","assists","squad","role","weapon","secondary","ammo","armor","range","style","cause","tags","cost","note"];
+ const rows=[h.join(",")].concat(records.map(r=>h.map(k=>`"${String(k==="tags"?(r.tags||[]).join("|"):(r[k]??"")).replace(/"/g,'""')}"`).join(",")));
+ download(new Blob(["\ufeff"+rows.join("\n")],{type:"text/csv;charset=utf-8"}),"fps-database.csv");
+});
+$("importFile").addEventListener("change",e=>{
+ const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+ rd.onload=()=>{try{const o=JSON.parse(rd.result),arr=Array.isArray(o)?o:o.records;if(!Array.isArray(arr))throw Error("格式错误");records=[...arr.map(r=>({...r,id:r.id||Date.now()+"-"+Math.random(),tags:Array.isArray(r.tags)?r.tags:[]})),...records];save();toast(`已导入 ${arr.length} 条`)}catch(err){alert("导入失败："+err.message)}e.target.value=""};rd.readAsText(f);
+});
+$("clearAllBtn").addEventListener("click",()=>{if(confirm("确定清空全部数据库？")){records=[];save();toast("已清空")}});
+
+function renderAll(){renderDashboard();renderRecords();renderAnalytics()}
+makeTabs();renderAll();
+
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}))}
+</script>
+</body>
+</html>
