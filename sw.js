@@ -1,5 +1,5 @@
-const CACHE="fps-db-v4";
-const CORE=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
+const CACHE="fps-db-v5";
+const CORE=["./","./index.html","./manifest.webmanifest","./cloud-config.js","./icon-192.png","./icon-512.png","./icon-180.png"];
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
@@ -20,7 +20,7 @@ self.addEventListener("fetch",event=>{
   const url=new URL(req.url);
   if(url.origin!==self.location.origin) return;
 
-  if(req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest")){
+  if(req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js")){
     event.respondWith(
       fetch(req).then(resp=>{
         const copy=resp.clone();
