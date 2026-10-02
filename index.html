@@ -27,11 +27,11 @@ body{
 button,input,select,textarea{font:inherit;color:inherit}
 button{touch-action:manipulation}
 button,input,select,textarea,.card,.stat{transition:border-color .18s ease,background .18s ease,transform .18s ease,box-shadow .18s ease}
-.wrap{max-width:1220px;margin:auto;padding:22px}
+.wrap{max-width:1220px;margin:auto;padding:22px;padding-top:calc(22px + env(safe-area-inset-top));padding-left:max(22px,env(safe-area-inset-left));padding-right:max(22px,env(safe-area-inset-right))}
 header{margin-bottom:18px}
-h1{font-size:28px;letter-spacing:-.02em;margin:0 0 6px}
+h1{font-size:28px;letter-spacing:-.02em;margin:0 0 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .sub{color:var(--muted);font-size:14px;line-height:1.5}
-.version{font-size:11px;color:#a9b7c8;border:1px solid var(--line);background:#0d141d;padding:3px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.version{font-size:11px;color:#a9b7c8;border:1px solid var(--line);background:#0d141d;padding:3px 7px;border-radius:999px;margin-left:0;vertical-align:middle;white-space:nowrap}
 .desktop-tabs{display:flex;gap:3px;flex-wrap:wrap;margin-top:16px;width:max-content;max-width:100%;padding:4px;background:#0d141c;border:1px solid var(--line);border-radius:13px}
 .tabbtn,.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 14px;cursor:pointer}
 .tabbtn{border:0;background:transparent;color:var(--muted);padding:9px 14px}
@@ -96,7 +96,7 @@ h1{font-size:28px;letter-spacing:-.02em;margin:0 0 6px}
 .other-input[hidden]{display:none!important}
 @keyframes fieldReveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 .span2{grid-column:span 2}.span4{grid-column:span 4}
-.form-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);margin-top:2px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}.form-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);margin-top:2px}
 .actions-main,.actions-quiet{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .actions-quiet .btn{font-size:12px;padding:8px 10px}
 .kpi-note{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.55}
@@ -146,12 +146,28 @@ tbody tr:hover td{background:#101821}
   .grid3{grid-template-columns:1fr}
 }
 @media(max-width:800px){
-  .wrap{padding:14px}.desktop-tabs{display:none}.mobile-nav{display:flex}
+  .wrap{
+    padding:14px;
+    padding-top:calc(14px + env(safe-area-inset-top));
+    padding-left:max(14px,env(safe-area-inset-left));
+    padding-right:max(14px,env(safe-area-inset-right))
+  }
+  header{margin-bottom:14px}
+  .desktop-tabs{display:none}.mobile-nav{display:flex}
   .stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}
   .tablewrap{display:none}.mobile-records{display:block}
-  h1{font-size:25px}
+  h1{font-size:24px;line-height:1.15;gap:7px}
+  .version{font-size:10px;padding:3px 6px}
+  .sub{font-size:13px;line-height:1.45}
+  .card{padding:15px;border-radius:14px}
+  #data .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+  #data .actions .btn{width:100%;min-width:0;text-align:center;padding:11px 8px;white-space:nowrap}
+  #data .actions label.btn{display:flex;align-items:center;justify-content:center}
   .entry-preview .preview-block{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}
   .entry-preview .preview-note{grid-column:1/-1}
+  .mobile-nav{padding-top:6px}
+  .mobile-nav button{padding:6px 2px;font-size:11px;min-height:48px}
+  .mobile-nav strong{font-size:17px;margin-bottom:1px}
 }
 @media(max-width:520px){
   .form-grid,.filters{grid-template-columns:1fr}.span2,.span4{grid-column:span 1}
@@ -161,13 +177,16 @@ tbody tr:hover td{background:#101821}
   .actions-main .btn.primary{flex:1}
   .actions-quiet{justify-content:flex-end}
   .entry-preview .preview-block{display:block}
+  #data h2{font-size:21px;margin-bottom:16px}
+  #data h3{font-size:19px}
+  #data .muted{font-size:13px;line-height:1.6}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.3.0</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.3.1</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -347,7 +366,7 @@ tbody tr:hover td{background:#101821}
   </div>
   <div class="card">
     <h3>安装到 iPhone 主屏幕</h3>
-    <div class="muted">Safari → 分享 → 添加到主屏幕。v0.2 起页面导航优先联网更新，离线时再回退到缓存。</div>
+    <div class="muted">Safari → 分享 → 添加到主屏幕。页面导航会优先联网更新，离线时再回退到缓存。</div>
   </div>
 </section>
 
@@ -366,7 +385,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.3.0";
+var APP_VERSION="0.3.1";
 var KEY="fps_database_pwa_v1";
 var tabs=[
   ["dashboard","⌂","总览"],["add","＋","录入"],["records","≡","记录"],["analytics","▦","分析"],["data","⋯","数据"]
