@@ -538,7 +538,7 @@ function renderAll(){renderDashboard();renderRecords();renderAnalytics();renderD
 $("saveBtn").addEventListener("click",saveForm);
 $("clearBtn").addEventListener("click",function(){clearForm(false)});
 $("cancelEditBtn").addEventListener("click",cancelEdit);
-$("newSessionBtn").addEventListener("click",function(){$("session").value=sessionLabel();renderDatalists();showToast("已生成 Session")});
+$("newSessionBtn").addEventListener("click",function(){$("session").value=sessionLabel();renderDatalists();showToast("已生成当前时段")});
 $("demoBtn").addEventListener("click",function(){
   $("game").value="三角洲行动";$("mode").value="常规";$("season").value="";$("session").value=sessionLabel();$("result").value="阵亡";$("kills").value=2;$("deaths").value=1;
   $("squad").value="单排";$("role").value="无名";$("weapon").value="K416";$("secondary").value="G18C";$("ammo").value="蓝";$("armor").value="金甲";
