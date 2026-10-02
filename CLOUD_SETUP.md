@@ -1,39 +1,34 @@
-# 云同步状态（v0.5.1）
+# 云同步状态（v0.5.2）
 
-Supabase 项目已经创建并接入前端。
+当前已完成：
+- Tokyo Supabase + RLS。
+- guest 与每个 user_id 的本地 workspace 分离。
+- guest 数据只在用户明确点击“合并到当前账号”时复制；guest 副本保留。
+- 草稿按 workspace 独立保存。
+- “复制上一局”用于快速复用游戏 / 模式 / 地图 / 角色 / 装备配置。
+- 服务端维护 revision 与 server_updated_at；客户端使用 base revision 写入，不再用设备时钟决定谁覆盖谁。
+- 并发冲突不静默覆盖，会保留“同步冲突”副本。
+- 删除会等 5 秒撤销窗口结束后再自动同步。
+- 社区统计要求至少 5 位不同贡献者且累计 20 局。
+- Supabase JS 固定到 2.117.2，不再跟随浮动 @2。
 
-- Project ref: `annugdqxrauzsbltegrg`
-- Region: Tokyo (`ap-northeast-1`)
-- 数据表：`public.fps_records`
-- RLS：已启用，原始记录只能由当前登录用户读写
-- 社区统计：`community_weapon_stats()`，只返回主动贡献的聚合结果，最小样本门槛为 5
-- 前端：使用 publishable key；仓库中没有 secret/service_role key
-- 本地优先：未登录或离线时继续使用 localStorage
-- 删除同步：tombstone 防止旧设备重新带回已删除记录
+## Auth 尚需手动配置
 
-## 还需在 Supabase Dashboard 完成的 Auth 设置
+在 Supabase Dashboard：
+1. Authentication → Providers / Sign In Methods → 开启 Anonymous Sign-Ins。
+2. 开启 Manual Linking（匿名身份绑定邮箱需要）。
+3. Authentication → URL Configuration：
+   - Site URL: https://sawolfmiracle.github.io/fps-personal-database/
+   - Redirect URLs: https://sawolfmiracle.github.io/fps-personal-database/**
 
-当前连接器不能修改 Auth Provider 或 Redirect URL，因此这两项需要在 Dashboard 手动打开：
+完成后，在 cloud-config.js 加上并设为 true：
+- anonymousAuth
+- emailMagicLink
+- manualLinking
 
-1. Auth → Providers / Sign In Methods → 启用 **Anonymous Sign-Ins**
-2. Auth → URL Configuration：
-   - Site URL：`https://sawolfmiracle.github.io/fps-personal-database/`
-   - Redirect URLs：`https://sawolfmiracle.github.io/fps-personal-database/**`
+## 安全边界
 
-完成后把 `cloud-config.js` 中：
-```js
-anonymousAuth: false,
-emailMagicLink: false
-```
-改为：
-```js
-anonymousAuth: true,
-emailMagicLink: true
-```
-
-## 已验证的安全边界
-
-- `fps_records` 已启用 RLS，并存在 SELECT / INSERT / UPDATE / DELETE 四条“仅本人”策略。
-- `anon` 角色直接读取 `fps_records` 会被 PostgreSQL 拒绝。
-- `anon` 角色可调用社区聚合函数，但只会得到聚合结果，不返回 user_id 或原始 payload。
-- Publishable key 允许公开出现在浏览器；secret/service_role key 不得进入前端。
+- 原始 fps_records 行仍由 RLS 按 auth.uid() 隔离。
+- anon 角色不能直接 SELECT fps_records。
+- community_weapon_stats 是有意公开的 SECURITY DEFINER 聚合入口，只读取显式 share_community=true 的记录，并强制 5 人 / 20 局最低门槛。
+- 前端只能放 publishable key；不能放 secret/service_role。
