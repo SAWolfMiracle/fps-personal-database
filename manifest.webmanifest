@@ -1,6 +1,6 @@
 {
-  "name": "FPS Personal Database",
-  "short_name": "FPS DB",
+  "name": "FPS 个人数据库",
+  "short_name": "FPS 数据库",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -6,10 +6,10 @@
 <meta name="theme-color" content="#0b0f14">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="FPS DB">
+<meta name="apple-mobile-web-app-title" content="FPS 数据库">
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="apple-touch-icon" href="./icon-180.png">
-<title>FPS Personal Database</title>
+<title>FPS 个人数据库</title>
 <style>
 :root{
   color-scheme:dark;
@@ -101,8 +101,8 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS Personal Database <span class="version">v0.2.0</span></h1>
-  <div class="sub">跨游戏记录 · 武器表现 · Session 复盘 · 本地离线保存</div>
+  <h1>FPS 个人数据库 <span class="version">v0.2.1</span></h1>
+  <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
 
@@ -124,7 +124,7 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
     <div class="card"><h3>武器使用</h3><div id="rankWeapon"></div></div>
   </div>
   <div class="card">
-    <div class="section-title-row"><h3 style="margin:0">最近 Session</h3><span class="muted" id="sessionCount"></span></div>
+    <div class="section-title-row"><h3 style="margin:0">最近时段</h3><span class="muted" id="sessionCount"></span></div>
     <div id="sessionOverview"></div>
   </div>
 </section>
@@ -138,7 +138,7 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
       <div class="field"><label>地图</label><input id="map" list="maps" placeholder="地图名"></div>
       <div class="field"><label>赛季 / 版本</label><input id="season" list="seasons" placeholder="S8 / 1.2.0 / 2026-10"></div>
 
-      <div class="field"><label>Session</label><input id="session" list="sessions" placeholder="2026-10-02 夜间"></div>
+      <div class="field"><label>游戏时段</label><input id="session" list="sessions" placeholder="2026-10-02 夜间"></div>
       <div class="field"><label>结果</label><select id="result"><option>胜利</option><option>撤离</option><option>任务完成</option><option>失败</option><option>阵亡</option><option>平局</option><option>其他</option></select></div>
       <div class="field"><label>击杀</label><input id="kills" type="number" min="0" value="0"></div>
       <div class="field"><label>死亡</label><input id="deaths" type="number" min="0" value="1"></div>
@@ -168,7 +168,7 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
     </div>
     <div class="actions">
       <button class="btn primary" id="saveBtn">保存这一局</button>
-      <button class="btn" id="newSessionBtn">生成当前 Session</button>
+      <button class="btn" id="newSessionBtn">生成当前时段</button>
       <button class="btn" id="demoBtn">填三角洲示例</button>
       <button class="btn" id="cancelEditBtn" hidden>取消编辑</button>
       <button class="btn" id="clearBtn">清空表单</button>
@@ -181,7 +181,7 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
   <div class="card">
     <h2>记录</h2>
     <div class="filters">
-      <input class="filter" id="fSearch" placeholder="搜索游戏 / 武器 / 地图 / 版本 / Session / 标签">
+      <input class="filter" id="fSearch" placeholder="搜索游戏 / 武器 / 地图 / 版本 / 时段 / 标签">
       <select class="filter" id="fGame"><option value="">全部游戏</option></select>
       <select class="filter" id="fResult"><option value="">全部结果</option></select>
       <select class="filter" id="fCause"><option value="">全部死因</option></select>
@@ -190,7 +190,7 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
     <div class="tablewrap">
       <table>
         <thead><tr>
-          <th>时间</th><th>游戏</th><th>版本</th><th>Session</th><th>模式</th><th>地图</th><th>结果</th><th>K/D/A</th>
+          <th>时间</th><th>游戏</th><th>版本</th><th>时段</th><th>模式</th><th>地图</th><th>结果</th><th>K/D/A</th>
           <th>队伍</th><th>角色</th><th>主武器</th><th>距离</th><th>打法</th><th>死因</th><th>标签</th><th>复盘</th><th>操作</th>
         </tr></thead>
         <tbody id="tbody"></tbody>
@@ -211,7 +211,7 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
     <div class="card"><h3>打法表现</h3><div id="anaStyle"></div></div>
   </div>
   <div class="card">
-    <h3>Session 表现</h3>
+    <h3>时段表现</h3>
     <div id="anaSessions"></div>
   </div>
   <div class="kpi-note">“成功率”按游戏类型计算：三角洲 / 塔科夫看撤离；Ready or Not 看任务完成；其他游戏看胜利。样本少于 5 局时不作为稳定结论。</div>
@@ -401,7 +401,7 @@ function renderDashboard(){
   $("sessionOverview").innerHTML=sg.map(function(pair){
     var z=summary(pair[1]),gameTop=topEntry(counter("game",pair[1]));
     return '<div class="session-summary"><b>'+esc(pair[0])+'</b><span class="muted">'+z.games+' 局 · '+z.k+' 杀 · 总体 K/D '+z.kd.toFixed(2)+(gameTop?' · '+esc(gameTop[0]):'')+(z.profit?' · 收益 '+z.profit:'')+'</span></div>'
-  }).join("")||'<div class="empty">给记录填上 Session 后，这里会按一次游戏时段汇总。</div>';
+  }).join("")||'<div class="empty">给记录填上游戏时段后，这里会按一次游戏时段汇总。</div>';
 }
 
 function populate(id,arr,label){
@@ -505,7 +505,7 @@ function renderAnalytics(){
   $("anaSessions").innerHTML=sg.map(function(pair){
     var z=summary(pair[1]),cause=topEntry(counter("cause",pair[1].filter(function(r){return r.cause&&r.cause!=="无 / 未死亡"})));
     return '<div class="session-summary"><b>'+esc(pair[0])+'</b><span class="muted">'+z.games+' 局 · '+z.k+' 杀 / '+z.d+' 死 · K/D '+z.kd.toFixed(2)+' · 场均 '+z.avgK.toFixed(2)+' 杀'+(z.profit?' · 收益 '+z.profit:'')+(cause?' · 常见死因 '+esc(cause[0])+' ×'+cause[1]:'')+(z.games<5?' · <span class="warntxt">样本少</span>':'')+'</span></div>'
-  }).join("")||'<div class="empty">暂无 Session 数据</div>';
+  }).join("")||'<div class="empty">暂无时段数据</div>';
 }
 
 function download(blob,name){
