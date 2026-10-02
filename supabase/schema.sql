@@ -42,9 +42,61 @@ as $$
     nullif(r.payload->>'game','') as game,
     nullif(r.payload->>'weapon','') as weapon,
     count(*) as sample_size,
-    coalesce(sum((r.payload->>'kills')::bigint),0) as kills,
-    coalesce(sum((r.payload->>'deaths')::bigint),0) as deaths,
-    round(coalesce(sum((r.payload->>'kills')::numeric),0) / nullif(coalesce(sum((r.payload->>'deaths')::numeric),0),0),2) as kd
+    coalesce(sum(case when coalesce(r.payload->>'kills','') ~ '^[0-9]+
+  from public.fps_records r
+  where r.deleted_at is null and r.share_community is true
+    and coalesce(r.payload->>'game','') <> '' and coalesce(r.payload->>'weapon','') <> ''
+  group by r.payload->>'game', r.payload->>'weapon'
+  having count(*) >= greatest(coalesce(min_samples,5),5)
+  order by count(*) desc
+  limit 100;
+$$;
+
+revoke all on function public.community_weapon_stats(integer) from public;
+grant execute on function public.community_weapon_stats(integer) to anon, authenticated;
+ then (r.payload->>'kills')::bigint else 0 end),0) as kills,
+    coalesce(sum(case when coalesce(r.payload->>'deaths','') ~ '^[0-9]+
+  from public.fps_records r
+  where r.deleted_at is null and r.share_community is true
+    and coalesce(r.payload->>'game','') <> '' and coalesce(r.payload->>'weapon','') <> ''
+  group by r.payload->>'game', r.payload->>'weapon'
+  having count(*) >= greatest(coalesce(min_samples,5),5)
+  order by count(*) desc
+  limit 100;
+$$;
+
+revoke all on function public.community_weapon_stats(integer) from public;
+grant execute on function public.community_weapon_stats(integer) to anon, authenticated;
+ then (r.payload->>'deaths')::bigint else 0 end),0) as deaths,
+    round(
+      coalesce(sum(case when coalesce(r.payload->>'kills','') ~ '^[0-9]+
+  from public.fps_records r
+  where r.deleted_at is null and r.share_community is true
+    and coalesce(r.payload->>'game','') <> '' and coalesce(r.payload->>'weapon','') <> ''
+  group by r.payload->>'game', r.payload->>'weapon'
+  having count(*) >= greatest(coalesce(min_samples,5),5)
+  order by count(*) desc
+  limit 100;
+$$;
+
+revoke all on function public.community_weapon_stats(integer) from public;
+grant execute on function public.community_weapon_stats(integer) to anon, authenticated;
+ then (r.payload->>'kills')::numeric else 0 end),0)
+      / nullif(coalesce(sum(case when coalesce(r.payload->>'deaths','') ~ '^[0-9]+
+  from public.fps_records r
+  where r.deleted_at is null and r.share_community is true
+    and coalesce(r.payload->>'game','') <> '' and coalesce(r.payload->>'weapon','') <> ''
+  group by r.payload->>'game', r.payload->>'weapon'
+  having count(*) >= greatest(coalesce(min_samples,5),5)
+  order by count(*) desc
+  limit 100;
+$$;
+
+revoke all on function public.community_weapon_stats(integer) from public;
+grant execute on function public.community_weapon_stats(integer) to anon, authenticated;
+ then (r.payload->>'deaths')::numeric else 0 end),0),0),
+      2
+    ) as kd
   from public.fps_records r
   where r.deleted_at is null and r.share_community is true
     and coalesce(r.payload->>'game','') <> '' and coalesce(r.payload->>'weapon','') <> ''

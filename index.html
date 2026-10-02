@@ -950,9 +950,13 @@ async function initCloud(){
 }
 async function cloudAnonymousSignIn(){
   if(!cloudClient)return;cloudBusy=true;renderCloudPanel();
-  try{var r=await cloudClient.auth.signInAnonymously();if(r.error)throw r.error;cloudUser=r.data.user;renderCloudPanel();showToast("匿名云身份已创建");await cloudSync({silent:true})}
-  catch(err){setCloudBadge("登录失败","cloud-error");setCloudMessage("匿名登录失败："+err.message)}
-  finally{cloudBusy=false;renderCloudPanel()}
+  try{
+    var r=await cloudClient.auth.signInAnonymously();if(r.error)throw r.error;
+    cloudUser=r.data.user;showToast("匿名云身份已创建")
+  }catch(err){
+    setCloudBadge("登录失败","cloud-error");setCloudMessage("匿名登录失败："+err.message);cloudBusy=false;renderCloudPanel();return
+  }
+  cloudBusy=false;renderCloudPanel();await cloudSync({silent:true})
 }
 async function cloudEmailSignIn(){
   if(!cloudClient)return;var email=$("cloudEmail").value.trim();if(!email){showToast("请先填写邮箱");$("cloudEmail").focus();return}
