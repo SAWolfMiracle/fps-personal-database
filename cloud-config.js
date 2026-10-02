@@ -1,8 +1,10 @@
 // FPS Personal Database cloud configuration.
-// Public file: use only a Supabase publishable/anon key here.
-// NEVER put a service_role key or any secret server credential here.
+// Public on GitHub Pages: only a Supabase publishable key belongs here.
+// NEVER place a secret/service_role key or other server credential here.
 window.FPS_CLOUD_CONFIG = {
-  enabled: false,
-  supabaseUrl: "",
-  publishableKey: ""
+  enabled: true,
+  supabaseUrl: "https://annugdqxrauzsbltegrg.supabase.co",
+  publishableKey: "sb_publishable_d6MRWoYt5Uy56ExIKdFVNA_uOzvSWc4",
+  anonymousAuth: false,
+  emailMagicLink: false
 };

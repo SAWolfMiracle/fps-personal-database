@@ -255,7 +255,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.5.0</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.5.1</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -455,8 +455,8 @@ tbody tr:hover td{background:#101821}
     <div class="cloud-auth">
       <div class="field cloud-email-field"><label>可恢复账号（邮箱魔法链接）</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
       <div class="actions cloud-actions">
-        <button class="btn primary" id="cloudEmailBtn">发送登录链接</button>
-        <button class="btn" id="cloudAnonBtn">匿名云身份</button>
+        <button class="btn primary" id="cloudEmailBtn" title="需先在 Supabase Auth 配置站点重定向">发送登录链接</button>
+        <button class="btn" id="cloudAnonBtn" title="需先在 Supabase Auth 启用 Anonymous Sign-Ins">匿名云身份</button>
         <button class="btn" id="cloudSyncBtn">立即同步</button>
         <button class="btn ghost" id="cloudSignOutBtn">退出云身份</button>
       </div>
@@ -501,7 +501,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.5.0";
+var APP_VERSION="0.5.1";
 var KEY="fps_database_pwa_v1";
 var tabs=[
   ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["data","database","数据"]
@@ -916,7 +916,7 @@ function isoNow(){return new Date().toISOString()}
 function timeValue(v){var n=Date.parse(v||"");return Number.isFinite(n)?n:0}
 function cloudConfig(){
   var c=window.FPS_CLOUD_CONFIG||{};
-  return {enabled:!!c.enabled,url:String(c.supabaseUrl||c.url||"").trim(),key:String(c.publishableKey||c.anonKey||c.key||"").trim()}
+  return {enabled:!!c.enabled,url:String(c.supabaseUrl||c.url||"").trim(),key:String(c.publishableKey||c.anonKey||c.key||"").trim(),anonymousAuth:!!c.anonymousAuth,emailMagicLink:!!c.emailMagicLink}
 }
 function cloudConfigured(){var c=cloudConfig();return c.enabled&&/^https:\/\//.test(c.url)&&c.key.length>10}
 function cloudAutoEnabled(){return localStorage.getItem(CLOUD_AUTO_KEY)!=="0"}
@@ -930,11 +930,13 @@ function renderCloudPanel(){
   $("cloudLocalCount").textContent=records.length;$("cloudDeleteCount").textContent=cloudTombstones.length;
   $("cloudIdentity").textContent=shortUserId();$("cloudLastSync").textContent=formatSyncTime(localStorage.getItem(CLOUD_LAST_SYNC_KEY));
   $("cloudAutoSync").checked=cloudAutoEnabled();$("communityOptIn").checked=communityEnabled();
+  var cfg=cloudConfig();
   $("cloudSyncBtn").disabled=!cloudClient||!cloudUser||cloudBusy;$("cloudSignOutBtn").disabled=!cloudClient||!cloudUser||cloudBusy;
-  $("cloudAnonBtn").disabled=!cloudClient||!!cloudUser||cloudBusy;$("cloudEmailBtn").disabled=!cloudClient||cloudBusy;
+  $("cloudAnonBtn").disabled=!cloudClient||!!cloudUser||cloudBusy||!cfg.anonymousAuth;$("cloudEmailBtn").disabled=!cloudClient||cloudBusy||!cfg.emailMagicLink;
   if(!cloudConfigured()){setCloudBadge("未配置","cloud-off");setCloudMessage("当前未配置 Supabase，数据只保存在本机；不会发生任何网络上传。")}
   else if(cloudBusy){setCloudBadge("同步中","cloud-busy")}
   else if(cloudUser){setCloudBadge(navigator.onLine?"云端已连接":"离线","cloud-ready");setCloudMessage(navigator.onLine?"本地优先已启用；云端仅保存当前身份自己的原始记录。":"当前离线，修改会先保存在本机，恢复联网后可继续同步。")}
+  else if(!cfg.anonymousAuth&&!cfg.emailMagicLink){setCloudBadge("数据库已连接","cloud-ready");setCloudMessage("Supabase 数据库和 RLS 已就绪；用户认证还需在 Supabase Auth 中启用匿名登录，并配置 GitHub Pages 的邮箱重定向地址。")}
   else{setCloudBadge("等待登录","cloud-off");setCloudMessage("云端已配置。可用邮箱魔法链接建立可恢复账号，或创建当前浏览器专用的匿名云身份。")}
 }
 async function initCloud(){
