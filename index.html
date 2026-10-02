@@ -918,10 +918,16 @@ function renderRecords(){
 }
 function deleteRecord(id){
   var idx=records.findIndex(function(r){return r.id===id});if(idx<0)return;
-  deletedSnapshot={record:records[idx],index:idx};var baseRevision=num(records[idx].cloud_revision);records.splice(idx,1);addTombstone(id,baseRevision);saveAndRender();
+  deletedSnapshot={record:records[idx],index:idx};var baseRevision=num(records[idx].cloud_revision);records.splice(idx,1);addTombstone(id,baseRevision);saveAndRender(true);
   showToast("已删除 1 条记录","撤销",function(){
-    if(!deletedSnapshot)return;deletedSnapshot.record.updated_at=isoNow();records.splice(deletedSnapshot.index,0,deletedSnapshot.record);removeTombstone(deletedSnapshot.record.id);deletedSnapshot=null;saveAndRender()
-  })
+    if(!deletedSnapshot)return;
+    deletedSnapshot.record.updated_at=isoNow();deletedSnapshot.record.local_dirty=true;
+    records.splice(deletedSnapshot.index,0,deletedSnapshot.record);removeTombstone(deletedSnapshot.record.id);deletedSnapshot=null;saveAndRender()
+  });
+  setTimeout(function(){
+    if(deletedSnapshot&&deletedSnapshot.record&&deletedSnapshot.record.id===id)deletedSnapshot=null;
+    scheduleCloudSync(0)
+  },5200)
 }
 function editRecord(id){
   var r=records.find(function(x){return x.id===id});if(!r)return;
@@ -1021,9 +1027,16 @@ function guestRecords(){
   try{var x=JSON.parse(localStorage.getItem(workspaceRecordsKey("guest"))||"[]");return Array.isArray(x)?x.map(migrateRecord):[]}catch(e){return []}
 }
 function guestMergeFlagKey(){return GUEST_MERGED_PREFIX+(cloudUser?cloudUser.id:"none")}
+function guestMergedIds(){
+  try{var x=JSON.parse(localStorage.getItem(guestMergeFlagKey())||"[]");return Array.isArray(x)?x:[]}catch(e){return []}
+}
+function unmergedGuestRecords(){
+  var done={};guestMergedIds().forEach(function(id){done[id]=true});
+  return guestRecords().filter(function(r){return !done[r.id]})
+}
 function renderCloudPanel(){
   if(!$("cloudBadge"))return;
-  var cfg=cloudConfig(),guest=guestRecords(),mergeAvailable=!!cloudUser&&activeWorkspace!=="guest"&&guest.length>0&&localStorage.getItem(guestMergeFlagKey())!=="1";
+  var cfg=cloudConfig(),guest=unmergedGuestRecords(),mergeAvailable=!!cloudUser&&activeWorkspace!=="guest"&&guest.length>0;
   $("cloudLocalCount").textContent=records.length;$("cloudDeleteCount").textContent=cloudTombstones.length;
   $("cloudIdentity").textContent=identityLabel();$("cloudLastSync").textContent=formatSyncTime(localStorage.getItem(workspaceLastSyncKey()));
   $("cloudAutoSync").checked=cloudAutoEnabled();$("communityOptIn").checked=communityEnabled();
@@ -1099,17 +1112,17 @@ async function cloudSignOut(){
 }
 function mergeGuestIntoCurrent(){
   if(!cloudUser||activeWorkspace==="guest")return;
-  var guest=guestRecords();if(!guest.length){showToast("没有可合并的本机记录");return}
-  if(!confirm("把本机 guest workspace 的 "+guest.length+" 条记录复制到当前账号？guest 副本会继续保留。"))return;
+  var guest=unmergedGuestRecords();if(!guest.length){showToast("没有新的本机记录可合并");return}
+  if(!confirm("把本机 guest workspace 的 "+guest.length+" 条新记录复制到当前账号？guest 副本会继续保留。"))return;
   var ids={};records.forEach(function(r){ids[r.id]=true});
-  var added=0;
+  var merged=guestMergedIds(),added=0;
   guest.forEach(function(r){
-    var x=Object.assign({},r);
+    var originalId=r.id,x=Object.assign({},r);
     if(ids[x.id])x.id=uid();
     x.cloud_revision=0;x.cloud_server_updated_at="";x.local_dirty=true;x.updated_at=isoNow();
-    records.unshift(x);ids[x.id]=true;added++
+    records.unshift(x);ids[x.id]=true;merged.push(originalId);added++
   });
-  localStorage.setItem(guestMergeFlagKey(),"1");saveAndRender();showToast("已合并 "+added+" 条本机记录")
+  localStorage.setItem(guestMergeFlagKey(),JSON.stringify(uniq(merged)));saveAndRender();showToast("已合并 "+added+" 条本机记录")
 }
 
 function addTombstone(id,baseRevision){
@@ -1153,7 +1166,7 @@ async function cloudSync(opts){
   if(cloudBusy)return;cloudBusy=true;renderCloudPanel();var conflicts=0;
   try{
     var pulled=await cloudClient.from("fps_records").select("id,payload,revision,server_updated_at,deleted_at,share_community");if(pulled.error)throw pulled.error;
-    var remote=pulled.data||[];
+    var remote=pulled.data||[],remoteMap={};remote.forEach(function(row){remoteMap[row.id]=row});
     remote.forEach(function(row){
       var local=records.find(function(r){return r.id===row.id}),tomb=cloudTombstones.find(function(t){return t.id===row.id});
       if(local){
@@ -1165,7 +1178,12 @@ async function cloudSync(opts){
       }else applyRemoteRow(row)
     });
 
-    var share=communityEnabled(),dirty=records.filter(function(r){return r.local_dirty});
+    var share=communityEnabled();
+    records.forEach(function(rec){
+      var row=remoteMap[rec.id];
+      if(row&&!!row.share_community!==share)rec.local_dirty=true
+    });
+    var dirty=records.filter(function(r){return r.local_dirty});
     for(var i=0;i<dirty.length;i++){
       var rec=dirty[i],answer=await pushRecordWithRevision(rec,share);if(!answer)continue;
       if(answer.applied){
