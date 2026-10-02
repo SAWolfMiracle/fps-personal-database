@@ -181,24 +181,84 @@ tbody tr:hover td{background:#101821}
   #data h3{font-size:19px}
   #data .muted{font-size:13px;line-height:1.6}
 }
+
+/* v0.4 UI polish */
+.section.active{animation:sectionIn .16s ease-out}
+@keyframes sectionIn{from{opacity:.25;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}
+.dashboard-hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(320px,1.25fr);gap:10px;margin-bottom:14px}
+.stat-hero{position:relative;min-height:144px;padding:17px;overflow:hidden}
+.stat-hero:after{content:"";position:absolute;right:-34px;bottom:-54px;width:150px;height:150px;border:1px solid rgba(110,158,232,.08);border-radius:50%}
+.stat-hero>span{font-size:12px;color:var(--muted)}
+.stat-hero>b{font-size:39px;line-height:1.05;margin-top:10px;letter-spacing:-.035em}
+.stat-hero>small{display:block;color:var(--muted);font-size:11px;margin-top:11px;line-height:1.45;max-width:88%}
+.stat-icon{position:absolute;right:14px;top:14px;width:28px;height:28px;color:#5879a7;opacity:.68}
+.stat-icon svg{width:100%;height:100%}
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini-stats .stat{min-height:67px;display:flex;flex-direction:column;justify-content:center}
+.mini-stats .stat b{font-size:18px}
+.tab-icon{width:15px;height:15px;display:inline-block;vertical-align:-3px;margin-right:6px}
+.mobile-nav .nav-icon{width:20px;height:20px;display:block;margin:0 auto 3px}
+.mobile-nav button{border-radius:12px;transition:background .16s ease,color .16s ease,transform .16s ease}
+.mobile-nav button:active{transform:scale(.96)}
+.mobile-nav button.active{color:#f4f8fd;background:rgba(73,111,165,.16)}
+.choice-chips{display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.choice-chip{appearance:none;border:1px solid #29374a;background:#0d141c;color:#96a4b5;border-radius:9px;padding:9px 5px;font-size:12px;font-weight:650;min-width:0}
+.choice-chip.active{color:#edf5ff;background:#1a3152;border-color:#456d9f;box-shadow:inset 0 0 0 1px rgba(126,171,232,.08)}
+.choice-chip.tone-good.active{color:var(--good);background:var(--good-soft);border-color:#2b5a45}
+.choice-chip.tone-bad.active{color:var(--bad);background:var(--bad-soft);border-color:#663940}
+.kda-fields{display:contents}
+#kills,#deaths,#assists{font-variant-numeric:tabular-nums;font-weight:750}
+.btn.saved{background:#173d2c!important;border-color:#3a7a59!important;color:#a9ebc9!important;box-shadow:0 0 0 3px rgba(83,181,127,.08)!important}
+@media(max-width:1050px){
+  .dashboard-hero{grid-template-columns:1fr 1fr}
+  .mini-stats{grid-column:1/-1;grid-template-columns:repeat(4,1fr)}
+}
+@media(max-width:800px){
+  .dashboard-hero{grid-template-columns:1fr 1fr}
+  .stat-hero{min-height:124px;padding:14px}
+  .stat-hero>b{font-size:32px}
+  .mini-stats{grid-template-columns:1fr 1fr}
+  #result,#squad,#range{display:none}
+  .choice-chips{display:grid}
+  .kda-fields{display:grid;grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  #kills,#deaths,#assists{font-size:20px;text-align:center;padding:13px 8px}
+}
+@media(max-width:520px){
+  .dashboard-hero{grid-template-columns:1fr}
+  .stat-hero{min-height:112px}
+  .mini-stats{grid-template-columns:1fr 1fr}
+}
+
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.3.1</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.4.0</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
 
 <section id="dashboard" class="section active">
-  <div class="stats">
-    <div class="stat"><span>总记录</span><b id="stTotal">0</b></div>
-    <div class="stat"><span>总击杀</span><b id="stKills">0</b></div>
-    <div class="stat"><span>总体 K/D</span><b id="stKD">0.00</b></div>
-    <div class="stat"><span>场均击杀</span><b id="stAvgKills">0.00</b></div>
-    <div class="stat"><span>最常用武器</span><b id="stWeapon">暂无</b></div>
-    <div class="stat"><span>最常见死因</span><b id="stCause">暂无</b></div>
+  <div class="dashboard-hero">
+    <div class="stat stat-hero">
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <span>累计对局</span>
+      <b id="stTotal">0</b>
+      <small id="stTotalHint">从第一局开始积累你的样本</small>
+    </div>
+    <div class="stat stat-hero">
+      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="6.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
+      <span>总体 K/D</span>
+      <b id="stKD">0.00</b>
+      <small id="stRecentKD">积累更多记录后显示近期状态</small>
+    </div>
+    <div class="mini-stats">
+      <div class="stat"><span>总击杀</span><b id="stKills">0</b></div>
+      <div class="stat"><span>场均击杀</span><b id="stAvgKills">0.00</b></div>
+      <div class="stat"><span>最常用武器</span><b id="stWeapon">暂无</b></div>
+      <div class="stat"><span>最常见死因</span><b id="stCause">暂无</b></div>
+    </div>
   </div>
   <div class="grid2" style="margin-top:14px">
     <div class="card"><h3>当前结论</h3><div id="insights" class="muted"></div></div>
@@ -230,11 +290,13 @@ tbody tr:hover td{background:#101821}
           <div class="field"><label>地图</label><input id="map" list="maps" placeholder="地图名"></div>
           <div class="field"><label>赛季 / 版本</label><input id="season" list="seasons" placeholder="S8 / 1.2.0 / 2026-10"></div>
           <div class="field"><label>游戏时段</label><input id="session" list="sessions" placeholder="2026-10-02 夜间"></div>
-          <div class="field key-field"><label>结果</label><select id="result"><option>胜利</option><option>撤离</option><option>任务完成</option><option>失败</option><option>阵亡</option><option>平局</option><option>其他</option></select><input id="resultOther" class="other-input" placeholder="请输入自定义结果" hidden></div>
-          <div class="field key-field"><label>击杀</label><input id="kills" type="number" min="0" value="0"></div>
-          <div class="field key-field"><label>死亡</label><input id="deaths" type="number" min="0" value="1"></div>
-          <div class="field"><label>助攻</label><input id="assists" type="number" min="0" value="0"></div>
-          <div class="field"><label>队伍</label><select id="squad"><option>单排</option><option>双排</option><option>三排</option><option>四排</option><option>五人+</option><option>不适用</option></select></div>
+          <div class="field key-field"><label>结果</label><select id="result"><option>胜利</option><option>撤离</option><option>任务完成</option><option>失败</option><option>阵亡</option><option>平局</option><option>其他</option></select><div class="choice-chips" data-choice-select="result"></div><input id="resultOther" class="other-input" placeholder="请输入自定义结果" hidden></div>
+          <div class="kda-fields">
+            <div class="field key-field"><label>击杀</label><input id="kills" type="number" min="0" value="0"></div>
+            <div class="field key-field"><label>死亡</label><input id="deaths" type="number" min="0" value="1"></div>
+            <div class="field"><label>助攻</label><input id="assists" type="number" min="0" value="0"></div>
+          </div>
+          <div class="field"><label>队伍</label><select id="squad"><option>单排</option><option>双排</option><option>三排</option><option>四排</option><option>五人+</option><option>不适用</option></select><div class="choice-chips" data-choice-select="squad"></div></div>
         </div>
       </div>
 
@@ -249,7 +311,7 @@ tbody tr:hover td{background:#101821}
           <div class="field"><label>副武器</label><input id="secondary" list="secondaries" placeholder="G18C / 手枪..."></div>
           <div class="field"><label>弹药 / 弹种</label><input id="ammo" list="ammos" placeholder="蓝 / 紫 / M855A1..."></div>
           <div class="field"><label>护甲 / 装备</label><input id="armor" list="armors" placeholder="金甲 / 三甲 / 无"></div>
-          <div class="field"><label>交战距离</label><select id="range"><option>0–15m</option><option>15–40m</option><option>40–80m</option><option>80m+</option><option>混合</option></select></div>
+          <div class="field"><label>交战距离</label><select id="range"><option>0–15m</option><option>15–40m</option><option>40–80m</option><option>80m+</option><option>混合</option></select><div class="choice-chips" data-choice-select="range"></div></div>
           <div class="field"><label>打法</label><select id="style"><option>正面推进</option><option>绕后</option><option>架枪</option><option>狙击</option><option>游击</option><option>混合</option><option>其他</option></select><input id="styleOther" class="other-input" placeholder="请输入自定义打法" hidden></div>
           <div class="field"><label>主要死亡原因</label><select id="cause">
             <option>无 / 未死亡</option><option>正面连续接敌</option><option>换弹时被冲</option><option>信息不足 / 没发现敌人</option>
@@ -385,10 +447,10 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.3.1";
+var APP_VERSION="0.4.0";
 var KEY="fps_database_pwa_v1";
 var tabs=[
-  ["dashboard","⌂","总览"],["add","＋","录入"],["records","≡","记录"],["analytics","▦","分析"],["data","⋯","数据"]
+  ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["data","database","数据"]
 ];
 var records=[];
 var editingId=null;
@@ -447,9 +509,19 @@ function showToast(msg,actionLabel,action){
 }
 function hideToast(){$("toast").classList.remove("show")}
 
+function iconSvg(name){
+  var icons={
+    home:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.5 10.8 12 3.8l8.5 7v9a1.2 1.2 0 0 1-1.2 1.2H4.7a1.2 1.2 0 0 1-1.2-1.2v-9Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 21v-6h6v6" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>',
+    plus:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    list:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 6h11M9 12h11M9 18h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>',
+    chart:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10m6 10V4m6 16v-7m4 7V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+    database:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" stroke="currentColor" stroke-width="1.8"/></svg>'
+  };
+  return icons[name]||icons.database
+}
 function makeTabs(){
-  $("desktopTabs").innerHTML=tabs.map(function(t,i){return '<button class="tabbtn '+(i===0?"active":"")+'" data-tab="'+t[0]+'">'+t[2]+'</button>'}).join("");
-  $("mobileNav").innerHTML=tabs.map(function(t,i){return '<button class="'+(i===0?"active":"")+'" data-tab="'+t[0]+'"><strong>'+t[1]+'</strong>'+t[2]+'</button>'}).join("");
+  $("desktopTabs").innerHTML=tabs.map(function(t,i){return '<button class="tabbtn '+(i===0?"active":"")+'" data-tab="'+t[0]+'"><span class="tab-icon">'+iconSvg(t[1])+'</span>'+t[2]+'</button>'}).join("");
+  $("mobileNav").innerHTML=tabs.map(function(t,i){return '<button class="'+(i===0?"active":"")+'" data-tab="'+t[0]+'"><span class="nav-icon">'+iconSvg(t[1])+'</span>'+t[2]+'</button>'}).join("");
   document.querySelectorAll("[data-tab]").forEach(function(b){b.addEventListener("click",function(){switchTab(b.dataset.tab)})});
 }
 function switchTab(id){
@@ -477,6 +549,43 @@ function renderDatalists(){
     var dl=$(dictFields[field]),vals=field==="session"?fieldValues(field):fieldValues(field,game||null);
     dl.innerHTML=vals.map(function(v){return '<option value="'+esc(v)+'"></option>'}).join("");
   });
+}
+
+function choiceTone(selectId,value){
+  if(selectId!=="result")return "";
+  if(["胜利","撤离","任务完成"].indexOf(value)>=0)return "tone-good";
+  if(["失败","阵亡"].indexOf(value)>=0)return "tone-bad";
+  return ""
+}
+function syncChoiceGroup(selectId){
+  var sel=$(selectId),box=document.querySelector('[data-choice-select="'+selectId+'"]');
+  if(!sel||!box)return;
+  box.querySelectorAll(".choice-chip").forEach(function(b){b.classList.toggle("active",b.dataset.value===sel.value)})
+}
+function bindChoiceGroups(){
+  document.querySelectorAll("[data-choice-select]").forEach(function(box){
+    var selectId=box.dataset.choiceSelect,sel=$(selectId);
+    if(!sel)return;
+    box.innerHTML=Array.prototype.map.call(sel.options,function(opt){
+      return '<button type="button" class="choice-chip '+choiceTone(selectId,opt.value)+'" data-value="'+esc(opt.value)+'">'+esc(opt.textContent)+'</button>'
+    }).join("");
+    box.querySelectorAll(".choice-chip").forEach(function(btn){
+      btn.addEventListener("click",function(){
+        sel.value=btn.dataset.value;
+        sel.dispatchEvent(new Event("change",{bubbles:true}));
+        syncChoiceGroup(selectId);
+        updatePreview()
+      })
+    });
+    sel.addEventListener("change",function(){syncChoiceGroup(selectId)});
+    syncChoiceGroup(selectId)
+  })
+}
+function syncAllChoiceGroups(){["result","squad","range"].forEach(syncChoiceGroup)}
+function flashSaveButton(label,done){
+  var b=$("saveBtn"),old=b.textContent;
+  b.disabled=true;b.classList.add("saved");b.textContent="✓ "+label;
+  setTimeout(function(){b.classList.remove("saved");b.disabled=false;b.textContent=old;if(done)done()},420)
 }
 
 function bindOtherSelect(selectId,inputId){
@@ -596,6 +705,9 @@ function renderDashboard(){
   var s=summary(records),tw=topEntry(counter("weapon")),tc=topEntry(counter("cause",records.filter(function(r){return r.cause&&r.cause!=="无 / 未死亡"})));
   $("stTotal").textContent=s.games;$("stKills").textContent=s.k;$("stKD").textContent=s.kd.toFixed(2);$("stAvgKills").textContent=s.avgK.toFixed(2);
   $("stWeapon").textContent=tw?tw[0]:"暂无";$("stCause").textContent=tc?tc[0]:"暂无";
+  $("stTotalHint").textContent=s.games?("已积累 "+s.games+" 局可查询样本"):"从第一局开始积累你的样本";
+  var recentList=records.slice(0,Math.min(10,records.length)),recentSummary=summary(recentList);
+  if(recentList.length>=3){var delta=recentSummary.kd-s.kd,arrow=delta>.005?"↑":delta<-.005?"↓":"→";$("stRecentKD").textContent="最近 "+recentList.length+" 局 "+recentSummary.kd.toFixed(2)+" · "+arrow+" "+Math.abs(delta).toFixed(2)+" vs 总体"}else{$("stRecentKD").textContent="积累至少 3 局后显示近期状态"}
   var ins=[];
   if(records.length<5)ins.push("当前样本较少，先记录 5–10 局再看稳定趋势。");
   if(tc&&records.length>=5){
@@ -657,7 +769,7 @@ function editRecord(id){
   ["game","mode","map","season","session","kills","deaths","assists","squad","role","weapon","secondary","ammo","armor","range","cost","profit","note"].forEach(function(k){
     if($(k))$(k).value=r[k]==null?"":r[k]
   });
-  setSelectValue("result","resultOther",r.result);setSelectValue("style","styleOther",r.style);setSelectValue("cause","causeOther",r.cause);
+  setSelectValue("result","resultOther",r.result);setSelectValue("style","styleOther",r.style);setSelectValue("cause","causeOther",r.cause);syncAllChoiceGroups();
   $("tags").value=(r.tags||[]).join(", ");
   $("saveBtn").textContent="保存修改";$("cancelEditBtn").hidden=false;$("editBadge").hidden=false;$("formTitle").textContent="编辑记录";
   renderDatalists();updatePreview();switchTab("add")
@@ -689,17 +801,19 @@ function getForm(){
 function clearForm(keepSession){
   var sess=keepSession?$("session").value:"";
   ["game","mode","map","season","session","role","weapon","secondary","ammo","armor","tags","cost","profit","note"].forEach(function(id){$(id).value=""});
-  $("session").value=sess;$("kills").value=0;$("deaths").value=1;$("assists").value=0;$("result").value="胜利";$("squad").value="单排";$("range").value="0–15m";$("style").value="正面推进";$("cause").value="无 / 未死亡";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});renderDatalists();updatePreview()
+  $("session").value=sess;$("kills").value=0;$("deaths").value=1;$("assists").value=0;$("result").value="胜利";$("squad").value="单排";$("range").value="0–15m";$("style").value="正面推进";$("cause").value="无 / 未死亡";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});renderDatalists();syncAllChoiceGroups();updatePreview()
 }
 function saveForm(){
   if(!validateCustomSelects())return;
   var rec=getForm();
   if(editingId){
     var idx=records.findIndex(function(r){return r.id===editingId});if(idx>=0)records[idx]=rec;
-    editingId=null;$("saveBtn").textContent="保存这一局";$("cancelEditBtn").hidden=true;$("editBadge").hidden=true;$("formTitle").textContent="录入一局";
-    saveAndRender();clearForm(true);showToast("修改已保存");switchTab("records")
+    editingId=null;$("cancelEditBtn").hidden=true;$("editBadge").hidden=true;$("formTitle").textContent="录入一局";
+    saveAndRender();
+    flashSaveButton("修改已保存",function(){clearForm(true);$("saveBtn").textContent="保存这一局";showToast("修改已保存");switchTab("records")})
   }else{
-    records.unshift(rec);saveAndRender();var sess=rec.session;clearForm(false);$("session").value=sess;showToast("已保存");switchTab("dashboard")
+    records.unshift(rec);saveAndRender();var sess=rec.session;
+    flashSaveButton("已保存",function(){clearForm(false);$("session").value=sess;updatePreview();showToast("已保存");switchTab("dashboard")})
   }
 }
 
@@ -758,13 +872,13 @@ $("newSessionBtn").addEventListener("click",function(){$("session").value=sessio
 $("demoBtn").addEventListener("click",function(){
   $("game").value="三角洲行动";$("mode").value="常规";$("season").value="";$("session").value=sessionLabel();$("result").value="阵亡";$("kills").value=2;$("deaths").value=1;
   $("squad").value="单排";$("role").value="无名";$("weapon").value="K416";$("secondary").value="G18C";$("ammo").value="蓝";$("armor").value="金甲";
-  $("range").value="0–15m";$("style").value="正面推进";$("cause").value="换弹时被冲";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});$("tags").value="单三, 近战";$("note").value="30发打倒两个，换弹时第三个人贴脸冲进来。";renderDatalists();updatePreview();showToast("已填入示例")
+  $("range").value="0–15m";$("style").value="正面推进";$("cause").value="换弹时被冲";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});$("tags").value="单三, 近战";$("note").value="30发打倒两个，换弹时第三个人贴脸冲进来。";renderDatalists();syncAllChoiceGroups();updatePreview();showToast("已填入示例")
 });
 $("game").addEventListener("input",renderDatalists);
 ["fSearch","fGame","fResult","fCause","fSquad"].forEach(function(id){$(id).addEventListener("input",renderRecords);$(id).addEventListener("change",renderRecords)});
 $("exportJsonBtn").addEventListener("click",exportJSON);$("exportCsvBtn").addEventListener("click",exportCSV);$("importFile").addEventListener("change",importJSON);$("clearAllBtn").addEventListener("click",clearAll);
 
-load();makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");renderAll();bindPreview();
+load();makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();
 
 if("serviceWorker" in navigator){
   window.addEventListener("load",function(){
