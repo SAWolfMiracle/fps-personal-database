@@ -1,4 +1,4 @@
-const CACHE="fps-db-v2-2";
+const CACHE="fps-db-v3";
 const CORE=["./","./index.html","./manifest.webmanifest","./icon-192.png","./icon-512.png","./icon-180.png"];
 
 self.addEventListener("install",event=>{

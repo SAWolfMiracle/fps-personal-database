@@ -13,73 +13,131 @@
 <style>
 :root{
   color-scheme:dark;
-  --bg:#0b0f14;--panel:#121821;--panel2:#0e141b;--line:#283241;
-  --text:#e9eef5;--muted:#91a0b2;--accent:#5c8edb;--good:#79d8a7;
-  --bad:#ff7e75;--warn:#f2c85b;--purple:#bd9cff;
+  --bg:#0a0f15;--panel:#111821;--panel2:#0d141c;--panel3:#151e29;
+  --line:#253142;--line-strong:#34465e;--text:#eaf0f7;--muted:#8d9bad;
+  --accent:#6e9ee8;--accent-soft:#172945;--good:#77d8aa;--good-soft:#13271f;
+  --bad:#ff827a;--bad-soft:#2c181b;--warn:#e8c76c;--warn-soft:#2a2415;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
-body{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+body{
+  padding-bottom:calc(88px + env(safe-area-inset-bottom));
+  background:radial-gradient(circle at 18% -8%,rgba(74,117,178,.09),transparent 34%),linear-gradient(180deg,#0a0f15 0%,#0b1017 100%)
+}
 button,input,select,textarea{font:inherit;color:inherit}
 button{touch-action:manipulation}
-.wrap{max-width:1180px;margin:auto;padding:18px}
-header{margin-bottom:16px}
-h1{font-size:28px;margin:0 0 6px}.sub{color:var(--muted);font-size:14px;line-height:1.5}
-.version{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:2px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
-.desktop-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.tabbtn,.btn{border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:10px 14px;cursor:pointer}
-.tabbtn.active{background:#193155;border-color:#426b9f}
+button,input,select,textarea,.card,.stat{transition:border-color .18s ease,background .18s ease,transform .18s ease,box-shadow .18s ease}
+.wrap{max-width:1220px;margin:auto;padding:22px}
+header{margin-bottom:18px}
+h1{font-size:28px;letter-spacing:-.02em;margin:0 0 6px}
+.sub{color:var(--muted);font-size:14px;line-height:1.5}
+.version{font-size:11px;color:#a9b7c8;border:1px solid var(--line);background:#0d141d;padding:3px 7px;border-radius:999px;margin-left:8px;vertical-align:middle}
+.desktop-tabs{display:flex;gap:3px;flex-wrap:wrap;margin-top:16px;width:max-content;max-width:100%;padding:4px;background:#0d141c;border:1px solid var(--line);border-radius:13px}
+.tabbtn,.btn{border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 14px;cursor:pointer}
+.tabbtn{border:0;background:transparent;color:var(--muted);padding:9px 14px}
+.tabbtn:hover{color:var(--text);background:#131c27}
+.tabbtn.active{background:var(--accent-soft);color:#f3f7fd;box-shadow:inset 0 0 0 1px #355889}
+.btn:hover{border-color:var(--line-strong);background:#16202b}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn.primary{background:#244b82;border-color:#416da8;box-shadow:0 8px 24px rgba(34,73,126,.18)}
+.btn.primary:hover{background:#2a5796}
+.btn.danger{background:#25171b;border-color:#5f343c;color:#ffb1ac}
+.btn.good{background:#173426;border-color:#2c6849}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{background:#111a24;color:var(--text);border-color:var(--line)}
+.btn[hidden]{display:none}
 .section{display:none}.section.active{display:block}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.card{background:rgba(17,24,33,.96);border:1px solid var(--line);border-radius:15px;padding:18px;margin-bottom:14px;box-shadow:0 1px 0 rgba(255,255,255,.015)}
+.card:hover{border-color:#2d3c50}
 .card h2,.card h3{margin-top:0}
 .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-.stat{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px;min-width:0}
-.stat span{color:var(--muted);font-size:12px;display:block}.stat b{font-size:21px;display:block;margin-top:5px;overflow:hidden;text-overflow:ellipsis}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:13px;padding:13px;min-width:0}
+.stat span{color:var(--muted);font-size:12px;display:block}
+.stat b{font-size:21px;font-variant-numeric:tabular-nums;display:block;margin-top:5px;overflow:hidden;text-overflow:ellipsis}
+.entry-layout{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(280px,.85fr);gap:14px;align-items:start}
+.entry-card{padding:18px}
+.entry-preview{position:sticky;top:18px}
+.preview-card{overflow:hidden;position:relative}
+.preview-card:before{content:"";position:absolute;inset:0 auto auto 0;width:100%;height:2px;background:linear-gradient(90deg,var(--accent),transparent 72%)}
+.preview-eyebrow{font-size:11px;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.preview-game{font-size:20px;font-weight:760;letter-spacing:-.02em;margin-bottom:4px}
+.preview-context{font-size:13px;color:var(--muted);line-height:1.5;min-height:20px}
+.preview-result{margin-top:14px}
+.result-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 9px;font-size:12px;font-weight:700}
+.result-pill:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.result-good{color:var(--good);background:var(--good-soft);border-color:#244d3b}
+.result-bad{color:var(--bad);background:var(--bad-soft);border-color:#583036}
+.result-neutral{color:#aeb9c6;background:#121922;border-color:#2c3949}
+.preview-kda{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.preview-kda div{background:#0c131b;border:1px solid var(--line);border-radius:11px;padding:10px;text-align:center}
+.preview-kda span{display:block;color:var(--muted);font-size:10px;letter-spacing:.08em}
+.preview-kda b{display:block;margin-top:2px;font-size:22px;font-variant-numeric:tabular-nums}
+.preview-block{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.preview-row{display:flex;justify-content:space-between;gap:12px;margin:8px 0;font-size:13px}
+.preview-row span:first-child{color:var(--muted)}
+.preview-row strong{font-weight:650;text-align:right;max-width:62%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preview-note{margin-top:12px;color:#b7c3d1;font-size:13px;line-height:1.55;padding:10px 11px;background:#0c131b;border:1px solid var(--line);border-radius:11px;min-height:43px}
+.preview-hint{font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5}
+.form-section{padding:15px 0;border-top:1px solid var(--line)}
+.form-section:first-of-type{border-top:0;padding-top:4px}
+.form-section-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.section-index{width:26px;height:26px;border-radius:8px;background:#101b29;border:1px solid #293b51;color:#88aee6;display:grid;place-items:center;font-size:11px;font-weight:800;flex:0 0 auto}
+.form-section-head h3{font-size:14px;margin:1px 0 2px}
+.form-section-head p{margin:0;color:var(--muted);font-size:11px}
 .form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
-.field input,.field select,.field textarea,.filter{
-  width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 12px;outline:none
-}
-.field input:focus,.field select:focus,.field textarea:focus,.filter:focus{border-color:#4f78b0}
-.field textarea{min-height:96px;resize:vertical}.other-input{margin-top:8px}.other-input[hidden]{display:none!important}.span2{grid-column:span 2}.span4{grid-column:span 4}
-.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.btn.primary{background:#1f4478;border-color:#4775b6}.btn.danger{background:#3a2027;border-color:#6a3943}.btn.good{background:#173426;border-color:#2c6849}
-.btn[hidden]{display:none}
+.field label{display:block;font-size:11px;font-weight:600;color:#8493a5;margin-bottom:6px}
+.field.key-field label{color:#aab8c9}
+.field input,.field select,.field textarea,.filter{width:100%;background:#0d141c;border:1px solid #233043;border-radius:10px;padding:11px 12px;outline:none}
+.field input:hover,.field select:hover,.field textarea:hover,.filter:hover{border-color:#304158}
+.field input:focus,.field select:focus,.field textarea:focus,.filter:focus{border-color:#527db8;background:#0f1721;box-shadow:0 0 0 3px rgba(91,139,204,.09)}
+.field.key-field input,.field.key-field select{background:#0e1722;border-color:#2b3b50}
+.field textarea{min-height:100px;resize:vertical}
+.other-input{margin-top:8px;animation:fieldReveal .16s ease-out}
+.other-input[hidden]{display:none!important}
+@keyframes fieldReveal{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.span2{grid-column:span 2}.span4{grid-column:span 4}
+.form-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--line);margin-top:2px}
+.actions-main,.actions-quiet{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.actions-quiet .btn{font-size:12px;padding:8px 10px}
+.kpi-note{font-size:11px;color:var(--muted);margin-top:9px;line-height:1.55}
 .filters{display:grid;grid-template-columns:1.6fr repeat(4,1fr);gap:8px;margin-bottom:10px}
 .tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
 table{border-collapse:collapse;width:100%;min-width:1180px;font-size:13px}
 th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{background:#10161e;color:var(--muted);position:sticky;top:0}
+tbody tr:hover td{background:#101821}
 .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 7px}
 .goodtxt{color:var(--good)}.badtxt{color:var(--bad)}.warntxt{color:var(--warn)}.muted{color:var(--muted)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .rankrow{display:grid;grid-template-columns:minmax(100px,1fr) 2fr auto;gap:8px;align-items:center;margin:8px 0}
-.bar{height:8px;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#0a0f15}.fill{height:100%;background:var(--accent)}
-.mobile-nav{
-  display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(11,15,20,.94);
-  backdrop-filter:blur(14px);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom))
-}
+.bar{height:7px;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#0a0f15}
+.fill{height:100%;background:linear-gradient(90deg,#547fbe,#7aa5e8)}
+.mobile-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(10,15,21,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
 .mobile-nav button{flex:1;background:transparent;border:0;color:var(--muted);padding:8px 2px;font-size:12px}
-.mobile-nav button.active{color:#fff}.mobile-nav strong{display:block;font-size:18px;margin-bottom:2px}
-.toast{
-  position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#18212c;border:1px solid var(--line);
-  padding:10px 12px;border-radius:11px;opacity:0;pointer-events:none;transition:.2s;z-index:100;display:flex;gap:10px;align-items:center;max-width:calc(100vw - 30px)
-}
-.toast.show{opacity:1;pointer-events:auto}.toast button{border:0;background:transparent;color:var(--accent);font-weight:700;padding:4px}
+.mobile-nav button.active{color:#fff}
+.mobile-nav strong{display:block;font-size:18px;margin-bottom:2px}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#18212c;border:1px solid var(--line);padding:10px 12px;border-radius:11px;opacity:0;pointer-events:none;transition:.2s;z-index:100;display:flex;gap:10px;align-items:center;max-width:calc(100vw - 30px)}
+.toast.show{opacity:1;pointer-events:auto}
+.toast button{border:0;background:transparent;color:var(--accent);font-weight:700;padding:4px}
 .mobile-records{display:none}
 .record-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:10px}
 .record-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
-.record-title{font-weight:700}.record-meta,.record-note{font-size:13px;color:var(--muted);line-height:1.55;margin-top:7px}
-.record-kda{font-size:18px;font-weight:700;white-space:nowrap}
+.record-title{font-weight:700}
+.record-meta,.record-note{font-size:13px;color:var(--muted);line-height:1.55;margin-top:7px}
+.record-kda{font-size:19px;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
 .record-tags{margin-top:7px;font-size:12px;color:#b7c4d4}
 .record-actions{display:flex;gap:8px;margin-top:10px}
 .record-actions .btn{padding:7px 10px;font-size:13px}
 .session-summary{border:1px solid var(--line);border-radius:12px;padding:12px;margin:9px 0;background:var(--panel2)}
 .session-summary b{display:block;margin-bottom:5px}
-.kpi-note{font-size:12px;color:var(--muted);margin-top:6px}
 .empty{color:var(--muted);padding:8px 0}
 .section-title-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media(max-width:1050px){
+  .entry-layout{grid-template-columns:1fr}
+  .entry-preview{position:static;order:-1}
+  .preview-card{margin-bottom:0}
+}
 @media(max-width:900px){
   .stats{grid-template-columns:repeat(3,1fr)}
   .form-grid{grid-template-columns:repeat(2,1fr)}
@@ -92,16 +150,24 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
   .stats{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}
   .tablewrap{display:none}.mobile-records{display:block}
   h1{font-size:25px}
+  .entry-preview .preview-block{display:grid;grid-template-columns:1fr 1fr;column-gap:12px}
+  .entry-preview .preview-note{grid-column:1/-1}
 }
 @media(max-width:520px){
   .form-grid,.filters{grid-template-columns:1fr}.span2,.span4{grid-column:span 1}
+  .entry-card,.preview-card{padding:14px}
+  .form-actions{align-items:stretch}
+  .actions-main,.actions-quiet{width:100%}
+  .actions-main .btn.primary{flex:1}
+  .actions-quiet{justify-content:flex-end}
+  .entry-preview .preview-block{display:block}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.2.2</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.3.0</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -130,50 +196,101 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
 </section>
 
 <section id="add" class="section">
-  <div class="card">
-    <div class="section-title-row"><h2 id="formTitle">录入一局</h2><span id="editBadge" class="pill warntxt" hidden>编辑中</span></div>
-    <div class="form-grid">
-      <div class="field"><label>游戏</label><input id="game" list="games" placeholder="三角洲行动"></div>
-      <div class="field"><label>模式</label><input id="mode" list="modes" placeholder="常规 / 机密 / 排位..."></div>
-      <div class="field"><label>地图</label><input id="map" list="maps" placeholder="地图名"></div>
-      <div class="field"><label>赛季 / 版本</label><input id="season" list="seasons" placeholder="S8 / 1.2.0 / 2026-10"></div>
+  <div class="entry-layout">
+    <div class="card entry-card">
+      <div class="section-title-row"><h2 id="formTitle">录入一局</h2><span id="editBadge" class="pill warntxt" hidden>编辑中</span></div>
 
-      <div class="field"><label>游戏时段</label><input id="session" list="sessions" placeholder="2026-10-02 夜间"></div>
-      <div class="field"><label>结果</label><select id="result"><option>胜利</option><option>撤离</option><option>任务完成</option><option>失败</option><option>阵亡</option><option>平局</option><option>其他</option></select><input id="resultOther" class="other-input" placeholder="请输入自定义结果" hidden></div>
-      <div class="field"><label>击杀</label><input id="kills" type="number" min="0" value="0"></div>
-      <div class="field"><label>死亡</label><input id="deaths" type="number" min="0" value="1"></div>
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="section-index">01</span>
+          <div><h3>对局信息</h3><p>先记录这局发生在哪、结果怎样，以及最核心的 K/D/A。</p></div>
+        </div>
+        <div class="form-grid">
+          <div class="field key-field"><label>游戏</label><input id="game" list="games" placeholder="三角洲行动"></div>
+          <div class="field"><label>模式</label><input id="mode" list="modes" placeholder="常规 / 机密 / 排位..."></div>
+          <div class="field"><label>地图</label><input id="map" list="maps" placeholder="地图名"></div>
+          <div class="field"><label>赛季 / 版本</label><input id="season" list="seasons" placeholder="S8 / 1.2.0 / 2026-10"></div>
+          <div class="field"><label>游戏时段</label><input id="session" list="sessions" placeholder="2026-10-02 夜间"></div>
+          <div class="field key-field"><label>结果</label><select id="result"><option>胜利</option><option>撤离</option><option>任务完成</option><option>失败</option><option>阵亡</option><option>平局</option><option>其他</option></select><input id="resultOther" class="other-input" placeholder="请输入自定义结果" hidden></div>
+          <div class="field key-field"><label>击杀</label><input id="kills" type="number" min="0" value="0"></div>
+          <div class="field key-field"><label>死亡</label><input id="deaths" type="number" min="0" value="1"></div>
+          <div class="field"><label>助攻</label><input id="assists" type="number" min="0" value="0"></div>
+          <div class="field"><label>队伍</label><select id="squad"><option>单排</option><option>双排</option><option>三排</option><option>四排</option><option>五人+</option><option>不适用</option></select></div>
+        </div>
+      </div>
 
-      <div class="field"><label>助攻</label><input id="assists" type="number" min="0" value="0"></div>
-      <div class="field"><label>队伍</label><select id="squad"><option>单排</option><option>双排</option><option>三排</option><option>四排</option><option>五人+</option><option>不适用</option></select></div>
-      <div class="field"><label>角色 / 干员</label><input id="role" list="roles" placeholder="无名 / Nøkk / 突击..."></div>
-      <div class="field"><label>主武器</label><input id="weapon" list="weapons" placeholder="K416 / AK12 / M4..."></div>
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="section-index">02</span>
+          <div><h3>战斗配置</h3><p>角色、武器、距离和打法，用来回答“什么配置在什么场景更适合你”。</p></div>
+        </div>
+        <div class="form-grid">
+          <div class="field"><label>角色 / 干员</label><input id="role" list="roles" placeholder="无名 / Nøkk / 突击..."></div>
+          <div class="field key-field"><label>主武器</label><input id="weapon" list="weapons" placeholder="K416 / AK12 / M4..."></div>
+          <div class="field"><label>副武器</label><input id="secondary" list="secondaries" placeholder="G18C / 手枪..."></div>
+          <div class="field"><label>弹药 / 弹种</label><input id="ammo" list="ammos" placeholder="蓝 / 紫 / M855A1..."></div>
+          <div class="field"><label>护甲 / 装备</label><input id="armor" list="armors" placeholder="金甲 / 三甲 / 无"></div>
+          <div class="field"><label>交战距离</label><select id="range"><option>0–15m</option><option>15–40m</option><option>40–80m</option><option>80m+</option><option>混合</option></select></div>
+          <div class="field"><label>打法</label><select id="style"><option>正面推进</option><option>绕后</option><option>架枪</option><option>狙击</option><option>游击</option><option>混合</option><option>其他</option></select><input id="styleOther" class="other-input" placeholder="请输入自定义打法" hidden></div>
+          <div class="field"><label>主要死亡原因</label><select id="cause">
+            <option>无 / 未死亡</option><option>正面连续接敌</option><option>换弹时被冲</option><option>信息不足 / 没发现敌人</option>
+            <option>路线不熟 / 绕后迷路</option><option>贪物资 / 贪枪 / 停留过久</option><option>距离不适配武器</option>
+            <option>弹药 / 护甲劣势</option><option>枪法 / 操作失误</option><option>站位 / 掩体问题</option><option>队友脱节</option>
+            <option>被第三方 / 多队夹击</option><option>其他</option>
+          </select><input id="causeOther" class="other-input" placeholder="请输入自定义死亡原因" hidden></div>
+        </div>
+      </div>
 
-      <div class="field"><label>副武器</label><input id="secondary" list="secondaries" placeholder="G18C / 手枪..."></div>
-      <div class="field"><label>弹药 / 弹种</label><input id="ammo" list="ammos" placeholder="蓝 / 紫 / M855A1..."></div>
-      <div class="field"><label>护甲 / 装备</label><input id="armor" list="armors" placeholder="金甲 / 三甲 / 无"></div>
-      <div class="field"><label>交战距离</label><select id="range"><option>0–15m</option><option>15–40m</option><option>40–80m</option><option>80m+</option><option>混合</option></select></div>
+      <div class="form-section">
+        <div class="form-section-head">
+          <span class="section-index">03</span>
+          <div><h3>复盘与经济</h3><p>只留真正值得回看的上下文，不把它写成流水账。</p></div>
+        </div>
+        <div class="form-grid">
+          <div class="field span2"><label>标签</label><input id="tags" placeholder="单三, 满改, 近战"></div>
+          <div class="field"><label>经济 / 成本</label><input id="cost" type="number" min="0" placeholder="可选"></div>
+          <div class="field"><label>经济 / 带出或收益</label><input id="profit" type="number" step="1" placeholder="可选；允许负数"></div>
+          <div class="field span4"><label>一句话复盘</label><textarea id="note" placeholder="例：打倒两人后原地换弹，第三个人直接贴脸。"></textarea></div>
+        </div>
+      </div>
 
-      <div class="field"><label>打法</label><select id="style"><option>正面推进</option><option>绕后</option><option>架枪</option><option>狙击</option><option>游击</option><option>混合</option><option>其他</option></select><input id="styleOther" class="other-input" placeholder="请输入自定义打法" hidden></div>
-      <div class="field"><label>主要死亡原因</label><select id="cause">
-        <option>无 / 未死亡</option><option>正面连续接敌</option><option>换弹时被冲</option><option>信息不足 / 没发现敌人</option>
-        <option>路线不熟 / 绕后迷路</option><option>贪物资 / 贪枪 / 停留过久</option><option>距离不适配武器</option>
-        <option>弹药 / 护甲劣势</option><option>枪法 / 操作失误</option><option>站位 / 掩体问题</option><option>队友脱节</option>
-        <option>被第三方 / 多队夹击</option><option>其他</option>
-      </select><input id="causeOther" class="other-input" placeholder="请输入自定义死亡原因" hidden></div>
-      <div class="field span2"><label>标签</label><input id="tags" placeholder="单三, 满改, 近战"></div>
-
-      <div class="field span2"><label>经济 / 成本</label><input id="cost" type="number" min="0" placeholder="可选"></div>
-      <div class="field span2"><label>经济 / 带出或收益</label><input id="profit" type="number" step="1" placeholder="可选；允许负数"></div>
-      <div class="field span4"><label>一句话复盘</label><textarea id="note" placeholder="例：打倒两人后原地换弹，第三个人直接贴脸。"></textarea></div>
+      <div class="form-actions">
+        <div class="actions-main">
+          <button class="btn primary" id="saveBtn">保存这一局</button>
+          <button class="btn" id="newSessionBtn">生成当前时段</button>
+          <button class="btn" id="cancelEditBtn" hidden>取消编辑</button>
+        </div>
+        <div class="actions-quiet">
+          <button class="btn ghost" id="demoBtn">填示例</button>
+          <button class="btn ghost" id="clearBtn">清空表单</button>
+        </div>
+      </div>
+      <div class="kpi-note">同一游戏里已输入过的地图、模式、武器、角色等会自动成为补全项；大小写和常见分隔符差异会尽量合并。</div>
     </div>
-    <div class="actions">
-      <button class="btn primary" id="saveBtn">保存这一局</button>
-      <button class="btn" id="newSessionBtn">生成当前时段</button>
-      <button class="btn" id="demoBtn">填三角洲示例</button>
-      <button class="btn" id="cancelEditBtn" hidden>取消编辑</button>
-      <button class="btn" id="clearBtn">清空表单</button>
-    </div>
-    <div class="kpi-note">同一游戏里已输入过的地图、模式、武器、角色等会自动成为补全项；大小写和常见分隔符差异会尽量合并。</div>
+
+    <aside class="entry-preview">
+      <div class="card preview-card">
+        <div class="preview-eyebrow">本局实时预览</div>
+        <div class="preview-game" id="previewGame">未选择游戏</div>
+        <div class="preview-context" id="previewContext">填写左侧信息后，这里会实时整理本局摘要。</div>
+        <div class="preview-result"><span class="result-pill result-neutral" id="previewResult">未记录结果</span></div>
+        <div class="preview-kda">
+          <div><span>击杀</span><b id="previewKills">0</b></div>
+          <div><span>死亡</span><b id="previewDeaths">1</b></div>
+          <div><span>助攻</span><b id="previewAssists">0</b></div>
+        </div>
+        <div class="preview-block">
+          <div class="preview-row"><span>主武器</span><strong id="previewWeapon">—</strong></div>
+          <div class="preview-row"><span>角色</span><strong id="previewRole">—</strong></div>
+          <div class="preview-row"><span>距离</span><strong id="previewRange">0–15m</strong></div>
+          <div class="preview-row"><span>打法</span><strong id="previewStyle">正面推进</strong></div>
+          <div class="preview-row"><span>死因</span><strong id="previewCause">无 / 未死亡</strong></div>
+          <div class="preview-row"><span>时段</span><strong id="previewSession">—</strong></div>
+          <div class="preview-note" id="previewNote">本局复盘会显示在这里。</div>
+        </div>
+        <div class="preview-hint">预览只读取当前表单，不会提前保存任何数据。</div>
+      </div>
+    </aside>
   </div>
 </section>
 
@@ -249,7 +366,7 @@ th{background:#10161e;color:var(--muted);position:sticky;top:0}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.2.2";
+var APP_VERSION="0.3.0";
 var KEY="fps_database_pwa_v1";
 var tabs=[
   ["dashboard","⌂","总览"],["add","＋","录入"],["records","≡","记录"],["analytics","▦","分析"],["data","⋯","数据"]
@@ -382,6 +499,45 @@ function validateCustomSelects(){
   return true
 }
 
+function resultTone(v){
+  if(["胜利","撤离","任务完成"].indexOf(v)>=0)return "result-good";
+  if(["失败","阵亡"].indexOf(v)>=0)return "result-bad";
+  return "result-neutral"
+}
+function currentCustomValue(selectId,inputId){
+  var sel=$(selectId);
+  if(!sel)return "";
+  if(sel.value!=="其他")return sel.value;
+  return ($(inputId)&&$(inputId).value.trim())||"其他"
+}
+function updatePreview(){
+  if(!$("previewGame"))return;
+  var game=$("game").value.trim()||"未选择游戏";
+  var mode=$("mode").value.trim(),map=$("map").value.trim(),season=$("season").value.trim();
+  var context=[mode,map,season].filter(Boolean).join(" · ");
+  var result=currentCustomValue("result","resultOther")||"未记录结果";
+  $("previewGame").textContent=game;
+  $("previewContext").textContent=context||"填写模式、地图或版本后，这里会自动整理上下文。";
+  $("previewResult").textContent=result;
+  $("previewResult").className="result-pill "+resultTone(result);
+  $("previewKills").textContent=num($("kills").value);
+  $("previewDeaths").textContent=num($("deaths").value);
+  $("previewAssists").textContent=num($("assists").value);
+  $("previewWeapon").textContent=$("weapon").value.trim()||"—";
+  $("previewRole").textContent=$("role").value.trim()||"—";
+  $("previewRange").textContent=$("range").value||"—";
+  $("previewStyle").textContent=currentCustomValue("style","styleOther")||"—";
+  $("previewCause").textContent=currentCustomValue("cause","causeOther")||"—";
+  $("previewSession").textContent=$("session").value.trim()||"—";
+  $("previewNote").textContent=$("note").value.trim()||"本局复盘会显示在这里。"
+}
+function bindPreview(){
+  document.querySelectorAll("#add input,#add select,#add textarea").forEach(function(el){
+    el.addEventListener("input",updatePreview);el.addEventListener("change",updatePreview)
+  });
+  updatePreview()
+}
+
 function metricType(game){
   if(game==="三角洲行动"||game==="Escape from Tarkov")return {label:"撤离率",good:["撤离"]};
   if(game==="Ready or Not")return {label:"任务完成率",good:["任务完成","胜利"]};
@@ -433,7 +589,7 @@ function renderDashboard(){
   }
   $("insights").innerHTML=ins.map(function(x){return "• "+x}).join("<br>")||"暂无可分析内容。";
   $("recent").innerHTML=records.slice(0,10).map(function(r){
-    return '<div style="display:grid;grid-template-columns:95px 1fr auto;gap:7px;padding:7px 0;border-bottom:1px solid var(--line)"><span class="muted">'+esc(r.time)+'</span><span>'+esc(r.game)+' · '+esc(r.weapon)+'</span><span class="pill '+(isSuccess(r)?"goodtxt":"")+'">'+esc(r.result)+'</span></div>'
+    return '<div style="display:grid;grid-template-columns:95px 1fr auto;gap:7px;padding:7px 0;border-bottom:1px solid var(--line)"><span class="muted">'+esc(r.time)+'</span><span>'+esc(r.game)+' · '+esc(r.weapon)+'</span><span class="result-pill '+resultTone(r.result)+'">'+esc(r.result)+'</span></div>'
   }).join("")||'<div class="empty">暂无记录</div>';
   $("rankGame").innerHTML=rankHTML(counter("game"));$("rankWeapon").innerHTML=rankHTML(counter("weapon"));
   var sg=sessionGroups().slice(0,5);$("sessionCount").textContent=sg.length?"显示最近 "+sg.length+" 个":"";
@@ -461,10 +617,10 @@ function renderRecords(){
   populate("fSquad",uniq(records.map(function(r){return r.squad})),"全部队伍");
   var rs=filtered();
   $("tbody").innerHTML=rs.map(function(r){
-    return '<tr><td>'+esc(r.time)+'</td><td><b>'+esc(r.game)+'</b></td><td>'+esc(r.season||"")+'</td><td>'+esc(r.session||"")+'</td><td>'+esc(r.mode)+'</td><td>'+esc(r.map)+'</td><td><span class="pill">'+esc(r.result)+'</span></td><td>'+num(r.kills)+'/'+num(r.deaths)+'/'+num(r.assists)+'</td><td>'+esc(r.squad)+'</td><td>'+esc(r.role)+'</td><td>'+esc(r.weapon)+'</td><td>'+esc(r.range)+'</td><td>'+esc(r.style)+'</td><td>'+esc(r.cause)+'</td><td>'+(r.tags||[]).map(function(t){return "#"+esc(t)}).join(" ")+'</td><td>'+esc(r.note)+'</td><td><button class="btn" data-edit="'+esc(r.id)+'">编辑</button> <button class="btn danger" data-del="'+esc(r.id)+'">删</button></td></tr>'
+    return '<tr><td>'+esc(r.time)+'</td><td><b>'+esc(r.game)+'</b></td><td>'+esc(r.season||"")+'</td><td>'+esc(r.session||"")+'</td><td>'+esc(r.mode)+'</td><td>'+esc(r.map)+'</td><td><span class="result-pill '+resultTone(r.result)+'">'+esc(r.result)+'</span></td><td>'+num(r.kills)+'/'+num(r.deaths)+'/'+num(r.assists)+'</td><td>'+esc(r.squad)+'</td><td>'+esc(r.role)+'</td><td>'+esc(r.weapon)+'</td><td>'+esc(r.range)+'</td><td>'+esc(r.style)+'</td><td>'+esc(r.cause)+'</td><td>'+(r.tags||[]).map(function(t){return "#"+esc(t)}).join(" ")+'</td><td>'+esc(r.note)+'</td><td><button class="btn" data-edit="'+esc(r.id)+'">编辑</button> <button class="btn danger" data-del="'+esc(r.id)+'">删</button></td></tr>'
   }).join("")||'<tr><td colspan="17" class="empty">没有符合条件的记录。</td></tr>';
   $("mobileRecords").innerHTML=rs.map(function(r){
-    return '<div class="record-card"><div class="record-head"><div><div class="record-title">'+esc(r.game)+' · '+esc(r.mode)+'</div><div class="record-meta">'+esc(r.map)+' · '+esc(r.weapon)+(r.season&&r.season!=="未填写"?' · '+esc(r.season):'')+'</div></div><div class="record-kda">'+num(r.kills)+'/'+num(r.deaths)+'/'+num(r.assists)+'</div></div><div class="record-meta">'+esc(r.result)+' · '+esc(r.squad)+' · '+esc(r.range)+(r.session?' · '+esc(r.session):'')+'</div><div class="record-meta">死因：'+esc(r.cause)+'</div>'+(r.note?'<div class="record-note">'+esc(r.note)+'</div>':'')+'<div class="record-tags">'+(r.tags||[]).map(function(t){return "#"+esc(t)}).join(" ")+'</div><div class="record-actions"><button class="btn" data-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-del="'+esc(r.id)+'">删除</button></div></div>'
+    return '<div class="record-card"><div class="record-head"><div><div class="record-title">'+esc(r.game)+' · '+esc(r.mode)+'</div><div class="record-meta">'+esc(r.map)+' · '+esc(r.weapon)+(r.season&&r.season!=="未填写"?' · '+esc(r.season):'')+'</div></div><div class="record-kda">'+num(r.kills)+'/'+num(r.deaths)+'/'+num(r.assists)+'</div></div><div class="record-meta"><span class="result-pill '+resultTone(r.result)+'">'+esc(r.result)+'</span> · '+esc(r.squad)+' · '+esc(r.range)+(r.session?' · '+esc(r.session):'')+'</div><div class="record-meta">死因：'+esc(r.cause)+'</div>'+(r.note?'<div class="record-note">'+esc(r.note)+'</div>':'')+'<div class="record-tags">'+(r.tags||[]).map(function(t){return "#"+esc(t)}).join(" ")+'</div><div class="record-actions"><button class="btn" data-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-del="'+esc(r.id)+'">删除</button></div></div>'
   }).join("")||'<div class="empty">没有符合条件的记录。</div>';
   document.querySelectorAll("[data-edit]").forEach(function(b){b.onclick=function(){editRecord(b.dataset.edit)}});
   document.querySelectorAll("[data-del]").forEach(function(b){b.onclick=function(){deleteRecord(b.dataset.del)}});
@@ -485,7 +641,7 @@ function editRecord(id){
   setSelectValue("result","resultOther",r.result);setSelectValue("style","styleOther",r.style);setSelectValue("cause","causeOther",r.cause);
   $("tags").value=(r.tags||[]).join(", ");
   $("saveBtn").textContent="保存修改";$("cancelEditBtn").hidden=false;$("editBadge").hidden=false;$("formTitle").textContent="编辑记录";
-  renderDatalists();switchTab("add")
+  renderDatalists();updatePreview();switchTab("add")
 }
 function cancelEdit(){
   editingId=null;$("saveBtn").textContent="保存这一局";$("cancelEditBtn").hidden=true;$("editBadge").hidden=true;$("formTitle").textContent="录入一局";
@@ -514,7 +670,7 @@ function getForm(){
 function clearForm(keepSession){
   var sess=keepSession?$("session").value:"";
   ["game","mode","map","season","session","role","weapon","secondary","ammo","armor","tags","cost","profit","note"].forEach(function(id){$(id).value=""});
-  $("session").value=sess;$("kills").value=0;$("deaths").value=1;$("assists").value=0;$("result").value="胜利";$("squad").value="单排";$("range").value="0–15m";$("style").value="正面推进";$("cause").value="无 / 未死亡";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});renderDatalists()
+  $("session").value=sess;$("kills").value=0;$("deaths").value=1;$("assists").value=0;$("result").value="胜利";$("squad").value="单排";$("range").value="0–15m";$("style").value="正面推进";$("cause").value="无 / 未死亡";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});renderDatalists();updatePreview()
 }
 function saveForm(){
   if(!validateCustomSelects())return;
@@ -579,17 +735,17 @@ function renderAll(){renderDashboard();renderRecords();renderAnalytics();renderD
 $("saveBtn").addEventListener("click",saveForm);
 $("clearBtn").addEventListener("click",function(){clearForm(false)});
 $("cancelEditBtn").addEventListener("click",cancelEdit);
-$("newSessionBtn").addEventListener("click",function(){$("session").value=sessionLabel();renderDatalists();showToast("已生成当前时段")});
+$("newSessionBtn").addEventListener("click",function(){$("session").value=sessionLabel();renderDatalists();updatePreview();showToast("已生成当前时段")});
 $("demoBtn").addEventListener("click",function(){
   $("game").value="三角洲行动";$("mode").value="常规";$("season").value="";$("session").value=sessionLabel();$("result").value="阵亡";$("kills").value=2;$("deaths").value=1;
   $("squad").value="单排";$("role").value="无名";$("weapon").value="K416";$("secondary").value="G18C";$("ammo").value="蓝";$("armor").value="金甲";
-  $("range").value="0–15m";$("style").value="正面推进";$("cause").value="换弹时被冲";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});$("tags").value="单三, 近战";$("note").value="30发打倒两个，换弹时第三个人贴脸冲进来。";renderDatalists();showToast("已填入示例")
+  $("range").value="0–15m";$("style").value="正面推进";$("cause").value="换弹时被冲";["resultOther","styleOther","causeOther"].forEach(function(id){$(id).value="";$(id).hidden=true});$("tags").value="单三, 近战";$("note").value="30发打倒两个，换弹时第三个人贴脸冲进来。";renderDatalists();updatePreview();showToast("已填入示例")
 });
 $("game").addEventListener("input",renderDatalists);
 ["fSearch","fGame","fResult","fCause","fSquad"].forEach(function(id){$(id).addEventListener("input",renderRecords);$(id).addEventListener("change",renderRecords)});
 $("exportJsonBtn").addEventListener("click",exportJSON);$("exportCsvBtn").addEventListener("click",exportCSV);$("importFile").addEventListener("change",importJSON);$("clearAllBtn").addEventListener("click",clearAll);
 
-load();makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");renderAll();
+load();makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");renderAll();bindPreview();
 
 if("serviceWorker" in navigator){
   window.addEventListener("load",function(){
