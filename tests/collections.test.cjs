@@ -9,10 +9,10 @@ function app(){
  const html=readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
  source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
- source+=`saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};
- window.test={migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
+ source+=`renderAll=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};
+ window.test={importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
  setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)}};})();`;
- const window={},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
+ const window={FPSCatalog:require('../collection-catalog.js')},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
  vm.runInNewContext(source,context);return {api:window.test,window,element,store};
 }
 test('old backups stay matches; collection acquisitions survive cloud and JSON round trips',()=>{
@@ -49,4 +49,11 @@ test('screenshot snapshot survives sync with actual acquisitions, unknown assist
  const restored=api.remoteToLocal({id:item.id,revision:1,payload:JSON.parse(JSON.stringify(api.cloudPayload(item)))});
  assert.equal(api.collectionQuantity(restored),5);assert.equal(api.collectionStatus(restored),'已集齐');assert.equal(restored.acquisitions.length,1);assert.equal(restored.snapshot_date,'2026-10-07');
  assert.equal(api.migrateRecord({kind:'match',import_source:'screenshot',assists:null}).assists,null);
+});
+
+test('catalog bulk import persists a workspace atomically, preserves progress, and does not cross to guest',()=>{
+ const {api,element,store}=app();const catalog=require('../collection-catalog.json');element('catalogGrade').value='';api.setCatalog(catalog);
+ api.workspace('user_catalog_test');api.importCollectionCatalog();const count=api.getRecords().length;assert.equal(count,catalog.items.length);
+ const item=api.getRecords()[0];item.acquisitions.push({quantity:1});api.importCollectionCatalog();assert.equal(api.getRecords().length,count);assert.equal(api.collectionQuantity(item),1);
+ assert.equal(api.matchRecords().length,0);api.workspace('guest');assert.equal(api.getRecords().length,0);api.workspace('user_catalog_test');assert.equal(api.getRecords().length,count);assert.equal(api.getRecords().filter(r=>r.import_source==='catalog').length,count);
 });
