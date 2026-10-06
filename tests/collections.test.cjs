@@ -9,10 +9,10 @@ function app(){
  const html=readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
  source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
- source+=`renderAll=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};
- window.test={importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
+ source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};
+ window.test={cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
  setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)}};})();`;
- const window={FPSCatalog:require('../collection-catalog.js')},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
+ const window={FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
  vm.runInNewContext(source,context);return {api:window.test,window,element,store};
 }
 test('old backups stay matches; collection acquisitions survive cloud and JSON round trips',()=>{
@@ -56,4 +56,10 @@ test('catalog bulk import persists a workspace atomically, preserves progress, a
  api.workspace('user_catalog_test');api.importCollectionCatalog();const count=api.getRecords().length;assert.equal(count,catalog.items.length);
  const item=api.getRecords()[0];item.acquisitions.push({quantity:1});api.importCollectionCatalog();assert.equal(api.getRecords().length,count);assert.equal(api.collectionQuantity(item),1);
  assert.equal(api.matchRecords().length,0);api.workspace('guest');assert.equal(api.getRecords().length,0);api.workspace('user_catalog_test');assert.equal(api.getRecords().length,count);assert.equal(api.getRecords().filter(r=>r.import_source==='catalog').length,count);
+});
+
+test('an interrupted bulk sync retains acknowledged revisions on disk for resume',async()=>{
+ const {api}=app();api.workspace('user_sync_test');api.setCloudUser({id:'user_sync_test'});api.setRecords([api.migrateRecord({id:'first',kind:'collection',name:'first'}),api.migrateRecord({id:'second',kind:'collection',name:'second'})]);api.persist();let pushed=0;
+ api.setClient({from:()=>({select:async()=>({data:[]})}),rpc:async()=>{if(++pushed===2)throw Error('network interrupted');return {data:[{applied:true,current_revision:1}]}}});
+ await api.cloudSync({silent:true});api.workspace('user_sync_test');const rows=api.getRecords();assert.equal(rows[0].cloud_revision,1);assert.equal(rows[0].local_dirty,false);assert.equal(rows[1].cloud_revision,0);assert.equal(rows[1].local_dirty,true);
 });

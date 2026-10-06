@@ -639,7 +639,7 @@ var activeWorkspace="guest";
 var cloudTombstones=[];
 var cloudClient=null;
 var cloudUser=null;
-var cloudBusy=false;
+var cloudBusy=false,cloudSyncProgress="";
 var cloudSyncTimer=null;
 var draftTimer=null;
 
@@ -1170,7 +1170,7 @@ function renderCloudPanel(){
   $("guestMergeBox").hidden=!mergeAvailable;
   if(mergeAvailable)$("guestMergeText").textContent="本机 guest workspace 有 "+guest.length+" 条记录；合并后仍保留 guest 副本，避免误删。";
   if(!cloudConfigured()){setCloudBadge("未配置","cloud-off");setCloudMessage("当前未配置 Supabase，数据只保存在当前 workspace。")}
-  else if(cloudBusy){setCloudBadge("同步中","cloud-busy")}
+  else if(cloudBusy){setCloudBadge("同步中"+(cloudSyncProgress?" · "+cloudSyncProgress:""),"cloud-busy")}
   else if(cloudUser){setCloudBadge(navigator.onLine?"云端已连接":"离线","cloud-ready");setCloudMessage("当前 workspace："+activeWorkspace.replace("user_","账号 · ").replace("guest","本机 guest")+"。原始记录只允许此身份访问。")}
   else if(!cfg.anonymousAuth&&!cfg.emailMagicLink){setCloudBadge("数据库已连接","cloud-ready");setCloudMessage("Supabase 数据库和 RLS 已就绪；认证仍未在 Dashboard 开启。")}
   else{setCloudBadge("等待登录","cloud-off");setCloudMessage("当前是本机 guest workspace；登录后会切换到该账号自己的独立 workspace。")}
@@ -1292,7 +1292,7 @@ async function cloudSync(opts){
   opts=opts||{};if(!cloudConfigured()||!cloudClient){if(!opts.silent)showToast("云端尚未配置");return}
   if(!cloudUser){if(!opts.silent)showToast("请先登录云身份");return}
   if(!navigator.onLine){if(!opts.silent)showToast("当前离线，修改已保存在本机");return}
-  if(cloudBusy)return;cloudBusy=true;renderCloudPanel();var conflicts=0;
+  if(cloudBusy)return;cloudBusy=true;cloudSyncProgress="";renderCloudPanel();var conflicts=0;
   try{
     var pulled=await cloudClient.from("fps_records").select("id,payload,revision,server_updated_at,deleted_at,share_community");if(pulled.error)throw pulled.error;
     var remote=pulled.data||[],remoteMap={};remote.forEach(function(row){remoteMap[row.id]=row});
@@ -1324,6 +1324,8 @@ async function cloudSync(opts){
         else applyRemoteRow({id:rec.id,payload:answer.current_payload||{},revision:answer.current_revision,server_updated_at:answer.current_server_updated_at,deleted_at:null,share_community:answer.current_share_community});
         conflicts++
       }
+      // Persist acknowledged revisions during large imports so interrupted batches resume safely.
+      persist();cloudSyncProgress=(i+1)+" / "+dirty.length;if(i%20===0||i===dirty.length-1)renderCloudPanel();
     }
 
     var deletes=cloudTombstones.slice();
@@ -1340,7 +1342,7 @@ async function cloudSync(opts){
     persist();renderAll();localStorage.setItem(workspaceLastSyncKey(),isoNow());renderCloudPanel();refreshCommunityStats();
     if(conflicts)showToast("同步完成，保留了 "+conflicts+" 个冲突副本");else if(!opts.silent)showToast("云同步完成")
   }catch(err){setCloudBadge("同步失败","cloud-error");setCloudMessage("同步失败："+(err&&err.message?err.message:"未知错误"));if(!opts.silent)showToast("同步失败")}
-  finally{cloudBusy=false;renderCloudPanel()}
+  finally{cloudBusy=false;cloudSyncProgress="";renderCloudPanel()}
 }
 async function refreshCommunityStats(){
   if(!$("anaCommunity"))return;
