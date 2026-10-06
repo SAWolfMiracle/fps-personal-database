@@ -5,6 +5,7 @@ window.FPS_CLOUD_CONFIG = {
   enabled: true,
   supabaseUrl: "https://annugdqxrauzsbltegrg.supabase.co",
   publishableKey: "sb_publishable_d6MRWoYt5Uy56ExIKdFVNA_uOzvSWc4",
-  anonymousAuth: false,
-  emailMagicLink: false
+  anonymousAuth: true,
+  emailMagicLink: true,
+  manualLinking: true
 };
