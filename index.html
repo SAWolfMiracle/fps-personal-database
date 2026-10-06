@@ -1065,7 +1065,14 @@ async function initCloud(){
   var c=cloudConfig();
   try{
     cloudClient=window.supabase.createClient(c.url,c.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-    var result=await cloudClient.auth.getSession();cloudUser=result.data&&result.data.session?result.data.session.user:null;
+    var result=await cloudClient.auth.getSession();
+    var session=result.data&&result.data.session?result.data.session:null;
+    if(session&&session.user.is_anonymous&&navigator.onLine){
+      // Email confirmation can happen in another browser; refresh cached identity.
+      var refreshed=await cloudClient.auth.refreshSession();
+      if(!refreshed.error&&refreshed.data&&refreshed.data.session)session=refreshed.data.session
+    }
+    cloudUser=session?session.user:null;
     activateWorkspaceForUser(cloudUser);
     cloudClient.auth.onAuthStateChange(function(_event,session){
       var nextUser=session?session.user:null,oldId=cloudUser&&cloudUser.id,newId=nextUser&&nextUser.id;
