@@ -1091,7 +1091,7 @@ async function cloudEmailSignIn(){
   try{
     if(cloudUser&&cloudUser.is_anonymous){
       if(!cfg.manualLinking)throw Error("需先在 Supabase Auth 开启 Manual Linking");
-      var link=await cloudClient.auth.updateUser({email:email});if(link.error)throw link.error;
+      var link=await cloudClient.auth.updateUser({email:email},{emailRedirectTo:location.origin+location.pathname});if(link.error)throw link.error;
       showToast("验证邮件已发送");setCloudMessage("点击验证邮件后会把邮箱绑定到当前匿名身份，保留同一个 user_id 和云数据。")
     }else if(cloudUser){
       showToast("当前账号已经是可恢复账号")
