@@ -44,3 +44,9 @@ test('invalid quantities and unsafe image URLs are rejected during backup normal
  const {api}=app();const item=api.migrateRecord({kind:'collection',target:0,image:'javascript:alert(1)',acquisitions:[null,{quantity:-1},{quantity:1.5},{quantity:2,cost:-5}]});
  assert.equal(item.target,1);assert.equal(item.image,'');assert.equal(item.acquisitions.length,1);assert.equal(item.acquisitions[0].cost,0);
 });
+test('screenshot snapshot survives sync with actual acquisitions, unknown assists stay null',()=>{
+ const {api}=app();const item=api.migrateRecord({id:'snapshot',kind:'collection',name:'snapshot',import_source:'screenshot',starting_quantity:3,target:5,snapshot_date:'2026-10-07',acquisitions:[{quantity:2,date:'2026-10-07'}]});
+ const restored=api.remoteToLocal({id:item.id,revision:1,payload:JSON.parse(JSON.stringify(api.cloudPayload(item)))});
+ assert.equal(api.collectionQuantity(restored),5);assert.equal(api.collectionStatus(restored),'已集齐');assert.equal(restored.acquisitions.length,1);assert.equal(restored.snapshot_date,'2026-10-07');
+ assert.equal(api.migrateRecord({kind:'match',import_source:'screenshot',assists:null}).assists,null);
+});

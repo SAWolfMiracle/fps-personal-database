@@ -269,12 +269,13 @@ tbody tr:hover td{background:#101821}
 .collection-log p{margin:4px 0;overflow-wrap:anywhere}
 .collection-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 .collection-stats{margin:10px 0 18px;color:var(--muted);line-height:1.6}
+[data-ocr-kind][hidden],#ocrReview[hidden],#ocrPreview[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.0</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.1</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -504,6 +505,40 @@ tbody tr:hover td{background:#101821}
 </section>
 
 <section id="data" class="section">
+  <div class="card">
+    <h2>截图识别导入</h2>
+    <p class="muted">在本机识别中英文文字，核对后保存。截图不上传、不随记录同步；首次使用需联网下载模型。一次处理一局结算或一件物品。</p>
+    <div class="collection-fields">
+      <div class="field"><label for="ocrType">导入类型</label><select id="ocrType"><option value="match">对局结算</option><option value="collection">收藏 / 仓库数量快照</option></select></div>
+      <div class="field"><label for="ocrFile">选择截图（不超过 20 MB）</label><input id="ocrFile" type="file" accept="image/png,image/jpeg,image/webp"></div>
+    </div>
+    <label class="toggle-row"><input id="ocrInvert" type="checkbox"><span>深色背景反色（识别困难时尝试）</span></label>
+    <img id="ocrPreview" hidden alt="待识别截图" style="max-width:100%;max-height:360px;object-fit:contain;margin:12px 0">
+    <div class="actions"><button class="btn primary" id="ocrRun">识别截图</button><button class="btn" id="ocrCancel" hidden>取消识别</button><button class="btn ghost" id="ocrReset">清除截图和识别内容</button></div>
+    <p id="ocrStatus" class="muted" role="status" aria-live="polite">选择一张结算或物品截图开始。</p>
+    <div class="field"><label for="ocrText">识别文字（可修正或粘贴）</label><textarea id="ocrText" rows="6" placeholder="识别结果会显示在这里；建议用‘击杀：5’等明确标签核对。"></textarea></div>
+    <button class="btn" id="ocrParse" style="margin:12px 0">提取字段 / 重新核对</button>
+    <div id="ocrReview" hidden>
+      <h3>核对后保存</h3><p class="muted">识别不保证准确。留空表示未知；重复或冲突的标签不会自动选值。数量快照不生成获取历史。</p>
+      <form id="ocrForm"><div class="collection-fields">
+        <div class="field"><label for="ocr_game">游戏（必填）</label><input id="ocr_game" list="games" maxlength="120"></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_result">结果（必填）</label><select id="ocr_result"><option value="">请选择</option><option>撤离</option><option>阵亡</option><option>胜利</option><option>失败</option><option>任务完成</option></select></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_map">地图</label><input id="ocr_map" maxlength="200"></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_weapon">武器</label><input id="ocr_weapon" maxlength="200"></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_kills">击杀（必填）</label><input id="ocr_kills" type="number" min="0" step="1"></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_deaths">死亡（必填）</label><input id="ocr_deaths" type="number" min="0" step="1"></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_assists">助攻</label><input id="ocr_assists" type="number" min="0" step="1"></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_profit">净收益 / 利润</label><input id="ocr_profit" type="number" step="any"></div>
+        <div class="field" data-ocr-kind="match"><label for="ocr_cost">花费 / 成本</label><input id="ocr_cost" type="number" min="0" step="any"></div>
+        <div class="field" data-ocr-kind="collection"><label for="ocr_name">物品名称（必填）</label><input id="ocr_name" maxlength="200"></div>
+        <div class="field" data-ocr-kind="collection"><label for="ocr_category">物品分类</label><input id="ocr_category" list="collectionCategories" maxlength="80"></div>
+        <div class="field" data-ocr-kind="collection"><label for="ocr_quantity">当前数量快照（必填）</label><input id="ocr_quantity" type="number" min="0" step="1"></div>
+        <div class="field" data-ocr-kind="collection"><label for="ocr_target">收集目标数量（必填）</label><input id="ocr_target" type="number" min="1" step="1" value="1"></div>
+        <div class="field"><label for="ocr_note">导入备注</label><input id="ocr_note" maxlength="2000"></div>
+      </div><div class="actions" style="margin-top:14px"><button class="btn primary" id="ocrSave" type="submit">确认并保存识别记录</button></div></form>
+    </div>
+  </div>
+
   <div class="card cloud-card">
     <div class="section-title-row">
       <div><h2 style="margin:0 0 4px">云同步</h2><div class="muted" style="font-size:12px">Supabase · 本地优先 · RLS 用户隔离</div></div>
@@ -564,12 +599,13 @@ tbody tr:hover td{background:#101821}
 <nav class="mobile-nav" id="mobileNav"></nav>
 <div class="toast" id="toast"><span id="toastText"></span><button id="toastAction" hidden>撤销</button></div>
 
+<script src="./ocr-import.js"></script>
 <script src="./cloud-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.0";
+var APP_VERSION="0.6.1";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -583,6 +619,7 @@ var tabs=[
   ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","database","收藏"],["data","database","数据"]
 ];
 var records=[];
+var screenshotImporter=null;
 var collectionEditingId=null,collectionSelectedId=null;
 var editingId=null;
 var deletedSnapshot=null;
@@ -614,7 +651,7 @@ function sessionLabel(){
 
 function matchRecords(){return records.filter(function(r){return r.kind!=="collection"})}
 function collectionRecords(){return records.filter(function(r){return r.kind==="collection"})}
-function collectionQuantity(r){return (r.acquisitions||[]).reduce(function(n,a){return n+num(a.quantity)},0)}
+function collectionQuantity(r){return num(r.starting_quantity)+(r.acquisitions||[]).reduce(function(n,a){return n+num(a.quantity)},0)}
 function collectionStatus(r){var n=collectionQuantity(r);return n===0?"未获得":n>=r.target?"已集齐":"已获得"}
 function imageURL(v){try{var u=new URL(v);return u.protocol==="https:"?u.href:""}catch(e){return ""}}
 function migrateRecord(r){
@@ -628,7 +665,7 @@ function migrateRecord(r){
   if(x.profit==null)x.profit=null;
   if(x.cost==null)x.cost=null;
   if(x.deaths==null)x.deaths=x.result==="阵亡"?1:0;
-  if(x.assists==null)x.assists=0;
+  if(x.assists==null&&x.import_source!=="screenshot")x.assists=0;
   if(!x.updated_at){
     try{x.updated_at=new Date(x.ts||Date.now()).toISOString()}catch(e){x.updated_at=new Date().toISOString()}
   }
@@ -638,6 +675,7 @@ function migrateRecord(r){
   x.kind=x.kind==="collection"?"collection":"match";
   if(x.kind==="collection"){
     x.target=Math.max(1,Math.floor(num(x.target)||1));x.image=imageURL(x.image);
+    x.starting_quantity=Number.isSafeInteger(Number(x.starting_quantity))&&Number(x.starting_quantity)>=0?Number(x.starting_quantity):0;
     x.category=String(x.category||"其他");
     x.acquisitions=(Array.isArray(x.acquisitions)?x.acquisitions:[]).filter(function(a){return a&&Number.isSafeInteger(Number(a.quantity))&&Number(a.quantity)>0}).map(function(a){return {id:String(a.id||uid()),date:String(a.date||""),quantity:Number(a.quantity),source:String(a.source||""),cost:Math.max(0,num(a.cost)),note:String(a.note||"")}});
   }
@@ -1128,7 +1166,7 @@ function renderCloudPanel(){
 function activateWorkspaceForUser(user){
   var next=workspaceForUser(user);
   if(activeWorkspace===next)return;
-  saveDraftNow();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();$("acquisitionForm").reset();
+  saveDraftNow();if(screenshotImporter)screenshotImporter.clear();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();$("acquisitionForm").reset();
   clearForm(false,false);renderAll();restoreDraft()
 }
 async function initCloud(){
@@ -1365,7 +1403,7 @@ function renderCollectionDetail(){
   var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"});$("collectionDetail").hidden=!r;if(!r)return;
   $("collectionDetailTitle").textContent=r.name+" · 获取记录";$("collectionDetailSummary").textContent=collectionQuantity(r)+" / "+r.target+" · 总花费 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
   if(!$("acquisitionDate").value){var d=new Date();$("acquisitionDate").value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
-  $("acquisitionList").innerHTML=r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date)+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · 花费 '+num(a.cost).toFixed(2)+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
+  $("acquisitionList").innerHTML=(r.starting_quantity!=null&&r.import_source==="screenshot"?'<div class="collection-log"><div><b>初始数量快照 · '+num(r.starting_quantity)+'</b><p class="muted">'+esc(r.snapshot_date||'')+' 导入确认 · 不代表历史获取时间、来源或花费</p></div></div>':'')+r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date)+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · 花费 '+num(a.cost).toFixed(2)+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
   document.querySelectorAll("[data-acquisition-delete]").forEach(function(b){b.onclick=function(){deleteAcquisition(r.id,b.dataset.acquisitionDelete)}});
 }
 function saveAcquisition(e){
@@ -1382,8 +1420,8 @@ function deleteAcquisition(itemId,acquisitionId){
   showToast("已删除获取记录","撤销",function(){if(activeWorkspace!==workspace)return;var live=records.find(function(x){return x.id===itemId});if(live&&!live.acquisitions.some(function(a){return a.id===snapshot.id})){live.acquisitions.splice(index,0,snapshot);touchCollection(live)}});
 }
 function exportCollectionCSV(){
-  var h=["游戏","物品","分类","目标数量","已获得数量","状态","获取日期","本次数量","来源或地图","本次总花费","获取备注","物品备注","图片链接"],rows=[h];
-  collectionRecords().forEach(function(r){(r.acquisitions.length?r.acquisitions:[{}]).forEach(function(a){rows.push([r.game,r.name,r.category,r.target,collectionQuantity(r),collectionStatus(r),a.date,a.quantity,a.source,a.cost,a.note,r.note,r.image])})});
+  var h=["游戏","物品","分类","目标数量","已获得数量","初始数量快照","快照日期","状态","获取日期","本次数量","来源或地图","本次总花费","获取备注","物品备注","图片链接"],rows=[h];
+  collectionRecords().forEach(function(r){(r.acquisitions.length?r.acquisitions:[{}]).forEach(function(a){rows.push([r.game,r.name,r.category,r.target,collectionQuantity(r),r.starting_quantity||0,r.snapshot_date||"",collectionStatus(r),a.date,a.quantity,a.source,a.cost,a.note,r.note,r.image])})});
   var csv=rows.map(function(row){return row.map(function(v){var value=String(v==null?"":v);if(/^[=+@-]/.test(value))value="'"+value;return '"'+value.replace(/"/g,'""')+'"'}).join(",")}).join("\n");
   download(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),"fps-collections.csv");
 }
@@ -1423,6 +1461,11 @@ $("communityOptIn").addEventListener("change",function(){
 });
 window.addEventListener("online",function(){renderCloudPanel();scheduleCloudSync(300);refreshCommunityStats()});
 window.addEventListener("offline",renderCloudPanel);
+
+if(window.FPSOCR)screenshotImporter=window.FPSOCR.mount({onSave:function(data){
+  if(data.import_hash&&records.some(function(r){return r.import_hash===data.import_hash&&r.kind===data.kind&&(data.kind!=="collection"||r.name===data.name)})){showToast("此截图的这条记录已导入，未重复保存");return false}
+  data.id=uid();data.ts=Date.now();data.time=nowLabel();records.unshift(migrateRecord(data));saveAndRender();showToast("截图识别记录已保存");return true;
+}});
 
 migrateLegacyWorkspace();loadWorkspace("guest");makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();restoreDraft();initCloud();
 
