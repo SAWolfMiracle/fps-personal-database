@@ -197,6 +197,7 @@ as $function$
     from public.fps_records r
     where r.deleted_at is null
       and r.share_community is true
+      and coalesce(r.payload->>'kind','match') = 'match'
   )
   select
     c.game,

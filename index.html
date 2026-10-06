@@ -258,12 +258,23 @@ tbody tr:hover td{background:#101821}
 .workspace-label{font-variant-numeric:tabular-nums}
 @media(max-width:520px){.guest-merge{align-items:stretch;flex-direction:column}.guest-merge .btn{width:100%}}
 
+
+.collection-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.collection-thumb{width:64px;height:64px;object-fit:contain;border-radius:10px;background:var(--panel2)}
+.collection-top{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.collection-top h3{margin:0 0 5px;overflow-wrap:anywhere}
+.collection-progress{height:7px;border-radius:9px;background:var(--line);overflow:hidden;margin:10px 0 14px}
+.collection-progress span{display:block;height:100%;background:var(--good)}
+.collection-log{padding:12px 0;border-bottom:1px solid var(--line);display:flex;gap:12px;justify-content:space-between;align-items:start}
+.collection-log p{margin:4px 0;overflow-wrap:anywhere}
+.collection-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.collection-stats{margin:10px 0 18px;color:var(--muted);line-height:1.6}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.5.2</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.0</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -449,6 +460,49 @@ tbody tr:hover td{background:#101821}
   <div class="kpi-note">“成功率”按游戏类型计算：三角洲 / 塔科夫看撤离；Ready or Not 看任务完成；其他游戏看胜利。样本少于 5 局时不作为稳定结论。</div>
 </section>
 
+<section id="collections" class="section">
+  <div class="section-title-row"><div><h2 style="margin:0 0 6px">收藏簿</h2><div class="muted">收藏品、任务物品、皮肤与装备，都可以在这里记录。</div></div><button class="btn" id="newCollectionBtn">新增物品</button></div>
+  <div id="collectionStats" class="collection-stats"></div>
+  <div class="card">
+    <h3 id="collectionFormTitle">新增物品</h3>
+    <form id="collectionForm">
+      <div class="collection-fields">
+        <div class="field"><label for="collectionGame">游戏 *</label><input id="collectionGame" list="games" required maxlength="120" placeholder="可输入任意游戏"></div>
+        <div class="field"><label for="collectionName">物品名称 *</label><input id="collectionName" required maxlength="200" placeholder="收藏品、任务物品、皮肤…"></div>
+        <div class="field"><label for="collectionCategory">分类</label><input id="collectionCategory" list="collectionCategories" maxlength="80" placeholder="支持自定义分类"></div>
+        <div class="field"><label for="collectionTarget">目标数量 *</label><input id="collectionTarget" type="number" min="1" max="1000000000" step="1" value="1" required></div>
+        <div class="field"><label for="collectionImage">图片链接（可选）</label><input id="collectionImage" type="url" placeholder="https://…"></div>
+        <div class="field"><label for="collectionNote">物品备注</label><input id="collectionNote" maxlength="2000" placeholder="获取条件、用途、心愿…"></div>
+      </div>
+      <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveCollectionBtn">保存物品</button><button class="btn ghost" type="button" id="cancelCollectionBtn">取消编辑 / 重置</button></div>
+    </form>
+  </div>
+  <div class="card">
+    <div class="collection-fields">
+      <div class="field"><label for="collectionSearch">搜索</label><input id="collectionSearch" placeholder="物品、分类、来源、备注"></div>
+      <div class="field"><label for="collectionFilterGame">游戏筛选</label><select id="collectionFilterGame"></select></div>
+      <div class="field"><label for="collectionFilterCategory">分类筛选</label><select id="collectionFilterCategory"></select></div>
+      <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>已获得</option><option>已集齐</option></select></div>
+    </div>
+  </div>
+  <div id="collectionList" class="collection-grid"></div>
+  <div id="collectionDetail" class="card" hidden style="margin-top:18px">
+    <h3 id="collectionDetailTitle"></h3><p class="muted" id="collectionDetailSummary"></p>
+    <form id="acquisitionForm">
+      <div class="collection-fields">
+        <div class="field"><label for="acquisitionDate">获取日期 *</label><input id="acquisitionDate" type="date" required></div>
+        <div class="field"><label for="acquisitionQuantity">本次数量 *</label><input id="acquisitionQuantity" type="number" min="1" max="1000000000" step="1" value="1" required></div>
+        <div class="field"><label for="acquisitionSource">来源 / 地图</label><input id="acquisitionSource" maxlength="300" placeholder="任务、掉落、购买、地点…"></div>
+        <div class="field"><label for="acquisitionCost">本次总花费</label><input id="acquisitionCost" type="number" min="0" max="1000000000000" step="0.01" placeholder="0"></div>
+        <div class="field"><label for="acquisitionNote">获取备注</label><input id="acquisitionNote" maxlength="2000"></div>
+      </div>
+      <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit">保存获取记录</button></div>
+    </form>
+    <div id="acquisitionList" style="margin-top:16px"></div>
+  </div>
+  <datalist id="collectionCategories"><option value="收藏品"><option value="任务物品"><option value="皮肤"><option value="武器"><option value="装备"><option value="成就"><option value="其他"></datalist>
+</section>
+
 <section id="data" class="section">
   <div class="card cloud-card">
     <div class="section-title-row">
@@ -485,7 +539,8 @@ tbody tr:hover td{background:#101821}
     <h2>本地数据管理</h2>
     <div class="actions">
       <button class="btn primary" id="exportJsonBtn">导出 JSON</button>
-      <button class="btn" id="exportCsvBtn">导出 CSV</button>
+      <button class="btn" id="exportCsvBtn">导出对局 CSV</button>
+      <button class="btn" id="exportCollectionCsvBtn">导出收藏 CSV</button>
       <label class="btn">导入 JSON<input id="importFile" type="file" accept=".json,application/json" hidden></label>
       <button class="btn danger" id="clearAllBtn">清空全部</button>
     </div>
@@ -514,7 +569,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.5.2";
+var APP_VERSION="0.6.0";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -525,9 +580,10 @@ var MIGRATION_KEY="fps_workspace_migrated_v2";
 var GUEST_MERGED_PREFIX="fps_guest_merged_v1_";
 var CLOUD_AUTO_KEY="fps_cloud_auto_v1";
 var tabs=[
-  ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["data","database","数据"]
+  ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","database","收藏"],["data","database","数据"]
 ];
 var records=[];
+var collectionEditingId=null,collectionSelectedId=null;
 var editingId=null;
 var deletedSnapshot=null;
 var deleteTimer=null;
@@ -556,6 +612,11 @@ function sessionLabel(){
   return y+"-"+m+"-"+day+" "+daypart();
 }
 
+function matchRecords(){return records.filter(function(r){return r.kind!=="collection"})}
+function collectionRecords(){return records.filter(function(r){return r.kind==="collection"})}
+function collectionQuantity(r){return (r.acquisitions||[]).reduce(function(n,a){return n+num(a.quantity)},0)}
+function collectionStatus(r){var n=collectionQuantity(r);return n===0?"未获得":n>=r.target?"已集齐":"已获得"}
+function imageURL(v){try{var u=new URL(v);return u.protocol==="https:"?u.href:""}catch(e){return ""}}
 function migrateRecord(r){
   var x=Object.assign({},r);
   if(!x.id)x.id=uid();
@@ -574,6 +635,12 @@ function migrateRecord(r){
   if(x.cloud_revision==null)x.cloud_revision=0;
   if(x.cloud_server_updated_at==null)x.cloud_server_updated_at="";
   if(x.local_dirty==null)x.local_dirty=x.cloud_revision?false:true;
+  x.kind=x.kind==="collection"?"collection":"match";
+  if(x.kind==="collection"){
+    x.target=Math.max(1,Math.floor(num(x.target)||1));x.image=imageURL(x.image);
+    x.category=String(x.category||"其他");
+    x.acquisitions=(Array.isArray(x.acquisitions)?x.acquisitions:[]).filter(function(a){return a&&Number.isSafeInteger(Number(a.quantity))&&Number(a.quantity)>0}).map(function(a){return {id:String(a.id||uid()),date:String(a.date||""),quantity:Number(a.quantity),source:String(a.source||""),cost:Math.max(0,num(a.cost)),note:String(a.note||"")}});
+  }
   return x;
 }
 function workspaceRecordsKey(name){return WORKSPACE_PREFIX+(name||activeWorkspace)}
@@ -650,7 +717,7 @@ var dictFields={
   weapon:"weapons",secondary:"secondaries",ammo:"ammos",armor:"armors"
 };
 function fieldValues(field,game){
-  return uniq(records.filter(function(r){return !game||r.game===game}).map(function(r){return r[field]}).filter(function(v){return v&&v!=="未填写"}));
+  return uniq(matchRecords().filter(function(r){return !game||r.game===game}).map(function(r){return r[field]}).filter(function(v){return v&&v!=="未填写"}));
 }
 function canonical(field,value,game){
   var v=String(value||"").trim();if(!v)return "";
@@ -819,6 +886,7 @@ function restoreDraft(){
   renderDatalists();syncAllChoiceGroups();updatePreview()
 }
 function fillFromLastRecord(){
+  var records=matchRecords();
   if(!records.length){showToast("当前 workspace 还没有上一局");return}
   var r=records.slice().sort(function(a,b){return num(b.ts)-num(a.ts)})[0];
   ["game","mode","map","season","session","squad","role","weapon","secondary","ammo","armor","range"].forEach(function(k){if($(k))$(k).value=r[k]||""});
@@ -833,7 +901,7 @@ function metricType(game){
 }
 function isSuccess(r){return metricType(r.game).good.indexOf(r.result)>=0}
 function counter(field,list){
-  var c={};(list||records).forEach(function(r){var k=r[field]||"未填写";c[k]=(c[k]||0)+1});return c
+  var c={};(list||matchRecords()).forEach(function(r){var k=r[field]||"未填写";c[k]=(c[k]||0)+1});return c
 }
 function topEntry(obj){
   var e=Object.entries(obj).sort(function(a,b){return b[1]-a[1]});return e.length?e[0]:null
@@ -853,6 +921,7 @@ function summary(list){
   return {games:games,k:k,d:d,kd:d?k/d:k,avgK:games?k/games:0,success:pct(wins,games),profit:profit}
 }
 function sessionGroups(){
+  var records=matchRecords();
   var g={};
   records.forEach(function(r){if(!r.session)return;(g[r.session]||(g[r.session]=[])).push(r)});
   return Object.entries(g).sort(function(a,b){
@@ -862,6 +931,7 @@ function sessionGroups(){
 }
 
 function renderDashboard(){
+  var records=matchRecords();
   var s=summary(records),tw=topEntry(counter("weapon")),tc=topEntry(counter("cause",records.filter(function(r){return r.cause&&r.cause!=="无 / 未死亡"})));
   $("stTotal").textContent=s.games;$("stKills").textContent=s.k;$("stKD").textContent=s.kd.toFixed(2);$("stAvgKills").textContent=s.avgK.toFixed(2);
   $("stWeapon").textContent=tw?tw[0]:"暂无";$("stCause").textContent=tc?tc[0]:"暂无";
@@ -896,12 +966,13 @@ function populate(id,arr,label){
 }
 function filtered(){
   var q=$("fSearch").value.trim().toLowerCase();
-  return records.filter(function(r){
+  return matchRecords().filter(function(r){
     var hay=[r.game,r.mode,r.map,r.season,r.session,r.result,r.role,r.weapon,r.secondary,r.ammo,r.armor,r.range,r.style,r.cause,(r.tags||[]).join(" "),r.note].join(" ").toLowerCase();
     return(!q||hay.indexOf(q)>=0)&&(!$("fGame").value||r.game===$("fGame").value)&&(!$("fResult").value||r.result===$("fResult").value)&&(!$("fCause").value||r.cause===$("fCause").value)&&(!$("fSquad").value||r.squad===$("fSquad").value)
   })
 }
 function renderRecords(){
+  var records=matchRecords();
   populate("fGame",uniq(records.map(function(r){return r.game})),"全部游戏");
   populate("fResult",uniq(records.map(function(r){return r.result})),"全部结果");
   populate("fCause",uniq(records.map(function(r){return r.cause})),"全部死因");
@@ -918,9 +989,9 @@ function renderRecords(){
 }
 function deleteRecord(id){
   var idx=records.findIndex(function(r){return r.id===id});if(idx<0)return;
-  deletedSnapshot={record:records[idx],index:idx};var baseRevision=num(records[idx].cloud_revision);records.splice(idx,1);addTombstone(id,baseRevision);saveAndRender(true);
+  deletedSnapshot={record:records[idx],index:idx,workspace:activeWorkspace};var baseRevision=num(records[idx].cloud_revision);records.splice(idx,1);addTombstone(id,baseRevision);saveAndRender(true);
   showToast("已删除 1 条记录","撤销",function(){
-    if(!deletedSnapshot)return;
+    if(!deletedSnapshot||deletedSnapshot.workspace!==activeWorkspace)return;
     deletedSnapshot.record.updated_at=isoNow();deletedSnapshot.record.local_dirty=true;
     records.splice(deletedSnapshot.index,0,deletedSnapshot.record);removeTombstone(deletedSnapshot.record.id);deletedSnapshot=null;saveAndRender()
   });
@@ -988,6 +1059,7 @@ function saveForm(){
 }
 
 function perf(field){
+  var records=matchRecords();
   var g={};
   records.forEach(function(r){var k=r[field]||"未填写";if(!g[k])g[k]=[];g[k].push(r)});
   var entries=Object.entries(g).sort(function(a,b){return b[1].length-a[1].length}).slice(0,12);
@@ -1056,7 +1128,7 @@ function renderCloudPanel(){
 function activateWorkspaceForUser(user){
   var next=workspaceForUser(user);
   if(activeWorkspace===next)return;
-  saveDraftNow();activeWorkspace=next;loadWorkspace(next);editingId=null;
+  saveDraftNow();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();$("acquisitionForm").reset();
   clearForm(false,false);renderAll();restoreDraft()
 }
 async function initCloud(){
@@ -1159,7 +1231,7 @@ function applyRemoteRow(row){
   var incoming=remoteToLocal(row);if(idx>=0)records[idx]=incoming;else records.push(incoming);removeTombstone(row.id)
 }
 async function pushRecordWithRevision(r,share){
-  var result=await cloudClient.rpc("sync_fps_record",{p_id:r.id,p_payload:cloudPayload(r),p_share_community:share,p_base_revision:num(r.cloud_revision),p_deleted:false});
+  var result=await cloudClient.rpc("sync_fps_record",{p_id:r.id,p_payload:cloudPayload(r),p_share_community:r.kind==="collection"?false:share,p_base_revision:num(r.cloud_revision),p_deleted:false});
   if(result.error)throw result.error;return result.data&&result.data[0]?result.data[0]:null
 }
 async function pushDeleteWithRevision(t){
@@ -1188,7 +1260,7 @@ async function cloudSync(opts){
     var share=communityEnabled();
     records.forEach(function(rec){
       var row=remoteMap[rec.id];
-      if(row&&!!row.share_community!==share)rec.local_dirty=true
+      if(row&&!!row.share_community!==(rec.kind==="collection"?false:share))rec.local_dirty=true
     });
     var dirty=records.filter(function(r){return r.local_dirty});
     for(var i=0;i<dirty.length;i++){
@@ -1233,8 +1305,9 @@ async function refreshCommunityStats(){
 function download(blob,name){
   var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},1000)
 }
-function exportJSON(){download(new Blob([JSON.stringify({version:4,appVersion:APP_VERSION,workspace:activeWorkspace,exportedAt:new Date().toISOString(),records:records},null,2)],{type:"application/json"}),"fps-database.json")}
+function exportJSON(){download(new Blob([JSON.stringify({version:5,appVersion:APP_VERSION,workspace:activeWorkspace,exportedAt:new Date().toISOString(),records:records},null,2)],{type:"application/json"}),"fps-database.json")}
 function exportCSV(){
+  var records=matchRecords();
   var h=["time","game","season","session","mode","map","result","kills","deaths","assists","squad","role","weapon","secondary","ammo","armor","range","style","cause","tags","cost","profit","note"];
   var rows=[h.join(",")].concat(records.map(function(r){return h.map(function(k){var v=k==="tags"?(r.tags||[]).join("|"):(r[k]==null?"":r[k]);return '"'+String(v).replace(/"/g,'""')+'"'}).join(",")}));
   download(new Blob(["\ufeff"+rows.join("\n")],{type:"text/csv;charset=utf-8"}),"fps-database.csv")
@@ -1252,10 +1325,77 @@ function importJSON(e){
   };rd.readAsText(f)
 }
 function clearAll(){
-  if(confirm("确定清空当前 workspace？建议先导出 JSON 备份。")){records.forEach(function(r){addTombstone(r.id,num(r.cloud_revision))});records=[];editingId=null;clearDraft();saveAndRender();showToast("已清空当前 workspace")}
+  if(confirm("确定清空当前 workspace 的全部对局和收藏？建议先导出 JSON 备份。")){records.forEach(function(r){addTombstone(r.id,num(r.cloud_revision))});records=[];editingId=null;clearDraft();saveAndRender();showToast("已清空当前 workspace")}
 }
 
-function renderAll(){renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel()}
+
+function resetCollectionForm(){
+  collectionEditingId=null;$("collectionForm").reset();$("collectionFormTitle").textContent="新增物品";$("saveCollectionBtn").textContent="保存物品";
+}
+function touchCollection(r){r.updated_at=isoNow();r.local_dirty=true;saveAndRender()}
+function saveCollection(e){
+  e.preventDefault();
+  var game=$("collectionGame").value.trim(),name=$("collectionName").value.trim(),target=Number($("collectionTarget").value),image=$("collectionImage").value.trim();
+  if(!game||!name||!Number.isSafeInteger(target)||target<1){showToast("请填写游戏、物品名称和有效目标数量");return}
+  if(image&&!imageURL(image)){showToast("图片链接需使用 https://");return}
+  var r=collectionEditingId?records.find(function(x){return x.id===collectionEditingId&&x.kind==="collection"}):null;
+  if(collectionEditingId&&!r){showToast("物品已被删除，请重新新增");resetCollectionForm();return}
+  if(!r){r=migrateRecord({id:uid(),kind:"collection",acquisitions:[]});records.unshift(r)}
+  Object.assign(r,{game:game,name:name,category:$("collectionCategory").value.trim()||"其他",target:target,image:imageURL(image),note:$("collectionNote").value.trim()});
+  collectionSelectedId=r.id;resetCollectionForm();touchCollection(r);showToast("物品已保存，可继续记录获取");
+}
+function editCollection(id){
+  var r=records.find(function(x){return x.id===id&&x.kind==="collection"});if(!r)return;
+  collectionEditingId=id;[["Game","game"],["Name","name"],["Category","category"],["Target","target"],["Image","image"],["Note","note"]].forEach(function(pair){$("collection"+pair[0]).value=r[pair[1]]||""});
+  $("collectionFormTitle").textContent="编辑物品";$("saveCollectionBtn").textContent="保存修改";$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});
+}
+function renderCollections(){
+  var list=collectionRecords();
+  $("collectionStats").textContent=list.length+" 件物品 · 已集齐 "+list.filter(function(r){return collectionStatus(r)==="已集齐"}).length+" 件 · "+list.reduce(function(n,r){return n+r.acquisitions.length},0)+" 次获取";
+  populate("collectionFilterGame",uniq(list.map(function(r){return r.game})),"全部游戏");populate("collectionFilterCategory",uniq(list.map(function(r){return r.category})),"全部分类");
+  var q=$("collectionSearch").value.trim().toLowerCase();
+  var shown=list.filter(function(r){return (!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
+  $("collectionList").innerHTML=shown.map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+'</div></div></div><div>'+collectionStatus(r)+' · '+n+' / '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
+  document.querySelectorAll("[data-acquire]").forEach(function(b){b.onclick=function(){if(collectionSelectedId!==b.dataset.acquire)$("acquisitionForm").reset();collectionSelectedId=b.dataset.acquire;renderCollectionDetail();$("collectionDetail").scrollIntoView({behavior:"smooth",block:"start"})}});
+  document.querySelectorAll("[data-collection-edit]").forEach(function(b){b.onclick=function(){editCollection(b.dataset.collectionEdit)}});
+  document.querySelectorAll("[data-collection-delete]").forEach(function(b){b.onclick=function(){if(collectionEditingId===b.dataset.collectionDelete)resetCollectionForm();deleteRecord(b.dataset.collectionDelete)}});
+  renderCollectionDetail();
+}
+function renderCollectionDetail(){
+  var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"});$("collectionDetail").hidden=!r;if(!r)return;
+  $("collectionDetailTitle").textContent=r.name+" · 获取记录";$("collectionDetailSummary").textContent=collectionQuantity(r)+" / "+r.target+" · 总花费 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
+  if(!$("acquisitionDate").value){var d=new Date();$("acquisitionDate").value=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+  $("acquisitionList").innerHTML=r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date)+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · 花费 '+num(a.cost).toFixed(2)+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
+  document.querySelectorAll("[data-acquisition-delete]").forEach(function(b){b.onclick=function(){deleteAcquisition(r.id,b.dataset.acquisitionDelete)}});
+}
+function saveAcquisition(e){
+  e.preventDefault();var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"});if(!r){showToast("请先选择物品");return}
+  var quantity=Number($("acquisitionQuantity").value),cost=Number($("acquisitionCost").value||0),date=$("acquisitionDate").value;
+  if(!Number.isSafeInteger(quantity)||quantity<1||!Number.isFinite(cost)||cost<0||!/^\d{4}-\d{2}-\d{2}$/.test(date)){showToast("请填写有效日期、正整数数量和非负花费");return}
+  r.acquisitions.push({id:uid(),date:date,quantity:quantity,source:$("acquisitionSource").value.trim(),cost:cost,note:$("acquisitionNote").value.trim()});
+  $("acquisitionForm").reset();touchCollection(r);showToast("获取记录已保存，进度已更新");
+}
+function deleteAcquisition(itemId,acquisitionId){
+  var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!r)return;
+  var index=r.acquisitions.findIndex(function(a){return a.id===acquisitionId});if(index<0)return;
+  var snapshot=r.acquisitions[index],workspace=activeWorkspace;r.acquisitions.splice(index,1);touchCollection(r);
+  showToast("已删除获取记录","撤销",function(){if(activeWorkspace!==workspace)return;var live=records.find(function(x){return x.id===itemId});if(live&&!live.acquisitions.some(function(a){return a.id===snapshot.id})){live.acquisitions.splice(index,0,snapshot);touchCollection(live)}});
+}
+function exportCollectionCSV(){
+  var h=["游戏","物品","分类","目标数量","已获得数量","状态","获取日期","本次数量","来源或地图","本次总花费","获取备注","物品备注","图片链接"],rows=[h];
+  collectionRecords().forEach(function(r){(r.acquisitions.length?r.acquisitions:[{}]).forEach(function(a){rows.push([r.game,r.name,r.category,r.target,collectionQuantity(r),collectionStatus(r),a.date,a.quantity,a.source,a.cost,a.note,r.note,r.image])})});
+  var csv=rows.map(function(row){return row.map(function(v){var value=String(v==null?"":v);if(/^[=+@-]/.test(value))value="'"+value;return '"'+value.replace(/"/g,'""')+'"'}).join(",")}).join("\n");
+  download(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),"fps-collections.csv");
+}
+
+function renderAll(){renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel()}
+
+$("collectionForm").addEventListener("submit",saveCollection);
+$("acquisitionForm").addEventListener("submit",saveAcquisition);
+$("newCollectionBtn").addEventListener("click",function(){resetCollectionForm();$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});$("collectionGame").focus()});
+$("cancelCollectionBtn").addEventListener("click",resetCollectionForm);
+$("exportCollectionCsvBtn").addEventListener("click",exportCollectionCSV);
+["collectionSearch","collectionFilterGame","collectionFilterCategory","collectionFilterStatus"].forEach(function(id){$(id).addEventListener("input",renderCollections);$(id).addEventListener("change",renderCollections)});
 
 $("saveBtn").addEventListener("click",saveForm);
 $("clearBtn").addEventListener("click",function(){clearForm(false,true)});
@@ -1279,7 +1419,7 @@ $("cloudAutoSync").addEventListener("change",function(){localStorage.setItem(CLO
 $("communityOptIn").addEventListener("change",function(){
   if(!cloudUser){this.checked=false;showToast("登录后才能贡献社区统计");return}
   localStorage.setItem(workspaceShareKey(),this.checked?"1":"0");
-  records.forEach(function(r){r.local_dirty=true});persist();renderCloudPanel();cloudSync({silent:true})
+  matchRecords().forEach(function(r){r.local_dirty=true});persist();renderCloudPanel();cloudSync({silent:true})
 });
 window.addEventListener("online",function(){renderCloudPanel();scheduleCloudSync(300);refreshCommunityStats()});
 window.addEventListener("offline",renderCloudPanel);
