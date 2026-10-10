@@ -9,10 +9,10 @@ function app(){
  const html=readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
  source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
- source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};
- window.test={planBackupImport,applyBackupImport,cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
+ source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};download=function(blob,name){window.lastDownload={blob,name}};
+ window.test={exportCollectionCSV,saveInventory,voidInventory,editInventory,resetInventoryForm,openInventory,planBackupImport,applyBackupImport,cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
  setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)}};})();`;
- const window={FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>{if(store.failWrites)throw Error("storage full");store.set(k,v)},removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
+ const window={FPSInventory:require('../inventory.js'),FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>{if(store.failWrites)throw Error("storage full");store.set(k,v)},removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,Blob,console};
  vm.runInNewContext(source,context);return {api:window.test,window,element,store};
 }
 test('old backups stay matches; collection acquisitions survive cloud and JSON round trips',()=>{
@@ -135,4 +135,49 @@ test('invalid backups and storage failures do not partially import records',()=>
 });
 test('large delete queues retain every tombstone on disk',()=>{
  const {api,store}=app();api.workspace('user_queue');api.setRecords(Array.from({length:1002},(_,i)=>api.migrateRecord({id:'delete'+i})));for(let i=0;i<1002;i++)api.deleteRecord('delete'+i);assert.equal(JSON.parse(store.get('fps_cloud_tombstones_v2_user_queue')).length,1002);
+});
+
+function stockEntry(app,type,quantity,date='',note=''){const {element,api}=app;element('inventoryType').value=type;element('inventoryQuantity').value=String(quantity);element('inventoryDate').value=date;element('inventoryNote').value=note;api.saveInventory({preventDefault(){}})}
+test('inventory ledger supports all reductions, transfer-in, absolute correction and later acquisitions',()=>{
+ const a=app(),{api}=a,item=api.migrateRecord({id:'inventory',kind:'collection',name:'stock',starting_quantity:10});api.setRecords([item]);api.select(item.id);
+ for(const type of ['sale','consume','loss','transfer_out'])stockEntry(a,type,1);assert.equal(api.collectionQuantity(item),6);stockEntry(a,'transfer_in',2);assert.equal(api.collectionQuantity(item),8);
+ stockEntry(a,'correction',3);assert.equal(api.collectionQuantity(item),3);api.quickAcquire(item.id);assert.equal(api.collectionQuantity(item),4);assert.equal(item.acquisitions.length,1);assert.equal(item.inventory_events.length,6);assert.equal(item.inventory_events[5].date,'');assert.equal(api.matchRecords().length,0);
+});
+test('correction zero and zero-stock status preserve acquisition history',()=>{
+ const a=app(),{api}=a,item=api.migrateRecord({id:'zero',kind:'collection',acquisitions:[{id:'old',quantity:2}]});api.setRecords([item]);api.select(item.id);stockEntry(a,'correction',0);assert.equal(api.collectionQuantity(item),0);assert.equal(api.collectionStatus(item),'当前无库存');assert.equal(item.acquisitions.length,1);assert.equal(item.acquisitions[0].quantity,2);
+ api.quickAcquire(item.id);assert.equal(api.collectionQuantity(item),1);assert.equal(item.acquisitions.length,2);
+});
+test('optional dates never reorder ledger; backfilling older acquisition does not override a later stocktake',()=>{
+ const a=app(),{api,element}=a,item=api.migrateRecord({id:'dates',kind:'collection',acquisitions:[{id:'old',quantity:5,date:''}]});api.setRecords([item]);api.select(item.id);stockEntry(a,'correction',2,'2026-01-01');
+ api.editAcquisition(item.id,'old');element('acquisitionDate').value='2026-10-11';element('acquisitionQuantity').value='6';element('acquisitionCost').value='';api.saveAcquisition({preventDefault(){}});assert.equal(api.collectionQuantity(item),2);assert.equal(item.acquisitions[0].quantity,6);api.quickAcquire(item.id);assert.equal(api.collectionQuantity(item),3);
+});
+test('negative stock, fractional amounts, missing correction targets and bad dates never mutate history',()=>{
+ const a=app(),{api}=a,item=api.migrateRecord({id:'guard',kind:'collection',starting_quantity:1});api.setRecords([item]);api.select(item.id);
+ for(const [type,q,date] of [['consume',2,''],['sale',.5,''],['correction','',''],['loss',-1,''],['correction',1,'2026-02-30'],['unknown',1,'']])stockEntry(a,type,q,date);
+ assert.equal(item.inventory_events.length,0);assert.equal(api.collectionQuantity(item),1);
+});
+test('undo keeps a voided movement in history and cannot cross workspaces',()=>{
+ const a=app(),{api,window}=a,item=api.migrateRecord({id:'undo-stock',kind:'collection',starting_quantity:5});api.setRecords([item]);api.select(item.id);stockEntry(a,'sale',2);assert.equal(api.collectionQuantity(item),3);window.undo();assert.equal(api.collectionQuantity(item),5);assert.equal(item.inventory_events[0].voided,true);window.undo();assert.equal(api.collectionQuantity(item),3);
+ stockEntry(a,'consume',1);const undo=window.undo;api.workspace('user_other_stock');undo();assert.equal(api.getRecords().length,0);api.workspace('guest');assert.equal(api.collectionQuantity(api.getRecords()[0]),2);
+});
+test('editing movement preserves sequence and undo restores the original movement',()=>{
+ const a=app(),{api,window}=a,item=api.migrateRecord({id:'edit-stock',kind:'collection',starting_quantity:5});api.setRecords([item]);api.select(item.id);stockEntry(a,'sale',1);const id=item.inventory_events[0].id;api.editInventory(item.id,id);stockEntry(a,'sale',2,'2026-10-11','补充备注');assert.equal(api.collectionQuantity(item),3);assert.equal(item.inventory_events.length,1);assert.equal(item.inventory_events[0].seq,1);window.undo();assert.equal(api.collectionQuantity(item),4);assert.equal(item.inventory_events[0].quantity,1);assert.equal(item.inventory_events[0].voided,false);
+});
+test('removing acquisitions or earlier corrections cannot make later consumption negative',()=>{
+ const a=app(),{api,window}=a,item=api.migrateRecord({id:'dependencies',kind:'collection'});api.setRecords([item]);api.select(item.id);api.quickAcquire(item.id);const acquisitionUndo=window.undo;stockEntry(a,'consume',1);api.deleteAcquisition(item.id,item.acquisitions[0].id);assert.equal(item.acquisitions.length,1);acquisitionUndo();assert.equal(item.acquisitions.length,1);
+ stockEntry(a,'correction',2);const correction=item.inventory_events[1].id;stockEntry(a,'consume',2);api.voidInventory(item.id,correction);assert.equal(item.inventory_events[1].voided,false);assert.equal(api.collectionQuantity(item),0);
+});
+test('inventory history survives cloud and backup round trips without opting into community',async()=>{
+ const a=app(),{api}=a,item=api.migrateRecord({id:'roundtrip-stock',kind:'collection',starting_quantity:4});api.setRecords([item]);api.select(item.id);stockEntry(a,'sale',1);stockEntry(a,'correction',5);api.quickAcquire(item.id);
+ const restored=api.remoteToLocal({id:item.id,revision:3,payload:JSON.parse(JSON.stringify(api.cloudPayload(item)))});assert.equal(api.collectionQuantity(restored),6);assert.equal(restored.inventory_events.length,2);assert.equal(restored.acquisitions[0].inventory_seq,3);
+ const plan=api.planBackupImport({workspace:'user_foreign',records:[restored]});assert.equal(api.collectionQuantity(plan.added[0]),6);let shared;api.setClient({rpc:async(name,args)=>{shared=args.p_share_community;return {data:[{applied:true}]}}});await api.pushRecordWithRevision(restored,true);assert.equal(shared,false);
+});
+test('storage failure leaves stock and movement history intact',()=>{
+ const a=app(),{api,store}=a,item=api.migrateRecord({id:'quota-stock',kind:'collection',starting_quantity:5});api.setRecords([item]);api.select(item.id);store.failWrites=true;stockEntry(a,'consume',2);assert.equal(api.collectionQuantity(item),5);assert.equal(item.inventory_events.length,0);
+});
+test('editing acquisition quantity is rejected when it would invalidate an existing sale',()=>{
+ const a=app(),{api,element}=a,item=api.migrateRecord({id:'edit-dependency',kind:'collection',acquisitions:[{id:'original',quantity:2}]});api.setRecords([item]);api.select(item.id);stockEntry(a,'sale',2);api.editAcquisition(item.id,'original');element('acquisitionQuantity').value='1';api.saveAcquisition({preventDefault(){}});assert.equal(item.acquisitions[0].quantity,2);assert.equal(api.collectionQuantity(item),0);
+});
+test('CSV export includes movement type, before/after balances, optional date and cancelled history',async()=>{
+ const a=app(),{api,window}=a,item=api.migrateRecord({id:'csv-stock',kind:'collection',name:'CSV',starting_quantity:4});api.setRecords([item]);api.select(item.id);stockEntry(a,'sale',1,'','价格后补');stockEntry(a,'correction',2);window.undo();api.exportCollectionCSV();const csv=await window.lastDownload.blob.text();assert.match(csv,/变动前库存/);assert.match(csv,/出售/);assert.match(csv,/校正/);assert.match(csv,/已撤销/);assert.match(csv,/价格后补/);assert.equal(api.collectionQuantity(item),3);
 });

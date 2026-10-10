@@ -25,7 +25,7 @@ function plan(catalog,review,records,hash,makeID,stamp){
  review.filter(function(r){return r.checked}).forEach(function(r){if(!items.has(r.item_id)||!Number.isSafeInteger(r.quantity)||r.quantity<1||r.quantity>1000000000)throw Error('请核对物品和正整数数量');counts.set(r.item_id,(counts.get(r.item_id)||0)+r.quantity)});
  if(!counts.size)throw Error('请勾选已核对的物品');
  var added=[],updated=[],skipped=[];counts.forEach(function(q,id){if(q>1000000000)throw Error('合计数量过大');var item=items.get(id),r=records.find(function(r){return r.kind==='collection'&&/^(三角洲行动|三角洲|delta force)$/i.test(r.game)&&(r.catalog_item_id===id||r.name===item.name)});
- if(r&&(r.import_hash===hash||r.acquisitions.length||Number(r.starting_quantity)>0)){skipped.push(item.name);return}
+ if(r&&(r.import_hash===hash||r.acquisitions.length||(r.inventory_events||[]).length||Number(r.starting_quantity)>0)){skipped.push(item.name);return}
  var next=Object.assign({},r||{id:makeID(),kind:'collection',game:catalog.game,target:1,acquisitions:[],note:''},{name:item.name,category:item.category,image:item.image,catalog_item_id:id,catalog_object_id:item.object_id,starting_quantity:q,snapshot_date:new Date(stamp).toLocaleDateString('sv-SE'),import_source:'warehouse',import_hash:hash,imported_at:stamp,updated_at:stamp,local_dirty:true});if(r)updated.push(next);else added.push(next);
  });return {added:added,updated:updated,skipped:skipped};
 }

@@ -275,7 +275,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.5</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.6</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -491,7 +491,7 @@ tbody tr:hover td{background:#101821}
       <div class="field"><label for="collectionSearch">搜索</label><input id="collectionSearch" placeholder="物品、分类、来源、备注"></div>
       <div class="field"><label for="collectionFilterGame">游戏筛选</label><select id="collectionFilterGame"></select></div>
       <div class="field"><label for="collectionFilterCategory">分类筛选</label><select id="collectionFilterCategory"></select></div>
-      <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>已获得</option><option>已集齐</option></select></div>
+      <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>当前无库存</option><option>已获得</option><option>已集齐</option></select></div>
     </div>
   </div>
   <div id="collectionList" class="collection-grid"></div>
@@ -510,6 +510,16 @@ tbody tr:hover td{background:#101821}
       <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveAcquisitionBtn">保存获取记录</button><button class="btn ghost" type="button" id="cancelAcquisitionBtn">取消编辑 / 重置</button></div>
     </form>
     <div id="acquisitionList" style="margin-top:16px"></div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
+    <h4 id="inventoryFormTitle">记录库存变动</h4>
+    <p class="muted">校正填写核对后的当前总数量，保留获取历史。日期与备注选填；历史按记录顺序计算，后补日期不会改变库存。</p>
+    <form id="inventoryForm"><div class="collection-fields">
+      <div class="field"><label for="inventoryType">变动类型</label><select id="inventoryType"><option value="consume">消耗</option><option value="sale">出售</option><option value="loss">丢失</option><option value="transfer_out">转出</option><option value="transfer_in">转入</option><option value="correction">校正当前库存</option></select></div>
+      <div class="field"><label id="inventoryQuantityLabel" for="inventoryQuantity">变动数量（默认 1）</label><input id="inventoryQuantity" type="number" min="1" max="1000000000" step="1" value="1"></div>
+      <div class="field"><label for="inventoryDate">变动日期（选填，可后补）</label><input id="inventoryDate" type="date"></div>
+      <div class="field"><label for="inventoryNote">变动备注（选填）</label><input id="inventoryNote" maxlength="2000" placeholder="用途、去向或校正原因"></div>
+    </div><div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveInventoryBtn">保存库存变动</button><button class="btn ghost" type="button" id="cancelInventoryBtn">取消编辑 / 重置</button></div></form>
+    <div id="inventoryList" style="margin-top:16px"></div>
   </div>
   <datalist id="collectionCategories"><option value="收藏品"><option value="任务物品"><option value="皮肤"><option value="武器"><option value="装备"><option value="成就"><option value="其他"></datalist>
 </section>
@@ -626,12 +636,13 @@ tbody tr:hover td{background:#101821}
 <script src="./ocr-import.js"></script>
 <script src="./warehouse-import.js"></script>
 <script src="./collection-catalog.js"></script>
+<script src="./inventory.js"></script>
 <script src="./cloud-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.5";
+var APP_VERSION="0.6.6";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -646,7 +657,7 @@ var tabs=[
 ];
 var records=[];
 var screenshotImporter=null,warehouseImporter=null;
-var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null;
+var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null,inventoryEditingId=null;
 var collectionCatalog=null,catalogLoading=false,collectionVisibleLimit=24;
 var editingId=null;
 var deletedSnapshot=null;
@@ -678,8 +689,8 @@ function sessionLabel(){
 
 function matchRecords(){return records.filter(function(r){return r.kind!=="collection"})}
 function collectionRecords(){return records.filter(function(r){return r.kind==="collection"})}
-function collectionQuantity(r){return num(r.starting_quantity)+(r.acquisitions||[]).reduce(function(n,a){return n+num(a.quantity)},0)}
-function collectionStatus(r){var n=collectionQuantity(r);return n===0?"未获得":n>=r.target?"已集齐":"已获得"}
+function collectionQuantity(r){return window.FPSInventory.quantity(r)}
+function collectionStatus(r){var n=collectionQuantity(r);return n===0?((r.starting_quantity||(r.acquisitions||[]).length||(r.inventory_events||[]).length)?"当前无库存":"未获得"):n>=r.target?"已集齐":"已获得"}
 function imageURL(v){try{var u=new URL(v);return u.protocol==="https:"?u.href:""}catch(e){return ""}}
 function migrateRecord(r){
   var x=Object.assign({},r);
@@ -704,7 +715,8 @@ function migrateRecord(r){
     x.target=Math.max(1,Math.floor(num(x.target)||1));x.image=imageURL(x.image);
     x.starting_quantity=Number.isSafeInteger(Number(x.starting_quantity))&&Number(x.starting_quantity)>=0?Number(x.starting_quantity):0;
     x.category=String(x.category||"其他");
-    x.acquisitions=(Array.isArray(x.acquisitions)?x.acquisitions:[]).filter(function(a){return a&&Number.isSafeInteger(Number(a.quantity))&&Number(a.quantity)>0}).map(function(a){return {id:String(a.id||uid()),date:String(a.date||""),quantity:Number(a.quantity),source:String(a.source||""),cost:a.cost==null||a.cost===""?null:Math.max(0,num(a.cost)),note:String(a.note||"")}});
+    x.acquisitions=(Array.isArray(x.acquisitions)?x.acquisitions:[]).filter(function(a){return a&&Number.isSafeInteger(Number(a.quantity))&&Number(a.quantity)>0}).map(function(a){return {id:String(a.id||uid()),date:String(a.date||""),quantity:Number(a.quantity),source:String(a.source||""),cost:a.cost==null||a.cost===""?null:Math.max(0,num(a.cost)),note:String(a.note||""),inventory_seq:Number.isSafeInteger(a.inventory_seq)&&a.inventory_seq>0?a.inventory_seq:0}});
+    x.inventory_events=window.FPSInventory.normalizeEvents(x.inventory_events);window.FPSInventory.validate(x);
   }
   return x;
 }
@@ -1194,7 +1206,7 @@ function renderCloudPanel(){
 function activateWorkspaceForUser(user){
   var next=workspaceForUser(user);
   if(activeWorkspace===next)return;
-  saveDraftNow();if(screenshotImporter)screenshotImporter.clear();if(warehouseImporter)warehouseImporter.clear();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();resetAcquisitionForm();
+  saveDraftNow();if(screenshotImporter)screenshotImporter.clear();if(warehouseImporter)warehouseImporter.clear();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();resetAcquisitionForm();resetInventoryForm();
   clearForm(false,false);renderAll();restoreDraft()
 }
 async function initCloud(){
@@ -1450,7 +1462,7 @@ function saveCollection(e){
   if(collectionEditingId&&!r){showToast("物品已被删除，请重新新增");resetCollectionForm();return}
   if(!r){r=migrateRecord({id:uid(),kind:"collection",acquisitions:[]});records.unshift(r)}
   Object.assign(r,{game:game,name:name,category:$("collectionCategory").value.trim()||"其他",target:target,image:imageURL(image),note:$("collectionNote").value.trim()});
-  collectionSelectedId=r.id;resetAcquisitionForm();resetCollectionForm();touchCollection(r);showToast("物品已保存，可继续记录获取");
+  collectionSelectedId=r.id;resetAcquisitionForm();resetInventoryForm();resetCollectionForm();touchCollection(r);showToast("物品已保存，可继续记录获取");
 }
 function editCollection(id){
   var r=records.find(function(x){return x.id===id&&x.kind==="collection"});if(!r)return;
@@ -1485,9 +1497,11 @@ function renderCollections(){
   populate("collectionFilterGame",uniq(list.map(function(r){return r.game})),"全部游戏");populate("collectionFilterCategory",uniq(list.map(function(r){return r.category})),"全部分类");
   var q=$("collectionSearch").value.trim().toLowerCase();
   var shown=list.filter(function(r){return (!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
-  $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+'</div></div></div><div>'+collectionStatus(r)+' · '+n+' / '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">获取明细</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
+  $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 '+n+' / 目标 '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">获取明细</button><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
+  document.querySelectorAll("[data-stock]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.stock,false)}});
+  document.querySelectorAll("[data-correct]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.correct,true)}});
   document.querySelectorAll("[data-acquire]").forEach(function(b){b.onclick=function(){quickAcquire(b.dataset.acquire)}});
-  document.querySelectorAll("[data-collection-detail]").forEach(function(b){b.onclick=function(){if(collectionSelectedId!==b.dataset.collectionDetail)resetAcquisitionForm();collectionSelectedId=b.dataset.collectionDetail;renderCollectionDetail();$("collectionDetail").scrollIntoView({behavior:"smooth",block:"start"})}});
+  document.querySelectorAll("[data-collection-detail]").forEach(function(b){b.onclick=function(){if(collectionSelectedId!==b.dataset.collectionDetail){resetAcquisitionForm();resetInventoryForm()}collectionSelectedId=b.dataset.collectionDetail;renderCollectionDetail();$("collectionDetail").scrollIntoView({behavior:"smooth",block:"start"})}});
   document.querySelectorAll("[data-collection-edit]").forEach(function(b){b.onclick=function(){editCollection(b.dataset.collectionEdit)}});
   document.querySelectorAll("[data-collection-delete]").forEach(function(b){b.onclick=function(){if(collectionEditingId===b.dataset.collectionDelete)resetCollectionForm();deleteRecord(b.dataset.collectionDelete)}});
   $("collectionMoreBtn").hidden=shown.length<=collectionVisibleLimit;$("collectionMoreBtn").textContent="加载更多（已显示 "+Math.min(shown.length,collectionVisibleLimit)+" / "+shown.length+"）";
@@ -1495,8 +1509,9 @@ function renderCollections(){
 }
 function renderCollectionDetail(){
   var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"});$("collectionDetail").hidden=!r;if(!r)return;
-  $("collectionDetailTitle").textContent=r.name+" · 获取记录";$("collectionDetailSummary").textContent=collectionQuantity(r)+" / "+r.target+" · 已填写花费合计 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
+  $("collectionDetailTitle").textContent=r.name+" · 获取与库存历史";$("collectionDetailSummary").textContent="当前库存 "+collectionQuantity(r)+" / 目标 "+r.target+" · 已填写花费合计 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
   $("acquisitionList").innerHTML=(r.starting_quantity!=null&&(r.import_source==="screenshot"||r.import_source==="warehouse")?'<div class="collection-log"><div><b>初始数量快照 · '+num(r.starting_quantity)+'</b><p class="muted">'+esc(r.snapshot_date||'')+' 导入确认 · 不代表历史获取时间、来源或花费</p></div></div>':'')+r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date||'日期未填写')+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · '+(a.cost==null?'花费未填写':'花费 '+num(a.cost).toFixed(2))+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><div class="actions"><button class="btn" data-acquisition-edit="'+esc(a.id)+'">补充 / 编辑</button><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
+  renderInventoryHistory(r);
   document.querySelectorAll("[data-acquisition-edit]").forEach(function(b){b.onclick=function(){editAcquisition(r.id,b.dataset.acquisitionEdit)}});
   document.querySelectorAll("[data-acquisition-delete]").forEach(function(b){b.onclick=function(){deleteAcquisition(r.id,b.dataset.acquisitionDelete)}});
 }
@@ -1505,8 +1520,8 @@ function resetAcquisitionForm(){
 }
 function quickAcquire(itemId){
   var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!r)return;
-  var a={id:uid(),date:"",quantity:1,source:"",cost:null,note:""},workspace=activeWorkspace;r.acquisitions.push(a);touchCollection(r);
-  showToast(r.name+"：已记录获取 1 件","撤销",function(){if(activeWorkspace!==workspace)return;var live=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!live)return;var index=live.acquisitions.findIndex(function(x){return x.id===a.id});if(index>=0){if(acquisitionEditingId===a.id)resetAcquisitionForm();live.acquisitions.splice(index,1);touchCollection(live)}});
+  var a={id:uid(),date:"",quantity:1,source:"",cost:null,note:"",inventory_seq:window.FPSInventory.nextSequence(r)},workspace=activeWorkspace;var candidate=JSON.parse(JSON.stringify(r));candidate.acquisitions.push(a);if(!validInventory(candidate)||!commitInventory(r,candidate))return;
+  showToast(r.name+"：已记录获取 1 件","撤销",function(){if(activeWorkspace!==workspace)return;var live=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!live)return;var index=live.acquisitions.findIndex(function(x){return x.id===a.id});if(index>=0){if(acquisitionEditingId===a.id)resetAcquisitionForm();var candidate=JSON.parse(JSON.stringify(live));candidate.acquisitions.splice(index,1);if(!validInventory(candidate))return;live.acquisitions.splice(index,1);touchCollection(live)}});
 }
 function editAcquisition(itemId,acquisitionId){
   var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"}),a=r&&r.acquisitions.find(function(x){return x.id===acquisitionId});if(!a)return;
@@ -1521,20 +1536,55 @@ function saveAcquisition(e){
   if(!Number.isSafeInteger(quantity)||quantity<1||quantity>1000000000||(cost!=null&&(!Number.isFinite(cost)||cost<0||cost>1000000000000))||!validDate){showToast("选填日期需有效，数量需为正整数，花费需为非负数");return}
   var a=acquisitionEditingId?r.acquisitions.find(function(x){return x.id===acquisitionEditingId}):null;
   if(acquisitionEditingId&&!a){showToast("获取记录已被删除，请重新选择");resetAcquisitionForm();return}
-  if(!a){a={id:uid()};r.acquisitions.push(a)}
-  Object.assign(a,{date:date,quantity:quantity,source:$("acquisitionSource").value.trim(),cost:cost,note:$("acquisitionNote").value.trim()});
+  var candidate=JSON.parse(JSON.stringify(r)),candidateAcquisition=a?candidate.acquisitions.find(function(x){return x.id===a.id}):{id:uid(),inventory_seq:window.FPSInventory.nextSequence(r)};if(!a)candidate.acquisitions.push(candidateAcquisition);
+  Object.assign(candidateAcquisition,{date:date,quantity:quantity,source:$("acquisitionSource").value.trim(),cost:cost,note:$("acquisitionNote").value.trim()});
+  if(!validInventory(candidate))return;
+  if(a)Object.assign(a,candidateAcquisition);else r.acquisitions.push(candidateAcquisition);
   resetAcquisitionForm();touchCollection(r);showToast("获取明细已保存，进度已更新");
 }
 function deleteAcquisition(itemId,acquisitionId){
   var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!r)return;
   var index=r.acquisitions.findIndex(function(a){return a.id===acquisitionId});if(index<0)return;
   if(acquisitionEditingId===acquisitionId)resetAcquisitionForm();
+  var candidate=JSON.parse(JSON.stringify(r));candidate.acquisitions.splice(index,1);if(!validInventory(candidate))return;
   var snapshot=r.acquisitions[index],workspace=activeWorkspace;r.acquisitions.splice(index,1);touchCollection(r);
-  showToast("已删除获取记录","撤销",function(){if(activeWorkspace!==workspace)return;var live=records.find(function(x){return x.id===itemId});if(live&&!live.acquisitions.some(function(a){return a.id===snapshot.id})){live.acquisitions.splice(index,0,snapshot);touchCollection(live)}});
+  showToast("已删除获取记录","撤销",function(){if(activeWorkspace!==workspace)return;var live=records.find(function(x){return x.id===itemId});if(live&&!live.acquisitions.some(function(a){return a.id===snapshot.id})){var candidate=JSON.parse(JSON.stringify(live));candidate.acquisitions.splice(index,0,snapshot);if(!validInventory(candidate))return;live.acquisitions.splice(index,0,snapshot);touchCollection(live)}});
+}
+function validInventory(r){try{window.FPSInventory.validate(r);return true}catch(e){showToast(e.message);return false}}
+function updateInventoryForm(){var correction=$("inventoryType").value==="correction";$("inventoryQuantityLabel").textContent=correction?"核对后的当前总数量（必填，可为 0）":"变动数量（默认 1）";$("inventoryQuantity").min=correction?"0":"1";$("inventoryQuantity").required=correction}
+function resetInventoryForm(){inventoryEditingId=null;$("inventoryForm").reset();$("inventoryType").value="consume";$("inventoryQuantity").value="1";$("inventoryDate").value="";$("inventoryNote").value="";$("inventoryFormTitle").textContent="记录库存变动";$("saveInventoryBtn").textContent="保存库存变动";updateInventoryForm()}
+function openInventory(id,correction){collectionSelectedId=id;resetAcquisitionForm();resetInventoryForm();var r=records.find(function(x){return x.id===id&&x.kind==="collection"});if(!r)return;if(correction){$("inventoryType").value="correction";$("inventoryQuantity").value=collectionQuantity(r)}updateInventoryForm();renderCollectionDetail();$("inventoryForm").scrollIntoView({behavior:"smooth",block:"center"})}
+function commitInventory(r,candidate){
+  candidate.updated_at=isoNow();candidate.local_dirty=true;
+  try{localStorage.setItem(workspaceRecordsKey(),JSON.stringify(records.map(function(x){return x.id===r.id?candidate:x})))}catch(e){showToast("空间不足，库存未修改。请先导出备份并释放空间。");return false}
+  Object.assign(r,candidate);renderAll();scheduleCloudSync();return true;
+}
+function saveInventory(e){
+  e.preventDefault();var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"});if(!r){showToast("请先选择物品");return}
+  var type=$("inventoryType").value,raw=$("inventoryQuantity").value,quantity=Number(raw===""&&type!=="correction"?1:raw),date=$("inventoryDate").value,note=$("inventoryNote").value.trim();
+  if(!Object.prototype.hasOwnProperty.call(window.FPSInventory.labels,type)||(type==="correction"&&raw==="")||!Number.isSafeInteger(quantity)||quantity<(type==="correction"?0:1)||quantity>1000000000||!window.FPSInventory.validDate(date)){showToast("请核对变动数量；校正需填写总数量，日期如填需有效");return}
+  var candidate=JSON.parse(JSON.stringify(r)),entry=inventoryEditingId?candidate.inventory_events.find(function(x){return x.id===inventoryEditingId&&!x.voided}):null;
+  if(inventoryEditingId&&!entry){showToast("此变动已撤销或不存在，请重新选择");resetInventoryForm();return}
+  var previousEntry=entry?JSON.parse(JSON.stringify(entry)):null;
+  if(!entry&&type==="correction"&&quantity===collectionQuantity(r)){showToast("库存数量一致，无需校正");return}
+  if(!entry){entry={id:uid(),seq:window.FPSInventory.nextSequence(r),created_at:isoNow(),voided:false};candidate.inventory_events.push(entry)}
+  Object.assign(entry,{type:type,quantity:quantity,date:date,note:note});if(!validInventory(candidate)||!commitInventory(r,candidate))return;
+  var eventId=entry.id,workspace=activeWorkspace,epoch=workspaceEpoch;resetInventoryForm();showToast("库存已更新："+collectionQuantity(r)+" 件","撤销",function(){if(activeWorkspace!==workspace||workspaceEpoch!==epoch)return;if(!previousEntry){voidInventory(r.id,eventId);return}var live=records.find(function(x){return x.id===r.id&&x.kind==="collection"});if(!live)return;var restored=JSON.parse(JSON.stringify(live)),idx=restored.inventory_events.findIndex(function(x){return x.id===eventId&&!x.voided});if(idx<0)return;restored.inventory_events[idx]=previousEntry;if(validInventory(restored))commitInventory(live,restored)})
+}
+function editInventory(itemId,eventId){var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"}),entry=r&&r.inventory_events.find(function(x){return x.id===eventId&&!x.voided});if(!entry)return;collectionSelectedId=itemId;inventoryEditingId=eventId;$("inventoryType").value=entry.type;$("inventoryQuantity").value=entry.quantity;$("inventoryDate").value=entry.date;$("inventoryNote").value=entry.note;$("inventoryFormTitle").textContent="编辑库存变动";$("saveInventoryBtn").textContent="保存修改";updateInventoryForm();$("inventoryForm").scrollIntoView({behavior:"smooth",block:"center"})}
+function voidInventory(itemId,eventId){
+  var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!r)return;var candidate=JSON.parse(JSON.stringify(r)),entry=candidate.inventory_events.find(function(x){return x.id===eventId&&!x.voided});if(!entry)return;
+  entry.voided=true;if(!validInventory(candidate)||!commitInventory(r,candidate))return;if(inventoryEditingId===eventId)resetInventoryForm();
+  var workspace=activeWorkspace,epoch=workspaceEpoch;showToast("变动已撤销，历史保留","恢复此变动",function(){if(activeWorkspace!==workspace||workspaceEpoch!==epoch)return;var live=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!live)return;var next=JSON.parse(JSON.stringify(live)),event=next.inventory_events.find(function(x){return x.id===eventId&&x.voided});if(!event)return;event.voided=false;if(validInventory(next))commitInventory(live,next)})
+}
+function renderInventoryHistory(r){
+  var rows=window.FPSInventory.trace(r).filter(function(row){return row.kind==="movement"}).reverse();
+  $("inventoryList").innerHTML=rows.map(function(row){var e=row.event,label=window.FPSInventory.labels[e.type]+(e.type==="correction"?"为 "+e.quantity:(e.type==="transfer_in"?" +":" −")+e.quantity);return '<div class="collection-log"><div><b>'+esc(label)+(e.voided?' · 已撤销':'')+'</b><p class="muted">'+(e.voided?'不影响库存':row.before+' → '+row.after+' 件')+' · '+esc(e.date||'日期未填写')+'</p>'+(e.note?'<p>'+esc(e.note)+'</p>':'')+'</div>'+(e.voided?'':'<div class="actions"><button class="btn" data-inventory-edit="'+esc(e.id)+'">编辑变动</button><button class="btn danger" data-inventory-void="'+esc(e.id)+'">撤销此变动</button></div>')+'</div>'}).join('')||'<div class="empty">暂无库存变动。</div>';
+  document.querySelectorAll("[data-inventory-edit]").forEach(function(b){b.onclick=function(){editInventory(r.id,b.dataset.inventoryEdit)}});document.querySelectorAll("[data-inventory-void]").forEach(function(b){b.onclick=function(){voidInventory(r.id,b.dataset.inventoryVoid)}})
 }
 function exportCollectionCSV(){
-  var h=["游戏","物品","分类","目标数量","已获得数量","初始数量快照","快照日期","状态","获取日期","本次数量","来源或地图","本次总花费","获取备注","物品备注","图片链接"],rows=[h];
-  collectionRecords().forEach(function(r){(r.acquisitions.length?r.acquisitions:[{}]).forEach(function(a){rows.push([r.game,r.name,r.category,r.target,collectionQuantity(r),r.starting_quantity||0,r.snapshot_date||"",collectionStatus(r),a.date,a.quantity,a.source,a.cost,a.note,r.note,r.image])})});
+  var h=["游戏","物品","分类","目标数量","已获得数量","初始数量快照","快照日期","状态","获取日期","本次数量","来源或地图","本次总花费","获取备注","物品备注","图片链接","记录类型","变动数量","变动前库存","变动后库存","记录状态"],rows=[h];
+  collectionRecords().forEach(function(r){var history=window.FPSInventory.trace(r);if(!history.length)history=[{kind:"baseline",event:{},before:r.starting_quantity||0,after:r.starting_quantity||0,delta:0}];history.forEach(function(row){var a=row.event,isAcquisition=row.kind==="acquisition";rows.push([r.game,r.name,r.category,r.target,collectionQuantity(r),r.starting_quantity||0,r.snapshot_date||"",collectionStatus(r),a.date,isAcquisition?a.quantity:"",isAcquisition?a.source:"",isAcquisition?a.cost:"",a.note,r.note,r.image,isAcquisition?"获取":row.kind==="baseline"?"初始库存":window.FPSInventory.labels[a.type],row.delta,row.before,row.after,a.voided?"已撤销":"有效"])})});
   var csv=rows.map(function(row){return row.map(function(v){var value=String(v==null?"":v);if(/^[=+@-]/.test(value))value="'"+value;return '"'+value.replace(/"/g,'""')+'"'}).join(",")}).join("\n");
   download(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),"fps-collections.csv");
 }
@@ -1543,6 +1593,7 @@ function renderAll(){renderCollections();renderDashboard();renderRecords();rende
 
 $("collectionForm").addEventListener("submit",saveCollection);
 $("acquisitionForm").addEventListener("submit",saveAcquisition);
+$("inventoryForm").addEventListener("submit",saveInventory);$("inventoryType").addEventListener("change",updateInventoryForm);$("cancelInventoryBtn").addEventListener("click",resetInventoryForm);
 $("cancelAcquisitionBtn").addEventListener("click",resetAcquisitionForm);
 $("importCatalogBtn").addEventListener("click",importCollectionCatalog);
 $("reloadCatalogBtn").addEventListener("click",function(){if(catalogLoading)return;collectionCatalog=null;loadCollectionCatalog()});

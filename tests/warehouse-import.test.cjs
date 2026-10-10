@@ -17,7 +17,7 @@ test('review is opt-in, aggregates identical items, and does not manufacture acq
 test('snapshot updates only unowned catalog records and preserves owned history, duplicates and other games',()=>{
  const r={id:'existing',kind:'collection',game:catalog.game,name:item.name,catalog_item_id:item.item_id,target:2,starting_quantity:0,acquisitions:[],cloud_revision:3,note:'自定义'};const review=[{checked:true,item_id:item.item_id,quantity:1}];
  const updated=api.plan(catalog,review,[r],'hash',()=> 'new',stamp);assert.equal(updated.updated[0].id,'existing');assert.equal(updated.updated[0].cloud_revision,3);assert.equal(updated.updated[0].note,'自定义');assert.equal(r.starting_quantity,0);
- for(const owned of [{...r,starting_quantity:1},{...r,acquisitions:[{quantity:1}]},{...r,import_hash:'hash'}]){assert.equal(api.plan(catalog,review,[owned],'hash',()=> 'new',stamp).skipped.length,1)}
+ for(const owned of [{...r,starting_quantity:1},{...r,acquisitions:[{quantity:1}]},{...r,import_hash:'hash'},{...r,inventory_events:[{type:'correction',quantity:0,seq:1}]}]){assert.equal(api.plan(catalog,review,[owned],'hash',()=> 'new',stamp).skipped.length,1)}
  assert.equal(api.plan(catalog,review,[{...r,game:'其他游戏'}],'hash',()=> 'new',stamp).added.length,1);
 });
 
