@@ -275,7 +275,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.7</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.8</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -479,6 +479,8 @@ tbody tr:hover td{background:#101821}
         <div class="field"><label for="collectionGame">游戏（选填）</label><input id="collectionGame" list="games" maxlength="120" placeholder="可输入任意游戏"></div>
         <div class="field"><label for="collectionName">物品名称 *</label><input id="collectionName" required maxlength="200" placeholder="收藏品、任务物品、皮肤…"></div>
         <div class="field"><label for="collectionCategory">分类（选填）</label><input id="collectionCategory" list="collectionCategories" maxlength="80" placeholder="支持自定义分类"></div>
+        <div class="field"><label for="collectionGroup">专项收集（选填）</label><input id="collectionGroup" list="collectionGroups" maxlength="80" placeholder="留空自动识别；输入普通库存可排除"></div>
+        <datalist id="collectionGroups"><option value="阿萨拉牌"><option value="普通库存"></datalist>
         <div class="field"><label for="collectionTarget">目标数量（选填，默认 1）</label><input id="collectionTarget" type="number" min="1" max="1000000000" step="1" value="1"></div>
         <div class="field"><label for="collectionImage">图片链接（可选）</label><input id="collectionImage" type="url" placeholder="https://…"></div>
         <div class="field"><label for="collectionNote">物品备注（选填）</label><input id="collectionNote" maxlength="2000" placeholder="获取条件、用途、心愿…"></div>
@@ -491,9 +493,11 @@ tbody tr:hover td{background:#101821}
       <div class="field"><label for="collectionSearch">搜索</label><input id="collectionSearch" placeholder="物品、分类、来源、备注"></div>
       <div class="field"><label for="collectionFilterGame">游戏筛选</label><select id="collectionFilterGame"></select></div>
       <div class="field"><label for="collectionFilterCategory">分类筛选</label><select id="collectionFilterCategory"></select></div>
+      <div class="field"><label for="collectionFilterGroup">库存 / 专项</label><select id="collectionFilterGroup"></select></div>
       <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>当前无库存</option><option>已获得</option><option>已集齐</option></select></div>
     </div>
   </div>
+  <div id="collectionSpecial" class="card" hidden></div>
   <div id="collectionList" class="collection-grid"></div>
   <button class="btn" id="collectionMoreBtn" hidden style="margin:12px 0">加载更多</button>
   <div id="collectionDetail" class="card" hidden style="margin-top:18px">
@@ -643,7 +647,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.7";
+var APP_VERSION="0.6.8";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1463,11 +1467,12 @@ function saveCollection(e){
   if(collectionEditingId&&!r){showToast("物品已被删除，请重新新增");resetCollectionForm();return}
   if(!r){r=migrateRecord({id:uid(),kind:"collection",acquisitions:[]});records.unshift(r)}
   Object.assign(r,{game:game,name:name,category:$("collectionCategory").value.trim()||"其他",target:target,image:imageURL(image),note:$("collectionNote").value.trim()});
+  r.collection_group=$("collectionGroup").value.trim().slice(0,80);
   collectionSelectedId=r.id;resetAcquisitionForm();resetInventoryForm();resetCollectionForm();touchCollection(r);showToast("物品已保存，可继续记录获取");
 }
 function editCollection(id){
   var r=records.find(function(x){return x.id===id&&x.kind==="collection"});if(!r)return;
-  collectionEditingId=id;[["Game","game"],["Name","name"],["Category","category"],["Target","target"],["Image","image"],["Note","note"]].forEach(function(pair){$("collection"+pair[0]).value=r[pair[1]]||""});
+  collectionEditingId=id;[["Game","game"],["Name","name"],["Category","category"],["Group","collection_group"],["Target","target"],["Image","image"],["Note","note"]].forEach(function(pair){$("collection"+pair[0]).value=r[pair[1]]||""});
   $("collectionFormTitle").textContent="编辑物品";$("saveCollectionBtn").textContent="保存修改";$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});
 }
 function renderCatalogInfo(){
@@ -1494,11 +1499,17 @@ function importCollectionCatalog(){
 function renderCollections(){
   renderCatalogInfo();
   var list=collectionRecords();
+  var groups=uniq(list.map(function(r){return window.FPSCatalog.group(r)||"普通库存"}));
+  populate("collectionFilterGroup",groups,"全部库存与专项");
+  var selectedGroup=$("collectionFilterGroup").value;
+  var deck=window.FPSCatalog.deckProgress(list,collectionQuantity),hasDeck=list.some(function(r){return window.FPSCatalog.group(r)==="阿萨拉牌"});
+  $("collectionSpecial").hidden=!hasDeck||(selectedGroup&&selectedGroup!=="阿萨拉牌");
+  $("collectionSpecial").innerHTML='<h3>专项收集 · 阿萨拉牌</h3><p>当前持有 '+deck.owned+' / '+deck.total+' 种牌 · 牌盒：'+(deck.box?'已持有':'未持有')+'</p><p class="muted">按不同牌种计数，重复牌不增加进度；牌盒不计入 54 种。这里只记录当前持有，不代表已在游戏中收藏或交付。</p><details><summary>缺少 '+deck.missing.length+' 种牌</summary><p>'+deck.missing.map(esc).join(' · ')+'</p></details>';
   $("collectionStats").textContent=list.length+" 件物品 · 已集齐 "+list.filter(function(r){return collectionStatus(r)==="已集齐"}).length+" 件 · "+list.reduce(function(n,r){return n+r.acquisitions.length},0)+" 次获取";
   populate("collectionFilterGame",uniq(list.map(function(r){return r.game})),"全部游戏");populate("collectionFilterCategory",uniq(list.map(function(r){return r.category})),"全部分类");
   var q=$("collectionSearch").value.trim().toLowerCase();
-  var shown=list.filter(function(r){return (!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
-  $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 '+n+' / 目标 '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">获取明细</button><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
+var shown=list.filter(function(r){return (!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
+  $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+' · '+esc(window.FPSCatalog.group(r)||'普通库存')+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 '+n+' / 目标 '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">获取明细</button><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
   document.querySelectorAll("[data-stock]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.stock,false)}});
   document.querySelectorAll("[data-correct]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.correct,true)}});
   document.querySelectorAll("[data-acquire]").forEach(function(b){b.onclick=function(){quickAcquire(b.dataset.acquire)}});
@@ -1603,7 +1614,7 @@ $("collectionMoreBtn").addEventListener("click",function(){collectionVisibleLimi
 $("newCollectionBtn").addEventListener("click",function(){resetCollectionForm();$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});$("collectionGame").focus()});
 $("cancelCollectionBtn").addEventListener("click",resetCollectionForm);
 $("exportCollectionCsvBtn").addEventListener("click",exportCollectionCSV);
-["collectionSearch","collectionFilterGame","collectionFilterCategory","collectionFilterStatus"].forEach(function(id){$(id).addEventListener("input",renderCollections);$(id).addEventListener("change",renderCollections)});
+["collectionSearch","collectionFilterGame","collectionFilterCategory","collectionFilterGroup","collectionFilterStatus"].forEach(function(id){$(id).addEventListener("input",renderCollections);$(id).addEventListener("change",renderCollections)});
 
 $("saveBtn").addEventListener("click",saveForm);
 $("clearBtn").addEventListener("click",function(){clearForm(false,true)});
