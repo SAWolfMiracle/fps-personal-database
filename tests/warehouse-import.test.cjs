@@ -1,3 +1,4 @@
+process.env.TZ='Asia/Shanghai';
 const {test}=require('node:test'),assert=require('node:assert/strict'),api=require('../warehouse-import.js'),catalog=require('../collection-catalog.json'),fixtures=require('./fixtures/warehouse-crops.json');
 const templates=require('../warehouse-templates.json').items.map(t=>({...t,feature:Array.from(Buffer.from(t.feature,'base64'))}));
 const stamp='2026-10-11T00:00:00.000Z',item=catalog.items.find(i=>i.name==='万足金条');
@@ -21,3 +22,6 @@ test('snapshot updates only unowned catalog records and preserves owned history,
 });
 
 test('all eight real crops include the expected item among the three review candidates',()=>{for(const r of fixtures.samples){const expected=r.name==='金条'?'万足金条':r.name;const result=api.rank(api.descriptor(Buffer.from(r.pixels,'base64'),96,96),templates,3);assert.ok(result.some(t=>catalog.items.find(i=>i.item_id===t.item_id).name===expected),expected)}});
+
+test('snapshot date uses client calendar day instead of the UTC date',()=>{const result=api.plan(catalog,[{checked:true,item_id:item.item_id,quantity:1}],[],'tz',()=> 'new','2026-10-10T19:45:00.000Z');assert.equal(result.added[0].snapshot_date,'2026-10-11')});
+test('overlapping checked crops are rejected before counts can be duplicated',()=>{const row={checked:true,item_id:item.item_id,quantity:1,box:{x:0,y:0,w:100,h:100}};assert.throws(()=>api.plan(catalog,[row,{...row,box:{x:2,y:2,w:100,h:100}}],[],'overlap',()=> 'new',stamp),/重叠/)});
