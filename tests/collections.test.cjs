@@ -84,3 +84,10 @@ test('invalid optional details and missing edited entries never create an extra 
  element('acquisitionDate').value='';element('acquisitionQuantity').value='-1';api.saveAcquisition(submit);assert.equal(item.acquisitions.length,0);
  api.quickAcquire(item.id);api.editAcquisition(item.id,item.acquisitions[0].id);item.acquisitions=[];api.saveAcquisition(submit);assert.equal(item.acquisitions.length,0);
 });
+
+test('edits during an in-flight cloud write stay dirty and are sent on the next sync',async()=>{
+ const {api}=app();api.workspace('user_inflight');api.setCloudUser({id:'user_inflight'});const item=api.migrateRecord({id:'inflight',kind:'collection',name:'同步中修改'});api.setRecords([item]);let savedPayload;
+ api.setClient({from:()=>({select:async()=>({data:[]})}),rpc:async(name,args)=>{savedPayload=JSON.parse(JSON.stringify(args.p_payload));item.acquisitions.push({id:'late',quantity:1,date:'',cost:null});item.local_dirty=true;return {data:[{applied:true,current_revision:1}]}}});
+ await api.cloudSync({silent:true});assert.equal(savedPayload.acquisitions.length,0);assert.equal(item.local_dirty,true);assert.equal(item.cloud_revision,1);
+ api.setClient({from:()=>({select:async()=>({data:[]})}),rpc:async(name,args)=>{savedPayload=args.p_payload;return {data:[{applied:true,current_revision:2}]}}});await api.cloudSync({silent:true});assert.equal(savedPayload.acquisitions.length,1);assert.equal(item.local_dirty,false);
+});

@@ -1293,7 +1293,7 @@ async function cloudSync(opts){
   opts=opts||{};if(!cloudConfigured()||!cloudClient){if(!opts.silent)showToast("云端尚未配置");return}
   if(!cloudUser){if(!opts.silent)showToast("请先登录云身份");return}
   if(!navigator.onLine){if(!opts.silent)showToast("当前离线，修改已保存在本机");return}
-  if(cloudBusy)return;cloudBusy=true;cloudSyncProgress="";renderCloudPanel();var conflicts=0;
+  if(cloudBusy)return;cloudBusy=true;cloudSyncProgress="";renderCloudPanel();var conflicts=0,pendingLocalEdits=false;
   try{
     var pulled=await cloudClient.from("fps_records").select("id,payload,revision,server_updated_at,deleted_at,share_community");if(pulled.error)throw pulled.error;
     var remote=pulled.data||[],remoteMap={};remote.forEach(function(row){remoteMap[row.id]=row});
@@ -1315,10 +1315,10 @@ async function cloudSync(opts){
     });
     var dirty=records.filter(function(r){return r.local_dirty});
     for(var i=0;i<dirty.length;i++){
-      var rec=dirty[i],answer=await pushRecordWithRevision(rec,share);if(!answer)continue;
+      var rec=dirty[i],sent=JSON.parse(JSON.stringify(rec)),sentPayload=JSON.stringify(cloudPayload(sent)),answer=await pushRecordWithRevision(sent,share);if(!answer)continue;
       if(answer.applied){
         var live=records.find(function(r){return r.id===rec.id});
-        if(live){live.cloud_revision=num(answer.current_revision);live.cloud_server_updated_at=answer.current_server_updated_at||"";live.local_dirty=false}
+        if(live){live.cloud_revision=num(answer.current_revision);live.cloud_server_updated_at=answer.current_server_updated_at||"";live.local_dirty=JSON.stringify(cloudPayload(live))!==sentPayload;if(live.local_dirty)pendingLocalEdits=true}
       }else{
         makeConflictCopy(rec);
         if(answer.current_deleted_at)records=records.filter(function(r){return r.id!==rec.id});
@@ -1343,7 +1343,7 @@ async function cloudSync(opts){
     persist();renderAll();localStorage.setItem(workspaceLastSyncKey(),isoNow());renderCloudPanel();refreshCommunityStats();
     if(conflicts)showToast("同步完成，保留了 "+conflicts+" 个冲突副本");else if(!opts.silent)showToast("云同步完成")
   }catch(err){setCloudBadge("同步失败","cloud-error");setCloudMessage("同步失败："+(err&&err.message?err.message:"未知错误"));if(!opts.silent)showToast("同步失败")}
-  finally{cloudBusy=false;cloudSyncProgress="";renderCloudPanel()}
+  finally{cloudBusy=false;cloudSyncProgress="";renderCloudPanel();if(pendingLocalEdits&&records.some(function(r){return r.local_dirty}))scheduleCloudSync(1500)}
 }
 async function refreshCommunityStats(){
   if(!$("anaCommunity"))return;
