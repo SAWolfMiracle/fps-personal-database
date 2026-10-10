@@ -1,5 +1,5 @@
-const CACHE="fps-db-v6-3-1";
-const CORE=["./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
+const CACHE="fps-db-v6-4";
+const CORE=["./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
@@ -20,7 +20,7 @@ self.addEventListener("fetch",event=>{
   const url=new URL(req.url);
   if(url.origin!==self.location.origin) return;
 
-  if(req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js") || url.pathname.endsWith("/ocr-import.js") || url.pathname.endsWith("/collection-catalog.js") || url.pathname.endsWith("/collection-catalog.json")){
+  if(req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js") || url.pathname.endsWith("/warehouse-import.js") || url.pathname.endsWith("/warehouse-templates.json") || url.pathname.endsWith("/ocr-import.js") || url.pathname.endsWith("/collection-catalog.js") || url.pathname.endsWith("/collection-catalog.json")){
     event.respondWith(
       fetch(req).then(resp=>{
         const copy=resp.clone();

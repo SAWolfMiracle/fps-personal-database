@@ -275,7 +275,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.3</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.4</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -516,6 +516,20 @@ tbody tr:hover td{background:#101821}
 
 <section id="data" class="section">
   <div class="card">
+    <h2>仓库图标识别 · 实验版</h2>
+    <p class="muted">截图在本机处理，不上传。先框选仓库区域，再按网格生成候选；多格物品可单独框选。相似度不是准确率，共用图标无法唯一识别，所有结果必须核对。暂不自动读取堆叠数量，不支持多张截图自动去重。</p>
+    <div class="field"><label for="warehouseFile">仓库截图（不超过 20 MB）</label><input id="warehouseFile" type="file" accept="image/png,image/jpeg,image/webp"></div>
+    <canvas id="warehouseCanvas" hidden style="width:100%;height:auto;touch-action:none;border:1px solid #60d49b;cursor:crosshair" aria-label="拖动框选仓库区域或单件物品"></canvas>
+    <div class="collection-fields"><div class="field"><label for="warehouseCols">框内列数</label><input id="warehouseCols" type="number" min="1" max="128" value="8"></div><div class="field"><label for="warehouseRows">框内行数</label><input id="warehouseRows" type="number" min="1" max="128" value="8"></div></div>
+    <label><input id="warehouseTrim" type="checkbox" checked> 忽略格子顶部小字（物品被截断时取消）</label>
+    <div class="actions" style="margin-top:12px"><button class="btn primary" id="warehouseScan">按网格生成候选</button><button class="btn" id="warehouseSingle">框选单件，追加候选</button><button class="btn" id="warehouseClearReview">清除候选</button><button class="btn ghost" id="warehouseReset">清除截图</button></div>
+    <p id="warehouseStatus" class="muted" role="status" aria-live="polite"></p>
+    <datalist id="warehouseNames"></datalist><div id="warehouseReview" class="collection-grid"></div>
+    <p class="muted">只保存勾选并核对的库存快照；不会生成历史获取时间。已有获取历史或非零库存的物品会跳过，未识别物品不会清零，同一截图不会重复导入。若物品跨格，请用单件框选，避免重复计数。</p>
+    <button class="btn primary" id="warehouseSave" disabled>保存已核对的库存快照</button>
+  </div>
+
+  <div class="card">
     <h2>截图识别导入</h2>
     <p class="muted">在本机识别中英文文字，核对后保存。截图不上传、不随记录同步；首次使用需联网下载模型。一次处理一局结算或一件物品。</p>
     <div class="collection-fields">
@@ -610,13 +624,14 @@ tbody tr:hover td{background:#101821}
 <div class="toast" id="toast"><span id="toastText"></span><button id="toastAction" hidden>撤销</button></div>
 
 <script src="./ocr-import.js"></script>
+<script src="./warehouse-import.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./cloud-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.3";
+var APP_VERSION="0.6.4";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -630,7 +645,7 @@ var tabs=[
   ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","database","收藏"],["data","database","数据"]
 ];
 var records=[];
-var screenshotImporter=null;
+var screenshotImporter=null,warehouseImporter=null;
 var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null;
 var collectionCatalog=null,catalogLoading=false,collectionVisibleLimit=24;
 var editingId=null;
@@ -1179,7 +1194,7 @@ function renderCloudPanel(){
 function activateWorkspaceForUser(user){
   var next=workspaceForUser(user);
   if(activeWorkspace===next)return;
-  saveDraftNow();if(screenshotImporter)screenshotImporter.clear();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();resetAcquisitionForm();
+  saveDraftNow();if(screenshotImporter)screenshotImporter.clear();if(warehouseImporter)warehouseImporter.clear();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();resetAcquisitionForm();
   clearForm(false,false);renderAll();restoreDraft()
 }
 async function initCloud(){
@@ -1441,7 +1456,7 @@ function renderCollections(){
 function renderCollectionDetail(){
   var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"});$("collectionDetail").hidden=!r;if(!r)return;
   $("collectionDetailTitle").textContent=r.name+" · 获取记录";$("collectionDetailSummary").textContent=collectionQuantity(r)+" / "+r.target+" · 已填写花费合计 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
-  $("acquisitionList").innerHTML=(r.starting_quantity!=null&&r.import_source==="screenshot"?'<div class="collection-log"><div><b>初始数量快照 · '+num(r.starting_quantity)+'</b><p class="muted">'+esc(r.snapshot_date||'')+' 导入确认 · 不代表历史获取时间、来源或花费</p></div></div>':'')+r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date||'日期未填写')+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · '+(a.cost==null?'花费未填写':'花费 '+num(a.cost).toFixed(2))+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><div class="actions"><button class="btn" data-acquisition-edit="'+esc(a.id)+'">补充 / 编辑</button><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
+  $("acquisitionList").innerHTML=(r.starting_quantity!=null&&(r.import_source==="screenshot"||r.import_source==="warehouse")?'<div class="collection-log"><div><b>初始数量快照 · '+num(r.starting_quantity)+'</b><p class="muted">'+esc(r.snapshot_date||'')+' 导入确认 · 不代表历史获取时间、来源或花费</p></div></div>':'')+r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date||'日期未填写')+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · '+(a.cost==null?'花费未填写':'花费 '+num(a.cost).toFixed(2))+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><div class="actions"><button class="btn" data-acquisition-edit="'+esc(a.id)+'">补充 / 编辑</button><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
   document.querySelectorAll("[data-acquisition-edit]").forEach(function(b){b.onclick=function(){editAcquisition(r.id,b.dataset.acquisitionEdit)}});
   document.querySelectorAll("[data-acquisition-delete]").forEach(function(b){b.onclick=function(){deleteAcquisition(r.id,b.dataset.acquisitionDelete)}});
 }
@@ -1524,6 +1539,13 @@ $("communityOptIn").addEventListener("change",function(){
 });
 window.addEventListener("online",function(){renderCloudPanel();scheduleCloudSync(300);refreshCommunityStats()});
 window.addEventListener("offline",renderCloudPanel);
+
+if(window.FPSWarehouse)warehouseImporter=window.FPSWarehouse.mount({onSave:function(catalog,review,hash){
+  var plan=window.FPSWarehouse.plan(catalog,review,records,hash,uid,isoNow()),previous=records;
+  var updates=new Map(plan.updated.map(function(r){return [r.id,r]}));records=plan.added.map(migrateRecord).concat(records.map(function(r){return updates.has(r.id)?migrateRecord(updates.get(r.id)):r}));
+  try{localStorage.setItem(workspaceRecordsKey(),JSON.stringify(records))}catch(e){records=previous;throw Error("空间不足，未保存。请先导出备份并释放空间。")}
+  renderAll();scheduleCloudSync();return "已新增 "+plan.added.length+" 件，更新未获得目录 "+plan.updated.length+" 件；跳过已有库存、获取历史或重复截图 "+plan.skipped.length+" 件"+(plan.skipped.length?"（"+plan.skipped.join("、")+"）":"");
+}});
 
 if(window.FPSOCR)screenshotImporter=window.FPSOCR.mount({onSave:function(data){
   if(data.import_hash&&records.some(function(r){return r.import_hash===data.import_hash&&r.kind===data.kind&&(data.kind!=="collection"||r.name===data.name)})){showToast("此截图的这条记录已导入，未重复保存");return false}

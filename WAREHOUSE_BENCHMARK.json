@@ -1,0 +1,165 @@
+{
+  "sources": [
+    "https://cs.52pk.com/shtml/7609592.shtml",
+    "https://shouji.vmos.cn/guides/sjz/63307.html"
+  ],
+  "templateItems": 533,
+  "sampleCount": 8,
+  "top1": 4,
+  "top3": 8,
+  "limitation": "Eight hand-selected crops from two real screenshots, not a representative accuracy benchmark. No auto-save.",
+  "rows": [
+    {
+      "expected": "量子存储",
+      "candidates": [
+        {
+          "name": "数据密钥",
+          "similarity": 0.887
+        },
+        {
+          "name": "空白存储",
+          "similarity": 0.887
+        },
+        {
+          "name": "量子存储",
+          "similarity": 0.887
+        }
+      ],
+      "top1": false,
+      "top3": true
+    },
+    {
+      "expected": "心脏支架",
+      "candidates": [
+        {
+          "name": "心脏支架",
+          "similarity": 0.968
+        },
+        {
+          "name": "建筑图纸1号",
+          "similarity": 0.906
+        },
+        {
+          "name": "潮汐监狱地图-3",
+          "similarity": 0.899
+        }
+      ],
+      "top1": true,
+      "top3": true
+    },
+    {
+      "expected": "咖啡",
+      "candidates": [
+        {
+          "name": "人像照片",
+          "similarity": 0.767
+        },
+        {
+          "name": "咖啡",
+          "similarity": 0.763
+        },
+        {
+          "name": "建筑图纸3号",
+          "similarity": 0.761
+        }
+      ],
+      "top1": false,
+      "top3": true
+    },
+    {
+      "expected": "万足金条",
+      "candidates": [
+        {
+          "name": "万足金条",
+          "similarity": 0.924
+        },
+        {
+          "name": "生津柠檬茶",
+          "similarity": 0.868
+        },
+        {
+          "name": "印象派名画",
+          "similarity": 0.852
+        }
+      ],
+      "top1": true,
+      "top3": true
+    },
+    {
+      "expected": "CPU",
+      "candidates": [
+        {
+          "name": "存储卡",
+          "similarity": 0.88
+        },
+        {
+          "name": "CPU",
+          "similarity": 0.876
+        },
+        {
+          "name": "加密路由器",
+          "similarity": 0.863
+        }
+      ],
+      "top1": false,
+      "top3": true
+    },
+    {
+      "expected": "手机",
+      "candidates": [
+        {
+          "name": "手机",
+          "similarity": 0.762
+        },
+        {
+          "name": "U盘",
+          "similarity": 0.733
+        },
+        {
+          "name": "含氟牙膏",
+          "similarity": 0.728
+        }
+      ],
+      "top1": true,
+      "top3": true
+    },
+    {
+      "expected": "信号棒",
+      "candidates": [
+        {
+          "name": "鳄鱼血样",
+          "similarity": 0.803
+        },
+        {
+          "name": "信号棒",
+          "similarity": 0.791
+        },
+        {
+          "name": "军用炮弹",
+          "similarity": 0.768
+        }
+      ],
+      "top1": false,
+      "top3": true
+    },
+    {
+      "expected": "可编程处理器",
+      "candidates": [
+        {
+          "name": "可编程处理器",
+          "similarity": 0.886
+        },
+        {
+          "name": "人像照片",
+          "similarity": 0.838
+        },
+        {
+          "name": "HIFI声卡",
+          "similarity": 0.824
+        }
+      ],
+      "top1": true,
+      "top3": true
+    }
+  ]
+}
