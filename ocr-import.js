@@ -26,7 +26,7 @@ function mount(options){
  function setBusy(value){busy=value;['ocrRun','ocrParse','ocrSave','ocrType','ocrFile','ocrInvert'].forEach(function(id){$(id).disabled=value});$('ocrCancel').hidden=!value}
  function clearFields(){fieldNames.forEach(function(key){$('ocr_'+key).value=''});$('ocr_target').value='1'}
  function clear(){epoch++;if(worker){worker.terminate().catch(function(){});worker=null}setBusy(false);if(blobURL)URL.revokeObjectURL(blobURL);blobURL='';image=null;hash='';saved=false;$('ocrFile').value='';$('ocrPreview').removeAttribute('src');$('ocrPreview').hidden=true;$('ocrText').value='';$('ocrReview').hidden=true;clearFields();status('选择一张结算或物品截图开始。')}
- function typeChanged(){var isCollection=$('ocrType').value==='collection';document.querySelectorAll('[data-ocr-kind]').forEach(function(e){e.hidden=e.dataset.ocrKind!==(isCollection?'collection':'match')});$('ocrReview').hidden=true;clearFields();saved=false}
+ function typeChanged(){var isCollection=$('ocrType').value==='collection';document.querySelector('label[for="ocr_game"]').textContent=isCollection?'游戏（选填）':'游戏（必填）';document.querySelectorAll('[data-ocr-kind]').forEach(function(e){e.hidden=e.dataset.ocrKind!==(isCollection?'collection':'match')});$('ocrReview').hidden=true;clearFields();saved=false}
  function parseReview(){clearFields();var data=parse($('ocrText').value);Object.keys(data).forEach(function(key){if($('ocr_'+key))$('ocr_'+key).value=data[key]});$('ocrReview').hidden=false;status('已提取有明确标签的字段。未识别或有冲突的字段留空，请对照原图核对。')}
  $('ocrFile').addEventListener('change',async function(){
   clearFields();$('ocrReview').hidden=true;$('ocrText').value='';image=null;hash='';saved=false;if(blobURL)URL.revokeObjectURL(blobURL);blobURL='';$('ocrPreview').removeAttribute('src');$('ocrPreview').hidden=true;var ticket=++epoch;var file=this.files[0];if(!file)return;
@@ -51,10 +51,10 @@ function mount(options){
   finally{if(ticket===epoch){if(worker){await worker.terminate().catch(function(){});worker=null}setBusy(false)}}
  });
  $('ocrForm').addEventListener('submit',function(e){
-  e.preventDefault();if(busy||saved)return;var type=$('ocrType').value,game=$('ocr_game').value.trim();if(!game){status('请填写游戏名称。');return}
+  e.preventDefault();if(busy||saved)return;var type=$('ocrType').value,game=$('ocr_game').value.trim()||(type==='collection'?'未分类游戏':'');if(!game){status('请填写游戏名称。');return}
   var data={kind:type,game:game,note:$('ocr_note').value.trim(),import_source:'screenshot',import_hash:hash,imported_at:new Date().toISOString()};
   if(type==='collection'){
-   var name=$('ocr_name').value.trim(),quantity=Number($('ocr_quantity').value),target=Number($('ocr_target').value);
+   var name=$('ocr_name').value.trim(),quantity=Number($('ocr_quantity').value),target=Number($('ocr_target').value||1);
    if(!name||$('ocr_quantity').value===''||!Number.isSafeInteger(quantity)||quantity<0||!Number.isSafeInteger(target)||target<1){status('请核对物品名称、当前数量和目标数量。');return}
    Object.assign(data,{name:name,category:$('ocr_category').value.trim()||'其他',target:target,starting_quantity:quantity,snapshot_date:new Date().toLocaleDateString('sv-SE'),acquisitions:[]});
   }else{

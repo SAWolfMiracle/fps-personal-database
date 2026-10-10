@@ -5,12 +5,12 @@ const assert=require('node:assert/strict');
 const vm=require('node:vm');
 function app(){
  const fields=new Map(),store=new Map();
- const element=id=>{if(!fields.has(id))fields.set(id,{value:'',innerHTML:'',textContent:'',hidden:false,reset(){},classList:{add(){},remove(){}}});return fields.get(id)};
+ const element=id=>{if(!fields.has(id))fields.set(id,{value:'',innerHTML:'',textContent:'',hidden:false,reset(){},scrollIntoView(){},classList:{add(){},remove(){}}});return fields.get(id)};
  const html=readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
  source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
  source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};
- window.test={cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
+ window.test={cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
  setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)}};})();`;
  const window={FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
  vm.runInNewContext(source,context);return {api:window.test,window,element,store};
@@ -62,4 +62,25 @@ test('an interrupted bulk sync retains acknowledged revisions on disk for resume
  const {api}=app();api.workspace('user_sync_test');api.setCloudUser({id:'user_sync_test'});api.setRecords([api.migrateRecord({id:'first',kind:'collection',name:'first'}),api.migrateRecord({id:'second',kind:'collection',name:'second'})]);api.persist();let pushed=0;
  api.setClient({from:()=>({select:async()=>({data:[]})}),rpc:async()=>{if(++pushed===2)throw Error('network interrupted');return {data:[{applied:true,current_revision:1}]}}});
  await api.cloudSync({silent:true});api.workspace('user_sync_test');const rows=api.getRecords();assert.equal(rows[0].cloud_revision,1);assert.equal(rows[0].local_dirty,false);assert.equal(rows[1].cloud_revision,0);assert.equal(rows[1].local_dirty,true);
+});
+
+test('name-only creation and empty acquisition fields use defaults without fabricating dates or costs',()=>{
+ const {api,element}=app(),submit={preventDefault(){}};element('collectionName').value='仅名称';api.saveCollection(submit);
+ const item=api.getRecords()[0];assert.equal(item.game,'未分类游戏');assert.equal(item.target,1);
+ api.saveAcquisition(submit);assert.equal(item.acquisitions.length,1);assert.equal(item.acquisitions[0].quantity,1);assert.equal(item.acquisitions[0].date,'');assert.equal(item.acquisitions[0].cost,null);
+ const restored=api.remoteToLocal({id:item.id,revision:1,payload:JSON.parse(JSON.stringify(api.cloudPayload(item)))});assert.equal(restored.acquisitions[0].date,'');assert.equal(restored.acquisitions[0].cost,null);
+});
+test('one-click acquisition supports exact undo; backfill edits original entry without duplicating progress',()=>{
+ const {api,element,window}=app(),submit={preventDefault(){}};const item=api.migrateRecord({id:'quick',kind:'collection',name:'一键'});api.setRecords([item]);api.quickAcquire(item.id);
+ assert.equal(api.collectionQuantity(item),1);const a=item.acquisitions[0],undo=window.undo;assert.equal(a.date,'');assert.equal(a.cost,null);
+ api.editAcquisition(item.id,a.id);element('acquisitionDate').value='2026-10-10';element('acquisitionCost').value='0';element('acquisitionNote').value='后补';api.saveAcquisition(submit);
+ assert.equal(item.acquisitions.length,1);assert.equal(item.acquisitions[0].id,a.id);assert.equal(api.collectionQuantity(item),1);assert.equal(a.date,'2026-10-10');assert.equal(a.cost,0);
+ undo();assert.equal(api.collectionQuantity(item),0);
+ api.quickAcquire(item.id);const guardedUndo=window.undo;api.workspace('user_other');guardedUndo();assert.equal(api.getRecords().length,0);api.workspace('guest');assert.equal(api.collectionQuantity(api.getRecords()[0]),1);
+});
+test('invalid optional details and missing edited entries never create an extra acquisition',()=>{
+ const {api,element}=app(),submit={preventDefault(){}};const item=api.migrateRecord({id:'invalid',kind:'collection',name:'检查'});api.setRecords([item]);api.select(item.id);
+ element('acquisitionDate').value='2026-02-30';api.saveAcquisition(submit);assert.equal(item.acquisitions.length,0);
+ element('acquisitionDate').value='';element('acquisitionQuantity').value='-1';api.saveAcquisition(submit);assert.equal(item.acquisitions.length,0);
+ api.quickAcquire(item.id);api.editAcquisition(item.id,item.acquisitions[0].id);item.acquisitions=[];api.saveAcquisition(submit);assert.equal(item.acquisitions.length,0);
 });
