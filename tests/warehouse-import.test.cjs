@@ -25,3 +25,22 @@ test('all eight real crops include the expected item among the three review cand
 
 test('snapshot date uses client calendar day instead of the UTC date',()=>{const result=api.plan(catalog,[{checked:true,item_id:item.item_id,quantity:1}],[],'tz',()=> 'new','2026-10-10T19:45:00.000Z');assert.equal(result.added[0].snapshot_date,'2026-10-11')});
 test('overlapping checked crops are rejected before counts can be duplicated',()=>{const row={checked:true,item_id:item.item_id,quantity:1,box:{x:0,y:0,w:100,h:100}};assert.throws(()=>api.plan(catalog,[row,{...row,box:{x:2,y:2,w:100,h:100}}],[],'overlap',()=> 'new',stamp),/重叠/)});
+
+function multiRow(id,source,extra={}){return {id,source_id:source,source_hash:'hash-'+source,item_id:item.item_id,quantity:2,checked:true,box:{x:0,y:0,w:100,h:100},...extra}}
+test('cross-image identical coordinates are allowed but same-item overlap decisions are required',()=>{
+ const rows=[multiRow('a','image-a'),multiRow('b','image-b')];assert.throws(()=>api.plan(catalog,rows,[],'batch',()=> 'new',stamp),/逐项确认/);
+ rows.forEach(r=>r.overlap_review='unique');const result=api.plan(catalog,rows,[],'batch',()=> 'new',stamp);assert.equal(result.added[0].starting_quantity,4);assert.equal(result.duplicates,0);assert.deepEqual(result.added[0].import_hashes,['hash-image-a','hash-image-b']);
+});
+test('confirmed duplicates across three images count exactly once including duplicate chains',()=>{
+ const rows=[multiRow('a','image-a',{overlap_review:'unique'}),multiRow('b','image-b',{duplicate_of:'a'}),multiRow('c','image-c',{duplicate_of:'b'})];const result=api.plan(catalog,rows,[],'batch',()=> 'new',stamp);assert.equal(result.added[0].starting_quantity,2);assert.equal(result.duplicates,2);assert.equal(result.added[0].import_hashes.length,3);
+});
+test('unchecked references, cycles, different quantities, same-image and different-item duplicates are rejected',()=>{
+ const base=multiRow('a','image-a',{overlap_review:'unique'}),dupe=multiRow('b','image-b',{duplicate_of:'a'});
+ for(const rows of [[{...base,checked:false},dupe],[{...base,overlap_review:'',duplicate_of:'b'},dupe],[base,{...dupe,quantity:3}],[base,{...dupe,source_id:'image-a'}],[base,{...dupe,item_id:catalog.items.find(i=>i.item_id!==item.item_id).item_id}],[base,{...dupe,overlap_review:'unique'}]])assert.throws(()=>api.plan(catalog,rows,[],'batch',()=> 'new',stamp));
+});
+test('separate same-item stacks remain independent while a repeated viewport stack is merged',()=>{
+ const rows=[multiRow('a','image-a',{overlap_review:'unique'}),multiRow('b','image-a',{overlap_review:'unique',quantity:3,box:{x:120,y:0,w:100,h:100}}),multiRow('c','image-b',{duplicate_of:'a'})];const result=api.plan(catalog,rows,[],'batch',()=> 'new',stamp);assert.equal(result.added[0].starting_quantity,5);assert.equal(result.duplicates,1);
+});
+test('per-image provenance blocks reimport even with a different batch identifier',()=>{
+ const rows=[multiRow('a','image-a',{overlap_review:'unique'}),multiRow('b','image-b',{duplicate_of:'a'})],record={id:'old',kind:'collection',game:catalog.game,catalog_item_id:item.item_id,starting_quantity:0,acquisitions:[],inventory_events:[],import_hashes:['hash-image-b']};const result=api.plan(catalog,rows,[record],'different-batch',()=> 'new',stamp);assert.equal(result.skipped.length,1);assert.equal(result.updated.length,0);
+});

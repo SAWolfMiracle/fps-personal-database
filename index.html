@@ -275,7 +275,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.6</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.7</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -527,15 +527,16 @@ tbody tr:hover td{background:#101821}
 <section id="data" class="section">
   <div class="card">
     <h2>仓库图标识别 · 实验版</h2>
-    <p class="muted">截图在本机处理，不上传。先框选仓库区域，再按网格生成候选；多格物品可单独框选。相似度不是准确率，共用图标无法唯一识别，所有结果必须核对。暂不自动读取堆叠数量，不支持多张截图自动去重。</p>
-    <div class="field"><label for="warehouseFile">仓库截图（不超过 20 MB）</label><input id="warehouseFile" type="file" accept="image/png,image/jpeg,image/webp"></div>
+    <p class="muted">截图在本机处理，不上传。先框选仓库区域，再按网格生成候选；多格物品可单独框选。相似度不是准确率，共用图标无法唯一识别，所有结果必须核对。暂不自动读取堆叠数量。支持多图汇总；同类物品跨图出现时需人工确认是否重复。重新扫描只替换当前图候选；新增或改名候选后需重新核对重叠。</p>
+    <div class="field"><label for="warehouseFile">添加仓库截图（可多选，每张不超过 20 MB）</label><input id="warehouseFile" type="file" accept="image/png,image/jpeg,image/webp" multiple></div>
+    <p id="warehouseBatchInfo" class="muted"></p><div class="field"><label for="warehousePages">当前截图</label><select id="warehousePages"></select></div><button class="btn" id="warehouseRemovePage">移除当前截图</button>
     <canvas id="warehouseCanvas" hidden style="width:100%;height:auto;touch-action:none;border:1px solid #60d49b;cursor:crosshair" aria-label="拖动框选仓库区域或单件物品"></canvas>
     <div class="collection-fields"><div class="field"><label for="warehouseCols">框内列数</label><input id="warehouseCols" type="number" min="1" max="128" value="8"></div><div class="field"><label for="warehouseRows">框内行数</label><input id="warehouseRows" type="number" min="1" max="128" value="8"></div></div>
     <label><input id="warehouseTrim" type="checkbox" checked> 忽略格子顶部小字（物品被截断时取消）</label>
-    <div class="actions" style="margin-top:12px"><button class="btn primary" id="warehouseScan">按网格生成候选</button><button class="btn" id="warehouseSingle">框选单件，追加候选</button><button class="btn" id="warehouseClearReview">清除候选</button><button class="btn ghost" id="warehouseReset">清除截图</button></div>
+    <div class="actions" style="margin-top:12px"><button class="btn primary" id="warehouseScan">按网格生成候选</button><button class="btn" id="warehouseSingle">框选单件，追加候选</button><button class="btn" id="warehouseClearReview">清除当前图候选</button><button class="btn ghost" id="warehouseReset">清除全部截图</button></div>
     <p id="warehouseStatus" class="muted" role="status" aria-live="polite"></p>
     <datalist id="warehouseNames"></datalist><div id="warehouseReview" class="collection-grid"></div>
-    <p class="muted">只保存勾选并核对的库存快照；不会生成历史获取时间。已有获取历史或非零库存的物品会跳过，未识别物品不会清零，同一截图不会重复导入。若物品跨格，请用单件框选，避免重复计数。</p>
+    <p class="muted">只保存勾选并核对的库存快照；不会生成历史获取时间。已有获取历史或非零库存的物品会跳过，未识别物品不会清零，相同图片文件会跳过。跨图重复项只计一次，不同位置的同类物品累加；重复项必须关联已勾选且数量一致的候选。若物品跨格，请用单件框选，避免重复计数。</p>
     <button class="btn primary" id="warehouseSave" disabled>保存已核对的库存快照</button>
   </div>
 
@@ -642,7 +643,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.6";
+var APP_VERSION="0.6.7";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1635,7 +1636,7 @@ if(window.FPSWarehouse)warehouseImporter=window.FPSWarehouse.mount({onSave:funct
   var plan=window.FPSWarehouse.plan(catalog,review,records,hash,uid,isoNow()),previous=records;
   var updates=new Map(plan.updated.map(function(r){return [r.id,r]}));records=plan.added.map(migrateRecord).concat(records.map(function(r){return updates.has(r.id)?migrateRecord(updates.get(r.id)):r}));
   try{localStorage.setItem(workspaceRecordsKey(),JSON.stringify(records))}catch(e){records=previous;throw Error("空间不足，未保存。请先导出备份并释放空间。")}
-  renderAll();scheduleCloudSync();return "已新增 "+plan.added.length+" 件，更新未获得目录 "+plan.updated.length+" 件；跳过已有库存、获取历史或重复截图 "+plan.skipped.length+" 件"+(plan.skipped.length?"（"+plan.skipped.join("、")+"）":"");
+  renderAll();scheduleCloudSync();return "已新增 "+plan.added.length+" 件，更新未获得目录 "+plan.updated.length+" 件；合并跨图重复候选 "+plan.duplicates+" 个；跳过已有库存、获取历史或重复截图 "+plan.skipped.length+" 件"+(plan.skipped.length?"（"+plan.skipped.join("、")+"）":"");
 }});
 
 if(window.FPSOCR)screenshotImporter=window.FPSOCR.mount({onSave:function(data){
