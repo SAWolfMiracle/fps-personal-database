@@ -10,9 +10,9 @@ function app(){
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
  source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
  source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};
- window.test={cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
+ window.test={planBackupImport,applyBackupImport,cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
  setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)}};})();`;
- const window={FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
+ const window={FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>{if(store.failWrites)throw Error("storage full");store.set(k,v)},removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,console};
  vm.runInNewContext(source,context);return {api:window.test,window,element,store};
 }
 test('old backups stay matches; collection acquisitions survive cloud and JSON round trips',()=>{
@@ -60,7 +60,7 @@ test('catalog bulk import persists a workspace atomically, preserves progress, a
 
 test('an interrupted bulk sync retains acknowledged revisions on disk for resume',async()=>{
  const {api}=app();api.workspace('user_sync_test');api.setCloudUser({id:'user_sync_test'});api.setRecords([api.migrateRecord({id:'first',kind:'collection',name:'first'}),api.migrateRecord({id:'second',kind:'collection',name:'second'})]);api.persist();let pushed=0;
- api.setClient({from:()=>({select:async()=>({data:[]})}),rpc:async()=>{if(++pushed===2)throw Error('network interrupted');return {data:[{applied:true,current_revision:1}]}}});
+ api.setClient({from:()=>({select:()=>({order:()=>({range:async()=>({data:[]})})})}),rpc:async()=>{if(++pushed===2)throw Error('network interrupted');return {data:[{applied:true,current_revision:1}]}}});
  await api.cloudSync({silent:true});api.workspace('user_sync_test');const rows=api.getRecords();assert.equal(rows[0].cloud_revision,1);assert.equal(rows[0].local_dirty,false);assert.equal(rows[1].cloud_revision,0);assert.equal(rows[1].local_dirty,true);
 });
 
@@ -87,7 +87,52 @@ test('invalid optional details and missing edited entries never create an extra 
 
 test('edits during an in-flight cloud write stay dirty and are sent on the next sync',async()=>{
  const {api}=app();api.workspace('user_inflight');api.setCloudUser({id:'user_inflight'});const item=api.migrateRecord({id:'inflight',kind:'collection',name:'同步中修改'});api.setRecords([item]);let savedPayload;
- api.setClient({from:()=>({select:async()=>({data:[]})}),rpc:async(name,args)=>{savedPayload=JSON.parse(JSON.stringify(args.p_payload));item.acquisitions.push({id:'late',quantity:1,date:'',cost:null});item.local_dirty=true;return {data:[{applied:true,current_revision:1}]}}});
+ api.setClient({from:()=>({select:()=>({order:()=>({range:async()=>({data:[]})})})}),rpc:async(name,args)=>{savedPayload=JSON.parse(JSON.stringify(args.p_payload));item.acquisitions.push({id:'late',quantity:1,date:'',cost:null});item.local_dirty=true;return {data:[{applied:true,current_revision:1}]}}});
  await api.cloudSync({silent:true});assert.equal(savedPayload.acquisitions.length,0);assert.equal(item.local_dirty,true);assert.equal(item.cloud_revision,1);
- api.setClient({from:()=>({select:async()=>({data:[]})}),rpc:async(name,args)=>{savedPayload=args.p_payload;return {data:[{applied:true,current_revision:2}]}}});await api.cloudSync({silent:true});assert.equal(savedPayload.acquisitions.length,1);assert.equal(item.local_dirty,false);
+ api.setClient({from:()=>({select:()=>({order:()=>({range:async()=>({data:[]})})})}),rpc:async(name,args)=>{savedPayload=args.p_payload;return {data:[{applied:true,current_revision:2}]}}});await api.cloudSync({silent:true});assert.equal(savedPayload.acquisitions.length,1);assert.equal(item.local_dirty,false);
+});
+
+function pagedClient(read,rpc){return {from:()=>({select:()=>({order:(column,options)=>({range:(from,to)=>read(from,to,column,options)})})}),rpc:rpc||(async()=>({data:[]}))}}
+test('old account pull cannot persist into a new workspace, including switch away and back',async()=>{
+ for(const back of [false,true]){const {api,store}=app();api.workspace('user_A');api.setCloudUser({id:'A'});
+ api.setClient(pagedClient(async()=>{api.workspace('user_B');api.setCloudUser({id:'B'});if(back){api.workspace('user_A');api.setCloudUser({id:'A'})}return {data:[{id:'private-A',payload:{kind:'collection',name:'old response'},revision:1}]}}));
+ await api.cloudSync({silent:true});assert.equal(api.getRecords().length,0);assert.equal(store.has('fps_workspace_v2_user_B'),false);assert.equal(store.has('fps_workspace_v2_user_A'),false)}
+});
+test('old write acknowledgement and remaining batch stop after identity changes',async()=>{
+ const {api,store}=app();api.workspace('user_A');api.setCloudUser({id:'A'});api.setRecords(['first','second'].map(id=>api.migrateRecord({id})));api.persist();let writes=0;
+ api.setClient(pagedClient(async()=>({data:[]}),async()=>{writes++;api.workspace('user_B');api.setCloudUser({id:'B'});return {data:[{applied:true,current_revision:1}]}}));
+ await api.cloudSync({silent:true});assert.equal(writes,1);assert.equal(api.getRecords().length,0);assert.equal(store.has('fps_workspace_v2_user_B'),false);api.workspace('user_A');assert.equal(api.getRecords()[0].local_dirty,true);
+});
+test('pagination restores 1201 records in stable 500-row pages including tombstones',async()=>{
+ const {api}=app();api.workspace('user_pages');api.setCloudUser({id:'pages'});const remote=Array.from({length:1201},(_,i)=>({id:String(i).padStart(5,'0'),payload:{kind:'collection',name:'row '+i},revision:1,deleted_at:i===1000?'2026-10-10':null}));let pages=0;
+ api.setClient(pagedClient(async(from,to,column,options)=>{pages++;assert.equal(column,'id');assert.equal(options.ascending,true);assert.equal(to-from,499);return {data:remote.slice(from,to+1)}}));
+ await api.cloudSync({silent:true});assert.equal(pages,3);assert.equal(api.getRecords().length,1200);assert.equal(api.getRecords().some(r=>r.id==='01200'),true);assert.equal(api.getRecords().some(r=>r.id==='01000'),false);
+});
+test('second-page failure leaves the existing workspace unchanged',async()=>{
+ const {api}=app();api.workspace('user_page_error');api.setCloudUser({id:'pages'});api.setRecords([api.migrateRecord({id:'local'})]);
+ api.setClient(pagedClient(async(from)=>from?{error:Error('page failed')}:{data:Array.from({length:500},(_,i)=>({id:'remote'+i,payload:{},revision:1}))}));await api.cloudSync({silent:true});assert.deepEqual(Array.from(api.getRecords(),r=>r.id),['local']);
+});
+test('delete during first upload keeps the record deleted and advances its pending revision',async()=>{
+ const {api,store}=app();api.workspace('user_delete');api.setCloudUser({id:'delete'});const item=api.migrateRecord({id:'during-write'});api.setRecords([item]);let deletes=0;
+ api.setClient(pagedClient(async()=>({data:[]}),async(name,args)=>{if(args.p_deleted){deletes++;return {data:[{applied:true,current_revision:2}]}}api.deleteRecord(item.id);return {data:[{applied:true,current_revision:1}]}}));await api.cloudSync({silent:true});
+ assert.equal(api.getRecords().length,0);assert.equal(deletes,0);const tombs=JSON.parse(store.get('fps_cloud_tombstones_v2_user_delete'));assert.equal(tombs[0].cloud_revision,1);
+ tombs[0].ready_after=0;store.set('fps_cloud_tombstones_v2_user_delete',JSON.stringify(tombs));api.workspace('user_delete');await api.cloudSync({silent:true});assert.equal(deletes,1);assert.equal(api.getRecords().length,0);
+});
+test('undo during an in-flight cloud delete retains restored data for a later upload',async()=>{
+ const {api,window,store}=app();api.workspace('user_undo');api.setCloudUser({id:'undo'});const item=api.migrateRecord({id:'undo-delete',cloud_revision:1,local_dirty:false});api.setRecords([item]);api.deleteRecord(item.id);const tombs=JSON.parse(store.get('fps_cloud_tombstones_v2_user_undo'));tombs[0].ready_after=0;store.set('fps_cloud_tombstones_v2_user_undo',JSON.stringify(tombs));api.workspace('user_undo');
+ api.setClient(pagedClient(async()=>({data:[]}),async()=>{window.undo();return {data:[{applied:true,current_revision:2,current_deleted_at:'2026-10-10'}]}}));await api.cloudSync({silent:true});assert.equal(api.getRecords().length,1);assert.equal(api.getRecords()[0].cloud_revision,2);assert.equal(api.getRecords()[0].local_dirty,true);
+});
+test('cross-account backup copies reset cloud state and repeated imports skip existing copies',async()=>{
+ const {api}=app();api.workspace('user_B');api.setCloudUser({id:'B'});const backup={workspace:'user_A',records:[{id:'A-row',kind:'collection',name:'copy',cloud_revision:99,local_dirty:false,acquisitions:[{id:'acq',quantity:2}]}]};const plan=api.planBackupImport(backup);assert.equal(plan.foreign,true);assert.notEqual(plan.added[0].id,'A-row');assert.equal(plan.added[0].cloud_revision,0);assert.equal(plan.added[0].local_dirty,true);api.applyBackupImport(plan);assert.equal(api.collectionQuantity(api.getRecords()[0]),2);assert.equal(api.planBackupImport(backup).added.length,0);
+ let saved;api.setClient(pagedClient(async()=>({data:[]}),async(name,args)=>{saved=args;return {data:[{applied:true,current_revision:1}]}}));await api.cloudSync({silent:true});assert.equal(saved.p_base_revision,0);assert.equal(saved.p_payload.name,'copy');
+});
+test('same-workspace restore skips live IDs and copies records pending deletion without cancelling deletion',()=>{
+ const {api,store}=app();api.workspace('user_restore');api.setRecords([api.migrateRecord({id:'existing',name:'keep'})]);api.deleteRecord('existing');const plan=api.planBackupImport({workspace:'user_restore',records:[{id:'existing',name:'restore',cloud_revision:12}]});assert.notEqual(plan.added[0].id,'existing');api.applyBackupImport(plan);assert.equal(JSON.parse(store.get('fps_cloud_tombstones_v2_user_restore')).length,1);assert.equal(api.planBackupImport({workspace:'user_restore',records:[{id:'existing'}]}).added.length,0);
+ const again=api.planBackupImport({workspace:'user_restore',records:[{id:plan.added[0].id,name:'overwrite'}]});assert.equal(again.added.length,0);assert.equal(api.getRecords()[0].name,'restore');
+});
+test('invalid backups and storage failures do not partially import records',()=>{
+ const {api,store}=app();api.setRecords([api.migrateRecord({id:'keep'})]);assert.throws(()=>api.planBackupImport({records:[{id:'good'},null]}));assert.equal(api.getRecords().length,1);const plan=api.planBackupImport({workspace:'other',records:[{id:'new'}]});store.failWrites=true;assert.throws(()=>api.applyBackupImport(plan),/storage full/);assert.equal(api.getRecords().length,1);assert.equal(store.size,0);
+});
+test('large delete queues retain every tombstone on disk',()=>{
+ const {api,store}=app();api.workspace('user_queue');api.setRecords(Array.from({length:1002},(_,i)=>api.migrateRecord({id:'delete'+i})));for(let i=0;i<1002;i++)api.deleteRecord('delete'+i);assert.equal(JSON.parse(store.get('fps_cloud_tombstones_v2_user_queue')).length,1002);
 });

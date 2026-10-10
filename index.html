@@ -275,7 +275,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.4</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.5</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -631,7 +631,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.4";
+var APP_VERSION="0.6.5";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -651,7 +651,7 @@ var collectionCatalog=null,catalogLoading=false,collectionVisibleLimit=24;
 var editingId=null;
 var deletedSnapshot=null;
 var deleteTimer=null;
-var activeWorkspace="guest";
+var activeWorkspace="guest",workspaceEpoch=0;
 var cloudTombstones=[];
 var cloudClient=null;
 var cloudUser=null;
@@ -725,7 +725,7 @@ function migrateLegacyWorkspace(){
   localStorage.setItem(MIGRATION_KEY,"1")
 }
 function loadWorkspace(name){
-  activeWorkspace=name||"guest";
+  workspaceEpoch++;activeWorkspace=name||"guest";
   try{
     var raw=JSON.parse(localStorage.getItem(workspaceRecordsKey())||"[]");
     records=Array.isArray(raw)?raw.map(migrateRecord):[];
@@ -737,7 +737,7 @@ function loadWorkspace(name){
 }
 function persist(){
   localStorage.setItem(workspaceRecordsKey(),JSON.stringify(records));
-  localStorage.setItem(workspaceTombstonesKey(),JSON.stringify(cloudTombstones.slice(-1000)))
+  localStorage.setItem(workspaceTombstonesKey(),JSON.stringify(cloudTombstones))
 }
 function saveAndRender(skipCloud){
   persist();renderAll();renderCloudPanel();
@@ -1055,7 +1055,7 @@ function renderRecords(){
 }
 function deleteRecord(id){
   var idx=records.findIndex(function(r){return r.id===id});if(idx<0)return;
-  deletedSnapshot={record:records[idx],index:idx,workspace:activeWorkspace};var baseRevision=num(records[idx].cloud_revision);records.splice(idx,1);addTombstone(id,baseRevision);saveAndRender(true);
+  deletedSnapshot={record:records[idx],index:idx,workspace:activeWorkspace};var baseRevision=num(records[idx].cloud_revision);records.splice(idx,1);addTombstone(id,baseRevision);cloudTombstones.find(function(t){return t.id===id}).ready_after=Date.now()+5200;saveAndRender(true);
   showToast("已删除 1 条记录","撤销",function(){
     if(!deletedSnapshot||deletedSnapshot.workspace!==activeWorkspace)return;
     deletedSnapshot.record.updated_at=isoNow();deletedSnapshot.record.local_dirty=true;
@@ -1288,7 +1288,7 @@ function remoteToLocal(row){
   var x=migrateRecord(row.payload||{});x.id=row.id;x.cloud_revision=num(row.revision);x.cloud_server_updated_at=row.server_updated_at||"";x.local_dirty=false;return x
 }
 function makeConflictCopy(local){
-  var x=Object.assign({},local);x.id=uid();x.cloud_revision=0;x.cloud_server_updated_at="";x.local_dirty=true;x.updated_at=isoNow();
+  var x=JSON.parse(JSON.stringify(local));x.id=uid();x.cloud_revision=0;x.cloud_server_updated_at="";x.local_dirty=true;x.updated_at=isoNow();
   x.tags=uniq((x.tags||[]).concat(["同步冲突"]));x.note=("【同步冲突副本】"+(x.note?(" "+x.note):"")).trim();records.unshift(x);return x
 }
 function applyRemoteRow(row){
@@ -1308,10 +1308,17 @@ async function cloudSync(opts){
   opts=opts||{};if(!cloudConfigured()||!cloudClient){if(!opts.silent)showToast("云端尚未配置");return}
   if(!cloudUser){if(!opts.silent)showToast("请先登录云身份");return}
   if(!navigator.onLine){if(!opts.silent)showToast("当前离线，修改已保存在本机");return}
-  if(cloudBusy)return;cloudBusy=true;cloudSyncProgress="";renderCloudPanel();var conflicts=0,pendingLocalEdits=false;
+  if(cloudBusy)return;cloudBusy=true;cloudSyncProgress="";renderCloudPanel();var conflicts=0,pendingLocalEdits=false,syncWorkspace=activeWorkspace,syncEpoch=workspaceEpoch,syncUserId=cloudUser.id,syncSucceeded=false,syncError=null;
+  function current(){return activeWorkspace===syncWorkspace&&workspaceEpoch===syncEpoch&&cloudUser&&cloudUser.id===syncUserId}
   try{
-    var pulled=await cloudClient.from("fps_records").select("id,payload,revision,server_updated_at,deleted_at,share_community");if(pulled.error)throw pulled.error;
-    var remote=pulled.data||[],remoteMap={};remote.forEach(function(row){remoteMap[row.id]=row});
+    var remote=[],pageSize=500;
+    for(var offset=0;;offset+=pageSize){
+      if(!current())return;
+      var pulled=await cloudClient.from("fps_records").select("id,payload,revision,server_updated_at,deleted_at,share_community").order("id",{ascending:true}).range(offset,offset+pageSize-1);
+      if(!current())return;if(pulled.error)throw pulled.error;
+      var page=pulled.data||[];remote=remote.concat(page);if(page.length<pageSize)break;
+    }
+    var remoteMap={};remote.forEach(function(row){remoteMap[row.id]=row});
     remote.forEach(function(row){
       var local=records.find(function(r){return r.id===row.id}),tomb=cloudTombstones.find(function(t){return t.id===row.id});
       if(local){
@@ -1330,9 +1337,13 @@ async function cloudSync(opts){
     });
     var dirty=records.filter(function(r){return r.local_dirty});
     for(var i=0;i<dirty.length;i++){
-      var rec=dirty[i],sent=JSON.parse(JSON.stringify(rec)),sentPayload=JSON.stringify(cloudPayload(sent)),answer=await pushRecordWithRevision(sent,share);if(!answer)continue;
+      if(!current())return;
+      var rec=records.find(function(r){return r.id===dirty[i].id});if(!rec)continue;
+      var sent=JSON.parse(JSON.stringify(rec)),sentPayload=JSON.stringify(cloudPayload(sent)),answer=await pushRecordWithRevision(sent,share);
+      if(!current())return;if(!answer)continue;
       if(answer.applied){
-        var live=records.find(function(r){return r.id===rec.id});
+        var live=records.find(function(r){return r.id===rec.id}),pendingDelete=cloudTombstones.find(function(t){return t.id===rec.id});
+        if(pendingDelete){pendingDelete.cloud_revision=num(answer.current_revision);if(deletedSnapshot&&deletedSnapshot.record.id===rec.id)deletedSnapshot.record.cloud_revision=num(answer.current_revision)}
         if(live){live.cloud_revision=num(answer.current_revision);live.cloud_server_updated_at=answer.current_server_updated_at||"";live.local_dirty=JSON.stringify(cloudPayload(live))!==sentPayload;if(live.local_dirty)pendingLocalEdits=true}
       }else{
         makeConflictCopy(rec);
@@ -1344,9 +1355,14 @@ async function cloudSync(opts){
       persist();cloudSyncProgress=(i+1)+" / "+dirty.length;if(i%20===0||i===dirty.length-1)renderCloudPanel();
     }
 
-    var deletes=cloudTombstones.slice();
+    var deletes=cloudTombstones.filter(function(t){return !t.ready_after||t.ready_after<=Date.now()});
     for(var j=0;j<deletes.length;j++){
-      var tomb=deletes[j],danswer=await pushDeleteWithRevision(tomb);if(!danswer)continue;
+      if(!current())return;
+      var tomb=deletes[j];if(cloudTombstones.indexOf(tomb)<0)continue;
+      var danswer=await pushDeleteWithRevision(tomb);if(!current())return;if(!danswer)continue;
+      var restored=records.find(function(r){return r.id===tomb.id});
+      if(restored){restored.cloud_revision=num(danswer.current_revision);restored.local_dirty=true;pendingLocalEdits=true;continue}
+      if(cloudTombstones.indexOf(tomb)<0)continue;
       if(danswer.applied||danswer.current_deleted_at)removeTombstone(tomb.id);
       else{
         applyRemoteRow({id:tomb.id,payload:danswer.current_payload||{},revision:danswer.current_revision,server_updated_at:danswer.current_server_updated_at,deleted_at:null,share_community:danswer.current_share_community});
@@ -1356,9 +1372,13 @@ async function cloudSync(opts){
 
     records.sort(function(a,b){return num(b.ts)-num(a.ts)});
     persist();renderAll();localStorage.setItem(workspaceLastSyncKey(),isoNow());renderCloudPanel();refreshCommunityStats();
-    if(conflicts)showToast("同步完成，保留了 "+conflicts+" 个冲突副本");else if(!opts.silent)showToast("云同步完成")
-  }catch(err){setCloudBadge("同步失败","cloud-error");setCloudMessage("同步失败："+(err&&err.message?err.message:"未知错误"));if(!opts.silent)showToast("同步失败")}
-  finally{cloudBusy=false;cloudSyncProgress="";renderCloudPanel();if(pendingLocalEdits&&records.some(function(r){return r.local_dirty}))scheduleCloudSync(1500)}
+    syncSucceeded=true;if(conflicts)showToast("同步完成，保留了 "+conflicts+" 个冲突副本");else if(!opts.silent)showToast("云同步完成")
+  }catch(err){if(!current())return;syncError=err;setCloudBadge("同步失败","cloud-error");setCloudMessage("同步失败："+(err&&err.message?err.message:"未知错误"));if(!opts.silent)showToast("同步失败")}
+  finally{
+    cloudBusy=false;cloudSyncProgress="";renderCloudPanel();
+    if(syncError&&current()){setCloudBadge("同步失败","cloud-error");setCloudMessage("同步失败："+(syncError.message||"未知错误"))}
+    if((!current()&&cloudUser)||(syncSucceeded&&(records.some(function(r){return r.local_dirty})||cloudTombstones.length)))scheduleCloudSync(1500)
+  }
 }
 async function refreshCommunityStats(){
   if(!$("anaCommunity"))return;
@@ -1380,16 +1400,36 @@ function exportCSV(){
   var rows=[h.join(",")].concat(records.map(function(r){return h.map(function(k){var v=k==="tags"?(r.tags||[]).join("|"):(r[k]==null?"":r[k]);return '"'+String(v).replace(/"/g,'""')+'"'}).join(",")}));
   download(new Blob(["\ufeff"+rows.join("\n")],{type:"text/csv;charset=utf-8"}),"fps-database.csv")
 }
+function planBackupImport(o){
+  var arr=Array.isArray(o)?o:o&&o.records;if(!Array.isArray(arr)||arr.length>100000)throw Error("备份格式错误或记录过多");
+  var source=Array.isArray(o)?"legacy":String(o.workspace||"legacy"),same=source===activeWorkspace,ids=new Set(records.map(function(r){return r.id})),origins=new Set(records.filter(function(r){return r.backup_origin}).map(function(r){return JSON.stringify(r.backup_origin)})),added=[],skipped=0;
+  arr.forEach(function(raw){
+    if(!raw||typeof raw!=="object"||Array.isArray(raw))throw Error("备份包含无效记录");
+    var origin={workspace:source,id:String(raw.id||"")};
+    if((same&&raw.id&&ids.has(raw.id))||(raw.id&&origins.has(JSON.stringify(origin)))){skipped++;return}
+    var r=migrateRecord(JSON.parse(JSON.stringify(raw)));
+    var copy=!same||cloudTombstones.some(function(t){return t.id===r.id});if(copy)r.id=uid();
+    r.cloud_revision=0;r.cloud_server_updated_at="";r.local_dirty=true;r.updated_at=isoNow();
+    if(copy)r.backup_origin=origin;
+    added.push(r);ids.add(r.id);if(raw.id)origins.add(JSON.stringify(origin));
+  });
+  return {added:added,skipped:skipped,foreign:!same};
+}
+function applyBackupImport(plan){
+  var next=records.concat(plan.added).sort(function(a,b){return num(b.ts)-num(a.ts)});
+  localStorage.setItem(workspaceRecordsKey(),JSON.stringify(next));records=next;renderAll();scheduleCloudSync();
+}
 function importJSON(e){
-  var f=e.target.files[0];if(!f)return;var rd=new FileReader();
+  var f=e.target.files[0];if(!f)return;var importWorkspace=activeWorkspace,importEpoch=workspaceEpoch,rd=new FileReader();
   rd.onload=function(){
     try{
-      var o=JSON.parse(rd.result),arr=Array.isArray(o)?o:o.records;if(!Array.isArray(arr))throw Error("格式错误");
-      var existing={};records.forEach(function(r){existing[r.id]=true});
-      var added=0;arr.map(migrateRecord).forEach(function(r){if(!existing[r.id]){records.push(r);existing[r.id]=true;added++}});
-      records.sort(function(a,b){return num(b.ts)-num(a.ts)});saveAndRender();showToast("已导入 "+added+" 条新记录")
+      if(activeWorkspace!==importWorkspace||workspaceEpoch!==importEpoch)throw Error("工作区已切换，请在目标账号重新选择备份");
+      var plan=planBackupImport(JSON.parse(rd.result));
+      if(!plan.added.length){showToast("没有新记录，跳过 "+plan.skipped+" 条已有记录");return}
+      if(!confirm("将向当前工作区导入 "+plan.added.length+" 条记录，跳过 "+plan.skipped+" 条已有记录。"+(plan.foreign?"\n这是其他工作区或旧版备份，将作为新副本归属当前账号；原数据保留。":"\n已有记录不会覆盖；恢复记录会重新同步。")))return;
+      applyBackupImport(plan);showToast("已导入 "+plan.added.length+" 条记录，跳过 "+plan.skipped+" 条")
     }catch(err){alert("导入失败："+err.message)}
-    e.target.value=""
+    finally{e.target.value=""}
   };rd.readAsText(f)
 }
 function clearAll(){

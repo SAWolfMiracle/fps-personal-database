@@ -12,16 +12,16 @@
 - 社区统计要求至少 5 位不同贡献者且累计 20 局。
 - Supabase JS 固定到 2.117.2，不再跟随浮动 @2。
 
-## Auth 尚需手动配置
+## Auth 配置（当前前端已启用）
 
-在 Supabase Dashboard：
+现有项目已配置以下项；新建项目时需在 Supabase Dashboard 配置：
 1. Authentication → Providers / Sign In Methods → 开启 Anonymous Sign-Ins。
 2. 开启 Manual Linking（匿名身份绑定邮箱需要）。
 3. Authentication → URL Configuration：
    - Site URL: https://sawolfmiracle.github.io/fps-personal-database/
    - Redirect URLs: https://sawolfmiracle.github.io/fps-personal-database/**
 
-完成后，在 cloud-config.js 加上并设为 true：
+当前 cloud-config.js 的以下开关均为 true；仅在服务端配置完成后启用：
 - anonymousAuth
 - emailMagicLink
 - manualLinking
