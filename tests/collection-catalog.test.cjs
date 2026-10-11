@@ -3,6 +3,18 @@ const assert=require('node:assert/strict');
 const {plan}=require('../collection-catalog.js');
 const {group,deckProgress}=require('../collection-catalog.js');
 const inventory=require('../inventory.js');
+const {acquisitionGuide}=require('../collection-catalog.js');
+test('official model acquisition routes respect the announced Shanghai time window and stable identities',()=>{
+ const record={game:'Delta Force',catalog_item_id:'orzice:p1628',name:'自定义德小兰',starting_quantity:4,acquisitions:[{quantity:2}]};const before=JSON.stringify(record);
+ let guide=acquisitionGuide(record,Date.parse('2026-10-15T23:59:59+08:00'));assert.equal(guide.status,'尚未开放');assert.match(guide.text,/嘉奖箱/);assert.match(guide.text,/概率/);assert.match(guide.source,/steamcommunity/);
+ assert.equal(acquisitionGuide(record,Date.parse('2026-10-16T00:00:00+08:00')).status,'公告开放期内；以游戏内为准');
+ assert.equal(acquisitionGuide(record,Date.parse('2027-01-21T02:00:00+08:00')).status,'活动已结束；历史途径');
+ guide=acquisitionGuide({game:'三角洲行动',name:'德小兰·灰鲭鲨模型'});assert.match(guide.summary,/组装/);assert.match(guide.text,/不会自动合成或扣除/);assert.equal(JSON.stringify(record),before);
+});
+test('manual acquisition guidance is labelled unverified and unrelated games never receive Delta Force guides',()=>{
+ const guide=acquisitionGuide({game:'三角洲行动',name:'德小兰',obtain_method:'朋友赠送'});assert.equal(guide.summary,'个人补充');assert.equal(guide.status,'未独立核实');assert.equal(guide.text,'朋友赠送');assert.equal(guide.source,'');
+ assert.equal(acquisitionGuide({game:'其他游戏',name:'德小兰'}).status,'待核实');assert.equal(acquisitionGuide({game:'三角洲行动',name:'不存在的物品'}).status,'待核实');
+});
 test('special collections distinguish cards, box, ordinary poker and other games without mutating records',()=>{
  const records=plan(require('../collection-catalog.json'),[],()=>String(++counter)).added;
  const before=JSON.stringify(records);assert.equal(records.filter(r=>group(r)==='阿萨拉牌').length,55);

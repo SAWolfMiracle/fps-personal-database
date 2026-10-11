@@ -10,16 +10,20 @@ function app(){
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
  source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
  source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};download=function(blob,name){window.lastDownload={blob,name}};
- window.test={exportCollectionCSV,saveInventory,voidInventory,editInventory,resetInventoryForm,openInventory,planBackupImport,applyBackupImport,cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
+ window.test={collectionGuideHTML,exportCollectionCSV,saveInventory,voidInventory,editInventory,resetInventoryForm,openInventory,planBackupImport,applyBackupImport,cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
  setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)}};})();`;
  const window={FPSInventory:require('../inventory.js'),FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>{if(store.failWrites)throw Error("storage full");store.set(k,v)},removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,Blob,console};
  vm.runInNewContext(source,context);return {api:window.test,window,element,store};
 }
 test('custom special group survives save, workspace reload, and cloud round trip',()=>{
- const {api,element}=app();api.workspace('user_special');element('collectionName').value='任务藏品';element('collectionGroup').value='赛季专项';element('collectionCategory').value='自定义分类';element('collectionTarget').value='3';api.saveCollection({preventDefault(){}});
+ const {api,element}=app();api.workspace('user_special');element('collectionName').value='任务藏品';element('collectionGroup').value='赛季专项';element('collectionMethod').value='任务兑换，条件待核实';element('collectionCategory').value='自定义分类';element('collectionTarget').value='3';api.saveCollection({preventDefault(){}});
  const original=api.getRecords()[0];assert.equal(original.collection_group,'赛季专项');assert.equal(original.category,'自定义分类');assert.equal(original.target,3);
  api.workspace('guest');assert.equal(api.getRecords().length,0);api.workspace('user_special');assert.equal(api.getRecords()[0].collection_group,'赛季专项');
- const restored=api.remoteToLocal({id:original.id,revision:1,payload:JSON.parse(JSON.stringify(api.cloudPayload(original)))});assert.equal(restored.collection_group,'赛季专项');assert.equal(restored.id,original.id);assert.equal(restored.target,3);
+ const restored=api.remoteToLocal({id:original.id,revision:1,payload:JSON.parse(JSON.stringify(api.cloudPayload(original)))});assert.equal(restored.collection_group,'赛季专项');assert.equal(restored.obtain_method,'任务兑换，条件待核实');assert.equal(restored.id,original.id);assert.equal(restored.target,3);
+});
+test('obtain method renders as escaped text without changing inventory',()=>{
+ const {api}=app();const record={game:'三角洲行动',name:'自定义',obtain_method:'<img src=x onerror=alert(1)>',starting_quantity:2,acquisitions:[]};const before=JSON.stringify(record);
+ const markup=api.collectionGuideHTML(record);assert.match(markup,/&lt;img/);assert.doesNotMatch(markup,/<img/);assert.match(markup,/未独立核实/);assert.equal(JSON.stringify(record),before);
 });
 test('old backups stay matches; collection acquisitions survive cloud and JSON round trips',()=>{
  const {api}=app();const legacy=api.migrateRecord({id:'old',game:'CS2',kills:3,deaths:1});
