@@ -281,7 +281,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.12</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.13</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -547,7 +547,7 @@ tbody tr:hover td{background:#101821}
     <canvas id="warehouseCanvas" hidden style="width:100%;height:auto;touch-action:none;border:1px solid #60d49b;cursor:crosshair" aria-label="拖动框选仓库区域或单件物品"></canvas>
     <div class="collection-fields"><div class="field"><label for="warehouseCols">框内列数</label><input id="warehouseCols" type="number" min="1" max="128" value="8"></div><div class="field"><label for="warehouseRows">框内行数</label><input id="warehouseRows" type="number" min="1" max="128" value="8"></div></div>
     <label><input id="warehouseTrim" type="checkbox" checked> 忽略格子顶部小字（物品被截断时取消）</label>
-    <div class="actions" style="margin-top:12px"><button class="btn primary" id="warehouseScan">按网格生成候选</button><button class="btn" id="warehouseSingle">框选单件，追加候选</button><button class="btn" id="warehouseClearReview">清除当前图候选</button><button class="btn ghost" id="warehouseReset">清除全部截图</button></div>
+    <div class="actions" style="margin-top:12px"><button class="btn primary" id="warehouseScan">按网格生成候选</button><button class="btn" id="warehouseCancel" disabled>取消识别</button><button class="btn" id="warehouseSingle">框选单件，追加候选</button><button class="btn" id="warehouseClearReview">清除当前图候选</button><button class="btn ghost" id="warehouseReset">清除全部截图</button></div>
     <p id="warehouseStatus" class="muted" role="status" aria-live="polite"></p>
     <datalist id="warehouseNames"></datalist><div id="warehouseReview" class="collection-grid"></div>
     <p class="muted">只保存勾选并核对的库存快照；不会生成历史获取时间。已有获取历史或非零库存的物品会跳过，未识别物品不会清零，相同图片文件会跳过。跨图重复项只计一次，不同位置的同类物品累加；重复项必须关联已勾选且数量一致的候选。若物品跨格，请用单件框选，避免重复计数。</p>
@@ -659,7 +659,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.12";
+var APP_VERSION="0.6.13";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";

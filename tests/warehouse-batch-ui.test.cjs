@@ -1,10 +1,10 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),crypto=require('node:crypto').webcrypto;
-function mounted(){
+function mounted(overrides={}){
  const fields=new Map(),urls=new Set();let counter=0,lastReview;const pixels=Buffer.from(require('./fixtures/warehouse-crops.json').samples.find(r=>r.name==='金条').pixels,'base64');
  const context2d={drawImage(){},strokeRect(){},getImageData:()=>({data:pixels})};
  function element(id){if(!fields.has(id))fields.set(id,{value:id==='warehouseCols'||id==='warehouseRows'?'1':'',checked:true,innerHTML:'',textContent:'',hidden:false,files:[],listeners:{},addEventListener(type,fn){this.listeners[type]=fn},getContext:()=>context2d,toDataURL:()=> 'data:image/jpeg;base64,TEST',getBoundingClientRect:()=>({left:0,top:0,width:96,height:96}),setPointerCapture(){}});return fields.get(id)}
  const document={getElementById:element,createElement:()=>element('crop'),querySelectorAll:()=>[]};class Image{constructor(){this.naturalWidth=96;this.naturalHeight=96}async decode(){}}
- const catalog=require('../collection-catalog.json'),templates=require('../warehouse-templates.json');const sandbox={window:{},document,Image,URL:{createObjectURL(){const u='blob:'+ ++counter;urls.add(u);return u},revokeObjectURL(u){urls.delete(u)}},crypto,setTimeout:fn=>{fn();return 0},fetch:async url=>({ok:true,json:async()=>url.includes('templates')?templates:catalog}),atob:s=>Buffer.from(s,'base64').toString('binary')};vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../warehouse-import.js'),'utf8'),sandbox);
+ const catalog=require('../collection-catalog.json'),templates=require('../warehouse-templates.json');const sandbox={window:{},document,Image,URL:{createObjectURL(){const u='blob:'+ ++counter;urls.add(u);return u},revokeObjectURL(u){urls.delete(u)}},crypto,AbortController,clearTimeout(){},setTimeout:(fn,ms)=>{if(!ms)fn();else if(overrides.timers)overrides.timers.push(fn);return 0},fetch:async url=>({ok:true,json:async()=>url.includes('templates')?templates:catalog}),atob:s=>Buffer.from(s,'base64').toString('binary'),...overrides};vm.runInNewContext(fs.readFileSync(require('node:path').join(__dirname,'../warehouse-import.js'),'utf8'),sandbox);
  const mount=sandbox.window.FPSWarehouse.mount({onSave:(c,review)=>{lastReview=JSON.parse(JSON.stringify(review));return false}});
  const file=(name,byte)=>({name,type:'image/png',size:1,arrayBuffer:async()=>new Uint8Array([byte]).buffer});
  async function add(files){const f=element('warehouseFile');f.files=files;await f.listeners.change.call(f)}
@@ -18,4 +18,14 @@ test('batch UI preserves candidates and per-page grid settings, ignores byte-ide
 });
 test('workspace clear cancels a pending file read without retaining old image or candidates',async()=>{
  const m=mounted();let resume;const f=m.file('pending.png',3);f.arrayBuffer=()=>new Promise(r=>resume=r);const promise=m.add([f]);m.mount.clear();resume(new Uint8Array([3]).buffer);await promise;assert.equal(m.urls.size,0);assert.match(m.element('warehouseBatchInfo').textContent,/0 张图片/);assert.equal(m.element('warehouseReview').innerHTML,'');
+});
+
+test('download timeout reports failure and unlocks retry without replacing candidates',async()=>{
+ const timers=[];const m=mounted({timers,fetch:()=>new Promise(()=>{})});await m.add([m.file('timeout.png',9)]);const pending=m.element('warehouseScan').onclick();assert.match(m.element('warehouseStatus').textContent,/正在加载/);timers.forEach(fn=>fn());await pending;assert.match(m.element('warehouseStatus').textContent,/超时.*没有可用缓存/);assert.equal(m.element('warehouseScan').disabled,false);assert.match(m.element('warehouseBatchInfo').textContent,/0 个候选/);
+});
+test('cancel interrupts an unresolved download, preserves image, and permits retry',async()=>{
+ let hang=true;const c=require('../collection-catalog.json'),t=require('../warehouse-templates.json');const m=mounted({fetch:async url=>hang?new Promise(()=>{}):({ok:true,json:async()=>url.includes('templates')?t:c})});await m.add([m.file('cancel.png',10)]);const pending=m.element('warehouseScan').onclick();m.element('warehouseCancel').onclick();await pending;assert.match(m.element('warehouseStatus').textContent,/已取消/);assert.equal(m.urls.size,1);assert.equal(m.element('warehouseScan').disabled,false);hang=false;m.element('warehouseCols').value='1';m.element('warehouseRows').value='1';await m.element('warehouseScan').onclick();assert.match(m.element('warehouseStatus').textContent,/生成 1 个候选/);
+});
+test('failed network falls back to cached templates and still completes matching',async()=>{
+ const c=require('../collection-catalog.json'),t=require('../warehouse-templates.json');const m=mounted({fetch:async()=>{throw Error('offline')},caches:{match:async url=>({ok:true,json:async()=>url.includes('templates')?t:c})}});await m.add([m.file('cache.png',11)]);m.element('warehouseCols').value='1';m.element('warehouseRows').value='1';await m.element('warehouseScan').onclick();assert.match(m.element('warehouseStatus').textContent,/生成 1 个候选/);
 });
