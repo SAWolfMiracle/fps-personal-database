@@ -11,7 +11,7 @@ function plan(catalog,records,makeID,stamp,grade){
  catalog.items.filter(function(item){return !grade||String(item.grade)===String(grade)}).forEach(function(item){
   if(names.has(item.name.trim())||existingIds.has(item.item_id)){skipped++;return}
   names.add(item.name.trim());existingIds.add(item.item_id);
-  added.push({id:makeID(),kind:'collection',game:catalog.game,name:item.name.trim(),category:item.category||'收集品',image:item.image||'',target:1,starting_quantity:0,acquisitions:[],note:'',import_source:'catalog',imported_at:now,catalog_id:catalog.id,catalog_item_id:item.item_id,catalog_object_id:item.object_id||"",catalog_grade:item.grade,catalog_snapshot:catalog.retrieved_at,catalog_source:catalog.source_url});
+  added.push({id:makeID(),kind:'collection',game:catalog.game,name:item.name.trim(),category:item.category||'收集品',image:item.image||'',target:1,starting_quantity:0,acquisitions:[],note:'',import_source:'catalog',imported_at:now,catalog_id:catalog.id,catalog_item_id:item.item_id,catalog_object_id:item.object_id||"",catalog_grade:item.grade,catalog_snapshot:catalog.retrieved_at});
  });
  return {added:added,skipped:skipped};
 }
@@ -40,7 +40,7 @@ function referenceGuide(r){
  if(fact.tradeable){labels.push('交易行');parts.push('资料页标为可交易，可在交易行寻找货源；当前供货、解锁条件和价格以游戏内为准。')}
  if(fact.explicit_source){labels.push('物品说明来源');parts.push('物品说明标注：'+fact.explicit_source)}
  if(!parts.length)parts.push('已检查该物品资料页，但未找到明确获取途径。具体任务、活动或刷新点仍待核实；禁止交易不等于只能搜刮。');
- return {summary:labels.join(' / ')||'待核实',text:parts.join(' '),status:labels.length?'公开资料参考 · 非实时验证':'待核实',source:fact.source,sourceLabel:fact.source_label||'三角洲小涛查公开物品页',checked:fact.checked};
+ return {summary:labels.join(' / ')||'待核实',text:parts.join(' '),status:labels.length?'公开资料参考 · 非实时验证':'待核实',source:fact.source,sourceLabel:fact.source_label||'',checked:fact.checked};
 }
 function guideCoverage(){var list=Object.keys(guideEntries).map(function(id){return acquisitionGuide({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})});return {total:list.length,known:list.filter(function(g){return g.summary!=='待核实'}).length,pending:list.filter(function(g){return g.summary==='待核实'}).length}}
 return {plan:plan,group:group,cardName:cardName,deckProgress:deckProgress,acquisitionGuide:acquisitionGuide,guideCoverage:guideCoverage};

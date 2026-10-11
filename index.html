@@ -278,7 +278,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.9</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.10</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -472,7 +472,7 @@ tbody tr:hover td{background:#101821}
     <p id="catalogStatus" class="muted" role="status" aria-live="polite">打开收藏页后加载目录。</p>
     <div class="collection-fields"><div class="field"><label for="catalogGrade">目录范围</label><select id="catalogGrade"><option value="">全部品质</option><option value="6">仅红色 / 6 级</option><option value="5">仅金色 / 5 级</option><option value="4">仅紫色 / 4 级</option><option value="3">仅蓝色 / 3 级</option><option value="2">仅绿色 / 2 级</option><option value="1">仅白色 / 1 级</option></select></div></div>
     <div class="actions"><button class="btn primary" id="importCatalogBtn" disabled>一键导入目录</button><button class="btn" id="reloadCatalogBtn">重新加载目录</button></div>
-    <details style="margin-top:12px"><summary>查看目录与来源</summary><p id="catalogSource" class="muted"></p><div id="catalogPreview" style="max-height:260px;overflow:auto"></div></details>
+    <details style="margin-top:12px"><summary>查看目录</summary><p id="catalogSource" class="muted"></p><div id="catalogPreview" style="max-height:260px;overflow:auto"></div></details>
   </div>
   <div id="collectionStats" class="collection-stats"></div>
   <div class="card">
@@ -653,7 +653,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.9";
+var APP_VERSION="0.6.10";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1486,7 +1486,7 @@ function renderCatalogInfo(){
   if(!collectionCatalog)return;
   var preview=window.FPSCatalog.plan(collectionCatalog,records,function(){return ""},isoNow(),$("catalogGrade").value);
   $("catalogStatus").textContent="内置目录 "+collectionCatalog.items.length+" 件 · 当前范围可新增 "+preview.added.length+" 件 · 跳过已有 "+preview.skipped+" 件";
-  $("catalogSource").textContent=collectionCatalog.source_label+" · 核对日期 "+new Date(collectionCatalog.retrieved_at).toLocaleDateString()+"。"+collectionCatalog.coverage;
+  $("catalogSource").textContent="核对日期 "+new Date(collectionCatalog.retrieved_at).toLocaleDateString();
   $("catalogPreview").textContent=collectionCatalog.items.filter(function(r){return !$("catalogGrade").value||String(r.grade)===$("catalogGrade").value}).map(function(r){return r.name+"（"+r.grade+"级）"}).join(" · ");
   $("importCatalogBtn").disabled=!preview.added.length;
 }
@@ -1504,13 +1504,13 @@ function importCollectionCatalog(){
   collectionVisibleLimit=24;renderAll();scheduleCloudSync();showToast("已加入 "+plan.added.length+" 件未获得物品，跳过 "+plan.skipped+" 件已有物品");
 }
 function collectionGuideHTML(r){
-  var guide=window.FPSCatalog.acquisitionGuide(r),source=imageURL(guide.source);
-  return '<details class="collection-guide"><summary>获取方式：'+esc(guide.summary)+' · '+esc(guide.status)+'</summary><p>'+esc(guide.text)+'</p>'+(source?'<p class="muted"><a href="'+esc(source)+'" target="_blank" rel="noopener noreferrer">'+esc(guide.sourceLabel||'资料来源')+'</a> · 核对 '+esc(guide.checked)+'</p>':'')+'</details>';
+  var guide=window.FPSCatalog.acquisitionGuide(r);
+  return '<details class="collection-guide"><summary>获取方式：'+esc(guide.summary)+' · '+esc(guide.status)+'</summary><p>'+esc(guide.text)+'</p>'+(guide.checked?'<p class="muted">核对 '+esc(guide.checked)+'</p>':'')+'</details>';
 }
 function renderCollections(){
   renderCatalogInfo();
   var list=collectionRecords();
-  var coverage=window.FPSCatalog.guideCoverage();$("collectionGuideCoverage").textContent='内置目录获取资料：有明确途径 '+coverage.known+' / '+coverage.total+' 件 · 待核实 '+coverage.pending+' 件。来源与日期见各卡片；并非全部已实机验证。';
+  var coverage=window.FPSCatalog.guideCoverage();$("collectionGuideCoverage").textContent='内置目录获取资料：有明确途径 '+coverage.known+' / '+coverage.total+' 件 · 待核实 '+coverage.pending+' 件。核对日期见各卡片；并非全部已实机验证。';
   var groups=uniq(list.map(function(r){return window.FPSCatalog.group(r)||"普通库存"}));
   populate("collectionFilterGroup",groups,"全部库存与专项");
   var selectedGroup=$("collectionFilterGroup").value;

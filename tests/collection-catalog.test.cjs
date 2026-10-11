@@ -36,7 +36,7 @@ const catalog={id:'delta-force-collectibles',game:'三角洲行动',retrieved_at
 let counter=0;const id=()=>`id-${++counter}`;
 test('one click adds every catalog entry as unowned, with no fabricated acquisition history',()=>{
  const result=plan(catalog,[],id);assert.equal(result.added.length,2);assert.equal(result.skipped,0);
- for(const r of result.added){assert.equal(r.kind,'collection');assert.equal(r.target,1);assert.equal(r.starting_quantity,0);assert.deepEqual(r.acquisitions,[]);assert.equal(r.catalog_source,catalog.source_url)}
+ for(const r of result.added){assert.equal(r.kind,'collection');assert.equal(r.target,1);assert.equal(r.starting_quantity,0);assert.deepEqual(r.acquisitions,[]);assert.equal(r.catalog_source,undefined)}
  assert.equal(plan(catalog,result.added,id).added.length,0);
 });
 test('existing quantities, customized names and acquisition history are preserved; other games stay separate',()=>{

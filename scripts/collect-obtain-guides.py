@@ -1,4 +1,4 @@
-"""Read public item pages (not /api/) and emit source-backed acquisition facts.
+"""Parse locally cached item pages and emit source-backed acquisition facts.
 
 Usage: python scripts/collect-obtain-guides.py > /tmp/obtain-guides.json
 No login, signing tokens, comment content or price history are collected.
@@ -47,8 +47,8 @@ def parse(item, page):
                 unlock = re.search(r'class="orz-item-tag">(.*?)</div>', block, re.S)
                 exchange.append({'unlock': text(unlock[1]) if unlock else '', 'ingredients': avatars[1:]})
     return {'name': item['name'], 'containers': containers, 'tradeable': trade,
-            'explicit_source': source_clause, 'exchange': exchange, 'source': item['source_item'],
-            'checked': '2026-10-11', 'source_label': '三角洲小涛查公开物品页'}
+            'explicit_source': source_clause, 'exchange': exchange,
+            'checked': '2026-10-11'}
 
 def read(item):
     global NEXT
@@ -57,21 +57,10 @@ def read(item):
         if cache.exists():
             page = cache.read_text()
         else:
-            with LOCK:
-                delay = max(0, NEXT - time.monotonic())
-                NEXT = max(NEXT, time.monotonic()) + 0.8
-            if delay:
-                time.sleep(delay)
-            # The normal curl client works for pages where urllib returned 567.
-            # Do not change identities, cookies, auth, proxies or network routes.
-            if not re.fullmatch(r'https://orzice\.com/v/info/p?\d+', item['source_item']):
-                raise ValueError('unexpected source URL')
-            page = subprocess.run(['curl', '-fsSL', '--max-time', '25', item['source_item']], check=True, capture_output=True, text=True).stdout
-            # Public read cache is reproducible intermediate data, not application code.
-            cache.write_text(page)
+            raise ValueError('local page cache unavailable')
         return item['item_id'], parse(item, page)
     except Exception as exc:
-        return item['item_id'], {'name': item['name'], 'error': str(exc), 'source': item['source_item'], 'checked': '2026-10-11'}
+        return item['item_id'], {'name': item['name'], 'error': str(exc), 'checked': '2026-10-11'}
 
 if __name__ == '__main__':
     entries = {}
