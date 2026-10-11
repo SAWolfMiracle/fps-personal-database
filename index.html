@@ -278,7 +278,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.10</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.11</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -497,6 +497,7 @@ tbody tr:hover td{background:#101821}
       <div class="field"><label for="collectionSearch">搜索</label><input id="collectionSearch" placeholder="物品、分类、来源、备注"></div>
       <div class="field"><label for="collectionFilterGame">游戏筛选</label><select id="collectionFilterGame"></select></div>
       <div class="field"><label for="collectionFilterCategory">分类筛选</label><select id="collectionFilterCategory"></select></div>
+      <div class="field"><label for="collectionFilterGrade">等级筛选</label><select id="collectionFilterGrade"><option value="">全部等级</option><option value="6">红色 / 6 级</option><option value="5">金色 / 5 级</option><option value="4">紫色 / 4 级</option><option value="3">蓝色 / 3 级</option><option value="2">绿色 / 2 级</option><option value="1">白色 / 1 级</option><option value="unknown">未标注等级</option></select></div>
       <div class="field"><label for="collectionFilterGroup">库存 / 专项</label><select id="collectionFilterGroup"></select></div>
       <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>当前无库存</option><option>已获得</option><option>已集齐</option></select></div>
     </div>
@@ -653,7 +654,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.10";
+var APP_VERSION="0.6.11";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1507,6 +1508,17 @@ function collectionGuideHTML(r){
   var guide=window.FPSCatalog.acquisitionGuide(r);
   return '<details class="collection-guide"><summary>获取方式：'+esc(guide.summary)+' · '+esc(guide.status)+'</summary><p>'+esc(guide.text)+'</p>'+(guide.checked?'<p class="muted">核对 '+esc(guide.checked)+'</p>':'')+'</details>';
 }
+function collectionMatchesGrade(r,selected){
+  if(!selected)return true;
+  var grade=Number(r.catalog_grade);
+  if(!(Number.isInteger(grade)&&grade>=1&&grade<=6)){
+    var sameGame=/^(三角洲行动|三角洲|delta force)$/i.test(String(r.game||'').trim());
+    var item=sameGame&&collectionCatalog&&collectionCatalog.items.find(function(x){return r.catalog_item_id?x.item_id===r.catalog_item_id:x.name===r.name});
+    grade=item?Number(item.grade):0;
+  }
+  var known=Number.isInteger(grade)&&grade>=1&&grade<=6;
+  return selected==="unknown"?!known:known&&String(grade)===selected;
+}
 function renderCollections(){
   renderCatalogInfo();
   var list=collectionRecords();
@@ -1520,7 +1532,7 @@ function renderCollections(){
   $("collectionStats").textContent=list.length+" 件物品 · 已集齐 "+list.filter(function(r){return collectionStatus(r)==="已集齐"}).length+" 件 · "+list.reduce(function(n,r){return n+r.acquisitions.length},0)+" 次获取";
   populate("collectionFilterGame",uniq(list.map(function(r){return r.game})),"全部游戏");populate("collectionFilterCategory",uniq(list.map(function(r){return r.category})),"全部分类");
   var q=$("collectionSearch").value.trim().toLowerCase();
-var shown=list.filter(function(r){return (!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
+var shown=list.filter(function(r){return collectionMatchesGrade(r,$("collectionFilterGrade").value)&&(!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
 $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+' · '+esc(window.FPSCatalog.group(r)||'普通库存')+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 '+n+' / 目标 '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+collectionGuideHTML(r)+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">获取明细</button><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
   document.querySelectorAll("[data-stock]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.stock,false)}});
   document.querySelectorAll("[data-correct]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.correct,true)}});
@@ -1626,7 +1638,7 @@ $("collectionMoreBtn").addEventListener("click",function(){collectionVisibleLimi
 $("newCollectionBtn").addEventListener("click",function(){resetCollectionForm();$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});$("collectionGame").focus()});
 $("cancelCollectionBtn").addEventListener("click",resetCollectionForm);
 $("exportCollectionCsvBtn").addEventListener("click",exportCollectionCSV);
-["collectionSearch","collectionFilterGame","collectionFilterCategory","collectionFilterGroup","collectionFilterStatus"].forEach(function(id){$(id).addEventListener("input",renderCollections);$(id).addEventListener("change",renderCollections)});
+["collectionSearch","collectionFilterGame","collectionFilterCategory","collectionFilterGrade","collectionFilterGroup","collectionFilterStatus"].forEach(function(id){$(id).addEventListener("input",renderCollections);$(id).addEventListener("change",renderCollections)});
 
 $("saveBtn").addEventListener("click",saveForm);
 $("clearBtn").addEventListener("click",function(){clearForm(false,true)});

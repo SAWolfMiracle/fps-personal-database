@@ -11,10 +11,20 @@ function app(){
  source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
  source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};download=function(blob,name){window.lastDownload={blob,name}};
  window.test={collectionGuideHTML,exportCollectionCSV,saveInventory,voidInventory,editInventory,resetInventoryForm,openInventory,planBackupImport,applyBackupImport,cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
- setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)}};})();`;
+ setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)},collectionMatchesGrade};})();`;
  const window={FPSInventory:require('../inventory.js'),FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>{if(store.failWrites)throw Error("storage full");store.set(k,v)},removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,Blob,console};
  vm.runInNewContext(source,context);return {api:window.test,window,element,store};
 }
+test('grade filter uses saved grades and catalogue identities without mixing other games or changing records',()=>{
+ const {api}=app();api.setCatalog(require('../collection-catalog.json'));
+ const red={game:'三角洲行动',name:'自定义名字',catalog_item_id:'orzice:p1518',catalog_grade:6,starting_quantity:2};const before=JSON.stringify(red);
+ assert.equal(api.collectionMatchesGrade(red,'6'),true);assert.equal(api.collectionMatchesGrade(red,'1'),false);assert.equal(api.collectionMatchesGrade(red,''),true);
+ assert.equal(api.collectionMatchesGrade({game:'三角洲行动',name:'阿萨拉牌-牌盒'},'6'),true);
+ assert.equal(api.collectionMatchesGrade({game:'三角洲行动',name:'鼠标'},'1'),true);
+ assert.equal(api.collectionMatchesGrade({game:'其他游戏',name:'鼠标'},'1'),false);
+ for(const grade of [undefined,0,7,2.5,'invalid'])assert.equal(api.collectionMatchesGrade({game:'其他游戏',name:'自定义',catalog_grade:grade},'unknown'),true);
+ assert.equal(JSON.stringify(red),before);
+});
 test('custom special group survives save, workspace reload, and cloud round trip',()=>{
  const {api,element}=app();api.workspace('user_special');element('collectionName').value='任务藏品';element('collectionGroup').value='赛季专项';element('collectionMethod').value='任务兑换，条件待核实';element('collectionCategory').value='自定义分类';element('collectionTarget').value='3';api.saveCollection({preventDefault(){}});
  const original=api.getRecords()[0];assert.equal(original.collection_group,'赛季专项');assert.equal(original.category,'自定义分类');assert.equal(original.target,3);
