@@ -276,12 +276,36 @@ tbody tr:hover td{background:#101821}
 .collection-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
 .collection-stats{margin:10px 0 18px;color:var(--muted);line-height:1.6}
 [data-ocr-kind][hidden],#ocrReview[hidden],#ocrPreview[hidden]{display:none!important}
+
+/* v0.6.14: mobile information hierarchy */
+[hidden]{display:none!important}
+.tool-panel>summary,.inline-panel>summary{cursor:pointer;font-weight:600;line-height:1.5;min-height:44px;display:flex;align-items:center;gap:8px}
+.tool-panel>summary:before,.inline-panel>summary:before{content:"▸";color:var(--muted)}
+.tool-panel[open]>summary:before,.inline-panel[open]>summary:before{content:"▾"}
+.inline-panel{margin:12px 0}.tool-panel[open]>summary{margin-bottom:12px}
+.collection-title-button{border:0;background:none;color:inherit;font:inherit;text-align:left;padding:0;min-height:44px;cursor:pointer;line-height:1.5}
+.collection-title-button:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.collection-guide-brief{color:var(--muted);font-size:13px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.collection-more{position:relative;margin-left:auto}.collection-more>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;padding:0 12px;border:1px solid var(--line);border-radius:10px}
+.collection-more[open]{width:100%;margin:0}.collection-select{display:flex;align-items:center;gap:8px;min-height:44px;margin-bottom:8px}.tool-steps{font-size:13px;color:var(--muted);line-height:1.6}
+@media(max-width:800px){
+ body{font-size:15px}.wrap{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+ .section-title-row{align-items:flex-start}.section-title-row>.btn{flex-shrink:0;white-space:nowrap;min-height:44px}
+ .collection-grid{grid-template-columns:minmax(0,1fr)}.collection-item{padding:16px}.collection-top>div{min-width:0}.collection-top h3{font-size:17px}
+ .collection-fields{grid-template-columns:repeat(2,minmax(0,1fr))}.field{min-width:0}input,select,textarea{font-size:16px;min-height:44px;max-width:100%;box-sizing:border-box}
+ .btn{min-height:44px;font-size:14px}.collection-item>.actions{gap:8px}.collection-item>.actions>.primary{flex:1}
+ #collections>.card>.collection-fields,#collectionEditor .collection-fields,#collectionFilters .collection-fields{grid-template-columns:minmax(0,1fr)}
+ #collectionForm>.field{margin-bottom:12px}#collectionDetail .collection-log{flex-direction:column}
+ #data .actions{grid-template-columns:minmax(0,1fr)}#data .actions .btn{white-space:normal;overflow-wrap:anywhere}
+ .mobile-nav button{min-width:0}.card{overflow-wrap:anywhere}.collection-stats{font-size:13px;margin-bottom:12px}
+}
+
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.13</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.14</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -469,21 +493,32 @@ tbody tr:hover td{background:#101821}
 
 <section id="collections" class="section">
   <div class="section-title-row"><div><h2 style="margin:0 0 6px">收藏簿</h2><div class="muted">收藏品、任务物品、皮肤与装备，都可以在这里记录。</div></div><button class="btn" id="newCollectionBtn">新增物品</button></div>
-  <div class="card">
-    <h3>三角洲收藏品目录</h3>
-    <p class="muted">一键加入目录，默认全部未获得、目标 1 件。已有物品会跳过，数量和获取明细保留。导入到当前工作区；访客目录不会自动混入账号。</p>
-    <p id="catalogStatus" class="muted" role="status" aria-live="polite">打开收藏页后加载目录。</p>
-    <div class="collection-fields"><div class="field"><label for="catalogGrade">目录范围</label><select id="catalogGrade"><option value="">全部品质</option><option value="6">仅红色 / 6 级</option><option value="5">仅金色 / 5 级</option><option value="4">仅紫色 / 4 级</option><option value="3">仅蓝色 / 3 级</option><option value="2">仅绿色 / 2 级</option><option value="1">仅白色 / 1 级</option></select></div></div>
-    <div class="actions"><button class="btn primary" id="importCatalogBtn" disabled>一键导入目录</button><button class="btn" id="reloadCatalogBtn">重新加载目录</button></div>
-    <details style="margin-top:12px"><summary>查看目录</summary><p id="catalogSource" class="muted"></p><div id="catalogPreview" style="max-height:260px;overflow:auto"></div></details>
-  </div>
   <div id="collectionStats" class="collection-stats"></div>
   <div class="card">
+    <div class="collection-fields">
+      <div class="field"><label for="collectionSearch">搜索</label><input id="collectionSearch" placeholder="物品、分类、来源、备注"></div>
+      <div class="field"><label for="collectionFilterGrade">等级筛选</label><select id="collectionFilterGrade"><option value="">全部等级</option><option value="6">红色 / 6 级</option><option value="5">金色 / 5 级</option><option value="4">紫色 / 4 级</option><option value="3">蓝色 / 3 级</option><option value="2">绿色 / 2 级</option><option value="1">白色 / 1 级</option><option value="unknown">未标注等级</option></select></div>
+    </div><details class="inline-panel" id="collectionFilters"><summary id="collectionFilterSummary">更多筛选</summary><div class="collection-fields">
+      <div class="field"><label for="collectionFilterGame">游戏筛选</label><select id="collectionFilterGame"></select></div>
+      <div class="field"><label for="collectionFilterCategory">分类筛选</label><select id="collectionFilterCategory"></select></div>
+
+      <div class="field"><label for="collectionFilterGroup">库存 / 专项</label><select id="collectionFilterGroup"></select></div>
+      <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>当前无库存</option><option>已获得</option><option>已集齐</option></select></div>
+    </div></details>
+  </div>
+
+<details class="card tool-panel" id="collectionManage"><summary>管理 / 批量选择</summary><p id="collectionSelectionCount" class="muted">已选 0 件</p><div class="actions"><button class="btn" id="selectFilteredCollectionsBtn">全选筛选结果</button><button class="btn" id="clearCollectionSelectionBtn">取消选择</button><button class="btn danger" id="deleteSelectedCollectionsBtn" disabled>删除选中物品</button></div>  <div class="actions" style="margin:12px 0"><button class="btn danger" id="deleteFilteredCollectionsBtn">删除筛选结果</button><button class="btn danger" id="deleteAllCollectionsBtn">删除全部收藏</button></div>
+</details>
+  <div id="collectionSpecial" class="card" hidden></div>
+  <div id="collectionList" class="collection-grid"></div>
+  <button class="btn" id="collectionMoreBtn" hidden style="margin:12px 0">加载更多</button>
+  <details class="card tool-panel" id="collectionEditor"><summary>新增 / 编辑物品</summary>
     <h3 id="collectionFormTitle">新增物品</h3>
     <form id="collectionForm">
-      <div class="collection-fields">
+      <div class="field"><label for="collectionName">物品名称 *</label><input id="collectionName" required maxlength="200" placeholder="收藏品、任务物品、皮肤…"></div>
+      <details id="collectionExtras" class="inline-panel"><summary>补充信息（选填）</summary><div class="collection-fields">
         <div class="field"><label for="collectionGame">游戏（选填）</label><input id="collectionGame" list="games" maxlength="120" placeholder="可输入任意游戏"></div>
-        <div class="field"><label for="collectionName">物品名称 *</label><input id="collectionName" required maxlength="200" placeholder="收藏品、任务物品、皮肤…"></div>
+
         <div class="field"><label for="collectionCategory">分类（选填）</label><input id="collectionCategory" list="collectionCategories" maxlength="80" placeholder="支持自定义分类"></div>
         <div class="field"><label for="collectionGroup">专项收集（选填）</label><input id="collectionGroup" list="collectionGroups" maxlength="80" placeholder="留空自动识别；输入普通库存可排除"></div>
         <datalist id="collectionGroups"><option value="阿萨拉牌"><option value="普通库存"></datalist>
@@ -491,28 +526,23 @@ tbody tr:hover td{background:#101821}
         <div class="field"><label for="collectionImage">图片链接（可选）</label><input id="collectionImage" type="url" placeholder="https://…"></div>
         <div class="field"><label for="collectionNote">物品备注（选填）</label><input id="collectionNote" maxlength="2000" placeholder="获取条件、用途、心愿…"></div>
         <div class="field"><label for="collectionMethod">获取方式 · 个人补充（选填）</label><textarea id="collectionMethod" maxlength="2000" placeholder="留空显示内置参考资料；这里不代表本次实际获取来源"></textarea></div>
-      </div>
+      </div></details>
       <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveCollectionBtn">保存物品</button><button class="btn ghost" type="button" id="cancelCollectionBtn">取消编辑 / 重置</button></div>
     </form>
-  </div>
-  <div class="card">
-    <div class="collection-fields">
-      <div class="field"><label for="collectionSearch">搜索</label><input id="collectionSearch" placeholder="物品、分类、来源、备注"></div>
-      <div class="field"><label for="collectionFilterGame">游戏筛选</label><select id="collectionFilterGame"></select></div>
-      <div class="field"><label for="collectionFilterCategory">分类筛选</label><select id="collectionFilterCategory"></select></div>
-      <div class="field"><label for="collectionFilterGrade">等级筛选</label><select id="collectionFilterGrade"><option value="">全部等级</option><option value="6">红色 / 6 级</option><option value="5">金色 / 5 级</option><option value="4">紫色 / 4 级</option><option value="3">蓝色 / 3 级</option><option value="2">绿色 / 2 级</option><option value="1">白色 / 1 级</option><option value="unknown">未标注等级</option></select></div>
-      <div class="field"><label for="collectionFilterGroup">库存 / 专项</label><select id="collectionFilterGroup"></select></div>
-      <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>当前无库存</option><option>已获得</option><option>已集齐</option></select></div>
-    </div>
-  </div>
-  <div class="actions" style="margin:12px 0"><button class="btn danger" id="deleteFilteredCollectionsBtn">删除筛选结果</button><button class="btn danger" id="deleteAllCollectionsBtn">删除全部收藏</button></div>
-  <p id="collectionGuideCoverage" class="muted"></p>
-  <div id="collectionSpecial" class="card" hidden></div>
-  <div id="collectionList" class="collection-grid"></div>
-  <button class="btn" id="collectionMoreBtn" hidden style="margin:12px 0">加载更多</button>
+  </details>
+  <details class="card tool-panel" id="catalogTools"><summary>导入收藏目录</summary>
+    <h3>三角洲收藏品目录</h3>
+    <p class="muted">一键加入目录，默认全部未获得、目标 1 件。已有物品会跳过，数量和获取明细保留。导入到当前工作区；访客目录不会自动混入账号。</p>
+    <p id="catalogStatus" class="muted" role="status" aria-live="polite">打开收藏页后加载目录。</p>
+    <div class="collection-fields"><div class="field"><label for="catalogGrade">目录范围</label><select id="catalogGrade"><option value="">全部品质</option><option value="6">仅红色 / 6 级</option><option value="5">仅金色 / 5 级</option><option value="4">仅紫色 / 4 级</option><option value="3">仅蓝色 / 3 级</option><option value="2">仅绿色 / 2 级</option><option value="1">仅白色 / 1 级</option></select></div></div>
+    <div class="actions"><button class="btn primary" id="importCatalogBtn" disabled>一键导入目录</button><button class="btn" id="reloadCatalogBtn">重新加载目录</button></div>
+    <details style="margin-top:12px"><summary>查看目录</summary><p id="catalogSource" class="muted"></p><div id="catalogPreview" style="max-height:260px;overflow:auto"></div></details>
+  </details>
+
+  <details class="inline-panel"><summary>目录核对情况</summary><p id="collectionGuideCoverage" class="muted"></p></details>
   <div id="collectionDetail" class="card" hidden style="margin-top:18px">
-    <h3 id="collectionDetailTitle"></h3><p class="muted" id="collectionDetailSummary"></p>
-    <p class="muted">“记录获取”一键增加 1 件。这里的补充信息均选填，之后随时可编辑。</p><h4 id="acquisitionFormTitle">新增获取明细</h4>
+    <div class="section-title-row"><h3 id="collectionDetailTitle"></h3><button class="btn" id="closeCollectionDetailBtn">关闭详情</button></div><div id="collectionDetailGuide"></div><p class="muted" id="collectionDetailSummary"></p>
+    <details class="inline-panel" id="acquisitionEditor"><summary>新增 / 补充获取明细</summary><p class="muted">“记录获取”一键增加 1 件。这里的补充信息均选填，之后随时可编辑。</p><h4 id="acquisitionFormTitle">新增获取明细</h4>
     <form id="acquisitionForm">
       <div class="collection-fields">
         <div class="field"><label for="acquisitionDate">获取日期（选填，可后补）</label><input id="acquisitionDate" type="date"></div>
@@ -523,9 +553,9 @@ tbody tr:hover td{background:#101821}
       </div>
       <div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveAcquisitionBtn">保存获取记录</button><button class="btn ghost" type="button" id="cancelAcquisitionBtn">取消编辑 / 重置</button></div>
     </form>
-    <div id="acquisitionList" style="margin-top:16px"></div>
+    </details><div id="acquisitionList" style="margin-top:16px"></div>
     <hr style="border:0;border-top:1px solid var(--line);margin:20px 0">
-    <h4 id="inventoryFormTitle">记录库存变动</h4>
+    <details class="inline-panel" id="inventoryEditor"><summary>库存变动 / 校正</summary><h4 id="inventoryFormTitle">记录库存变动</h4>
     <p class="muted">校正填写核对后的当前总数量，保留获取历史。日期与备注选填；历史按记录顺序计算，后补日期不会改变库存。</p>
     <form id="inventoryForm"><div class="collection-fields">
       <div class="field"><label for="inventoryType">变动类型</label><select id="inventoryType"><option value="consume">消耗</option><option value="sale">出售</option><option value="loss">丢失</option><option value="transfer_out">转出</option><option value="transfer_in">转入</option><option value="correction">校正当前库存</option></select></div>
@@ -533,29 +563,57 @@ tbody tr:hover td{background:#101821}
       <div class="field"><label for="inventoryDate">变动日期（选填，可后补）</label><input id="inventoryDate" type="date"></div>
       <div class="field"><label for="inventoryNote">变动备注（选填）</label><input id="inventoryNote" maxlength="2000" placeholder="用途、去向或校正原因"></div>
     </div><div class="actions" style="margin-top:14px"><button class="btn primary" type="submit" id="saveInventoryBtn">保存库存变动</button><button class="btn ghost" type="button" id="cancelInventoryBtn">取消编辑 / 重置</button></div></form>
-    <div id="inventoryList" style="margin-top:16px"></div>
+    </details><div id="inventoryList" style="margin-top:16px"></div>
   </div>
   <datalist id="collectionCategories"><option value="收藏品"><option value="任务物品"><option value="皮肤"><option value="武器"><option value="装备"><option value="成就"><option value="其他"></datalist>
 </section>
 
 <section id="data" class="section">
-  <div class="card">
-    <h2>仓库图标识别 · 实验版</h2>
+  <div class="card cloud-card">
+    <div class="section-title-row">
+      <div><h2 style="margin:0 0 4px">云同步</h2><div class="muted" style="font-size:12px">Supabase · 本地优先 · RLS 用户隔离</div></div>
+      <span class="cloud-badge cloud-off" id="cloudBadge">未配置</span>
+    </div>
+    <div class="cloud-grid">
+      <div class="cloud-info"><span>身份</span><b id="cloudIdentity">仅本机</b></div>
+      <div class="cloud-info"><span>最后同步</span><b id="cloudLastSync">从未</b></div>
+      <div class="cloud-info"><span>本地记录</span><b id="cloudLocalCount">0</b></div>
+      <div class="cloud-info"><span>待同步删除</span><b id="cloudDeleteCount">0</b></div>
+    </div>
+    <div class="guest-merge" id="guestMergeBox" hidden>
+      <div><b>发现本机未归属记录</b><small id="guestMergeText"></small></div>
+      <button class="btn" id="mergeGuestBtn">合并到当前账号</button>
+    </div>
+    <div class="actions"><button class="btn primary" id="cloudSyncBtn">立即同步</button></div><details class="inline-panel"><summary>登录与同步设置</summary><div class="cloud-auth">
+      <div class="field cloud-email-field"><label>可恢复账号（邮箱魔法链接）</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="actions cloud-actions">
+        <button class="btn primary" id="cloudEmailBtn" title="需先在 Supabase Auth 配置站点重定向">发送登录链接</button>
+        <button class="btn" id="cloudAnonBtn" title="需先在 Supabase Auth 启用 Anonymous Sign-Ins">匿名云身份</button>
+        <button class="btn ghost" id="cloudSignOutBtn">退出云身份</button>
+      </div>
+    </div>
+    <div class="cloud-toggles">
+      <label class="toggle-row"><input id="cloudAutoSync" type="checkbox" checked><span><b>自动同步</b><small>保存、编辑或删除后，在联网时自动同步。</small></span></label>
+      <label class="toggle-row"><input id="communityOptIn" type="checkbox"><span><b>匿名贡献社区统计</b><small>仅允许聚合统计使用；原始记录仍受 RLS 隔离，默认关闭。</small></span></label>
+    </div>
+    </details><div class="cloud-message muted" id="cloudMessage">当前未配置云端，所有功能继续使用本地存储。</div>
+  </div>
+
+  <details class="card tool-panel" id="warehouseTool"><summary>仓库图标识别 · 实验版</summary>
     <p class="muted">截图在本机处理，不上传。先框选仓库区域，再按网格生成候选；多格物品可单独框选。相似度不是准确率，共用图标无法唯一识别，所有结果必须核对。暂不自动读取堆叠数量。支持多图汇总；同类物品跨图出现时需人工确认是否重复。重新扫描只替换当前图候选；新增或改名候选后需重新核对重叠。</p>
-    <div class="field"><label for="warehouseFile">添加仓库截图（可多选，每张不超过 20 MB）</label><input id="warehouseFile" type="file" accept="image/png,image/jpeg,image/webp" multiple></div>
-    <p id="warehouseBatchInfo" class="muted"></p><div class="field"><label for="warehousePages">当前截图</label><select id="warehousePages"></select></div><button class="btn" id="warehouseRemovePage">移除当前截图</button>
+    <p class="tool-steps" id="warehouseStep">1 选图 → 2 框选 → 3 识别 → 4 核对</p><div class="field"><label for="warehouseFile">添加仓库截图（可多选，每张不超过 20 MB）</label><input id="warehouseFile" type="file" accept="image/png,image/jpeg,image/webp" multiple></div>
+    <div id="warehouseSetup" hidden><p id="warehouseBatchInfo" class="muted"></p><div class="field"><label for="warehousePages">当前截图</label><select id="warehousePages"></select></div><button class="btn" id="warehouseRemovePage">移除当前截图</button>
     <canvas id="warehouseCanvas" hidden style="width:100%;height:auto;touch-action:none;border:1px solid #60d49b;cursor:crosshair" aria-label="拖动框选仓库区域或单件物品"></canvas>
     <div class="collection-fields"><div class="field"><label for="warehouseCols">框内列数</label><input id="warehouseCols" type="number" min="1" max="128" value="8"></div><div class="field"><label for="warehouseRows">框内行数</label><input id="warehouseRows" type="number" min="1" max="128" value="8"></div></div>
     <label><input id="warehouseTrim" type="checkbox" checked> 忽略格子顶部小字（物品被截断时取消）</label>
-    <div class="actions" style="margin-top:12px"><button class="btn primary" id="warehouseScan">按网格生成候选</button><button class="btn" id="warehouseCancel" disabled>取消识别</button><button class="btn" id="warehouseSingle">框选单件，追加候选</button><button class="btn" id="warehouseClearReview">清除当前图候选</button><button class="btn ghost" id="warehouseReset">清除全部截图</button></div>
-    <p id="warehouseStatus" class="muted" role="status" aria-live="polite"></p>
-    <datalist id="warehouseNames"></datalist><div id="warehouseReview" class="collection-grid"></div>
+    <div class="actions" style="margin-top:12px"><button class="btn primary" id="warehouseScan">按网格生成候选</button><button class="btn" id="warehouseCancel" disabled>取消识别</button><details class="inline-panel"><summary>单件识别 / 清理候选</summary><div class="actions"><button class="btn" id="warehouseSingle">框选单件，追加候选</button><button class="btn" id="warehouseClearReview">清除当前图候选</button><button class="btn ghost" id="warehouseReset">清除全部截图</button></div></details></div>
+    </div><p id="warehouseStatus" class="muted" role="status" aria-live="polite"></p>
+    <div id="warehouseResults" hidden><datalist id="warehouseNames"></datalist><div id="warehouseReview" class="collection-grid"></div>
     <p class="muted">只保存勾选并核对的库存快照；不会生成历史获取时间。已有获取历史或非零库存的物品会跳过，未识别物品不会清零，相同图片文件会跳过。跨图重复项只计一次，不同位置的同类物品累加；重复项必须关联已勾选且数量一致的候选。若物品跨格，请用单件框选，避免重复计数。</p>
-    <button class="btn primary" id="warehouseSave" disabled>保存已核对的库存快照</button>
-  </div>
+    <button class="btn primary" id="warehouseSave" disabled>保存已核对的库存快照</button></div>
+  </details>
 
-  <div class="card">
-    <h2>截图识别导入</h2>
+  <details class="card tool-panel" id="ocrTool"><summary>截图文字识别导入</summary>
     <p class="muted">在本机识别中英文文字，核对后保存。截图不上传、不随记录同步；首次使用需联网下载模型。一次处理一局结算或一件物品。</p>
     <div class="collection-fields">
       <div class="field"><label for="ocrType">导入类型</label><select id="ocrType"><option value="match">对局结算</option><option value="collection">收藏 / 仓库数量快照</option></select></div>
@@ -586,41 +644,9 @@ tbody tr:hover td{background:#101821}
         <div class="field"><label for="ocr_note">导入备注</label><input id="ocr_note" maxlength="2000"></div>
       </div><div class="actions" style="margin-top:14px"><button class="btn primary" id="ocrSave" type="submit">确认并保存识别记录</button></div></form>
     </div>
-  </div>
+  </details>
 
-  <div class="card cloud-card">
-    <div class="section-title-row">
-      <div><h2 style="margin:0 0 4px">云同步</h2><div class="muted" style="font-size:12px">Supabase · 本地优先 · RLS 用户隔离</div></div>
-      <span class="cloud-badge cloud-off" id="cloudBadge">未配置</span>
-    </div>
-    <div class="cloud-grid">
-      <div class="cloud-info"><span>身份</span><b id="cloudIdentity">仅本机</b></div>
-      <div class="cloud-info"><span>最后同步</span><b id="cloudLastSync">从未</b></div>
-      <div class="cloud-info"><span>本地记录</span><b id="cloudLocalCount">0</b></div>
-      <div class="cloud-info"><span>待同步删除</span><b id="cloudDeleteCount">0</b></div>
-    </div>
-    <div class="guest-merge" id="guestMergeBox" hidden>
-      <div><b>发现本机未归属记录</b><small id="guestMergeText"></small></div>
-      <button class="btn" id="mergeGuestBtn">合并到当前账号</button>
-    </div>
-    <div class="cloud-auth">
-      <div class="field cloud-email-field"><label>可恢复账号（邮箱魔法链接）</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
-      <div class="actions cloud-actions">
-        <button class="btn primary" id="cloudEmailBtn" title="需先在 Supabase Auth 配置站点重定向">发送登录链接</button>
-        <button class="btn" id="cloudAnonBtn" title="需先在 Supabase Auth 启用 Anonymous Sign-Ins">匿名云身份</button>
-        <button class="btn" id="cloudSyncBtn">立即同步</button>
-        <button class="btn ghost" id="cloudSignOutBtn">退出云身份</button>
-      </div>
-    </div>
-    <div class="cloud-toggles">
-      <label class="toggle-row"><input id="cloudAutoSync" type="checkbox" checked><span><b>自动同步</b><small>保存、编辑或删除后，在联网时自动同步。</small></span></label>
-      <label class="toggle-row"><input id="communityOptIn" type="checkbox"><span><b>匿名贡献社区统计</b><small>仅允许聚合统计使用；原始记录仍受 RLS 隔离，默认关闭。</small></span></label>
-    </div>
-    <div class="cloud-message muted" id="cloudMessage">当前未配置云端，所有功能继续使用本地存储。</div>
-  </div>
-
-  <div class="card">
-    <h2>本地数据管理</h2>
+  <details class="card tool-panel"><summary>备份 / 导入 / 数据管理</summary>
     <div class="actions">
       <button class="btn primary" id="exportJsonBtn">导出 JSON</button>
       <button class="btn" id="exportCsvBtn">导出对局 CSV</button>
@@ -629,7 +655,7 @@ tbody tr:hover td{background:#101821}
       <button class="btn danger" id="clearAllBtn">清空全部</button>
     </div>
     <p class="muted">即使云端不可用，本地数据库仍可独立工作。首次启用云同步前，建议保留一份 JSON 备份。</p>
-  </div>
+  </details>
   <div class="card">
     <h3>安装到 iPhone 主屏幕</h3>
     <div class="muted">Safari → 分享 → 添加到主屏幕。页面导航会优先联网更新，离线时再回退到缓存。</div>
@@ -659,7 +685,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.13";
+var APP_VERSION="0.6.14";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -673,7 +699,7 @@ var tabs=[
   ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","database","收藏"],["data","database","数据"]
 ];
 var records=[];
-var screenshotImporter=null,warehouseImporter=null;
+var screenshotImporter=null,warehouseImporter=null,collectionSelection=new Set();
 var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null,inventoryEditingId=null;
 var collectionCatalog=null,catalogLoading=false,collectionVisibleLimit=24;
 var editingId=null;
@@ -754,7 +780,7 @@ function migrateLegacyWorkspace(){
   }catch(e){}
   localStorage.setItem(MIGRATION_KEY,"1")
 }
-function loadWorkspace(name){
+function loadWorkspace(name){collectionSelection.clear();
   workspaceEpoch++;activeWorkspace=name||"guest";
   pendingBulkDelete=null;$("deleteConfirm").hidden=true;
   try{
@@ -1466,10 +1492,10 @@ function importJSON(e){
 function clearAll(){requestBulkDelete("all")}
 function cancelBulkDelete(){pendingBulkDelete=null;$("deleteConfirm").hidden=true}
 function requestBulkDelete(scope){
-  var targets=scope==="all"?records:scope==="collections"?collectionRecords():filteredCollections();
+  var targets=scope==="all"?records:scope==="collections"?collectionRecords():scope==="selected"?collectionRecords().filter(function(r){return collectionSelection.has(r.id)}):filteredCollections();
   if(!targets.length){showToast("没有可删除的记录");return}
   pendingBulkDelete={ids:targets.map(function(r){return r.id}),workspace:activeWorkspace,epoch:workspaceEpoch};
-  $("deleteConfirmTitle").textContent=scope==="all"?"清空当前工作区":scope==="collections"?"删除全部收藏":"删除筛选结果";
+  $("deleteConfirmTitle").textContent=scope==="all"?"清空当前工作区":scope==="collections"?"删除全部收藏":scope==="selected"?"删除选中物品":"删除筛选结果";
   $("deleteConfirmText").textContent="将删除 "+targets.length+" 条"+(scope==="all"?"对局及收藏记录。":"收藏记录（含物品的获取明细和库存变动）。")+(scope==="filtered"?"包括符合筛选条件但尚未加载显示的物品。":"")+"建议先导出 JSON 备份。";
   $("deleteConfirm").hidden=false;$("deleteConfirmCancel").focus();
 }
@@ -1499,6 +1525,7 @@ function confirmBulkDelete(){
 
 
 function resetCollectionForm(){
+  $("collectionEditor").open=false;$("collectionExtras").open=false;
   collectionEditingId=null;$("collectionForm").reset();$("collectionFormTitle").textContent="新增物品";$("saveCollectionBtn").textContent="保存物品";
 }
 function touchCollection(r){r.updated_at=isoNow();r.local_dirty=true;saveAndRender()}
@@ -1518,7 +1545,7 @@ function saveCollection(e){
 function editCollection(id){
   var r=records.find(function(x){return x.id===id&&x.kind==="collection"});if(!r)return;
   collectionEditingId=id;[["Game","game"],["Name","name"],["Category","category"],["Group","collection_group"],["Method","obtain_method"],["Target","target"],["Image","image"],["Note","note"]].forEach(function(pair){$("collection"+pair[0]).value=r[pair[1]]||""});
-  $("collectionFormTitle").textContent="编辑物品";$("saveCollectionBtn").textContent="保存修改";$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});
+  $("collectionEditor").open=true;$("collectionExtras").open=true;$("collectionFormTitle").textContent="编辑物品";$("saveCollectionBtn").textContent="保存修改";$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});
 }
 function renderCatalogInfo(){
   if(!collectionCatalog)return;
@@ -1556,6 +1583,7 @@ function collectionMatchesGrade(r,selected){
   var known=Number.isInteger(grade)&&grade>=1&&grade<=6;
   return selected==="unknown"?!known:known&&String(grade)===selected;
 }
+function collectionGradeText(r){var labels=['白色 / 1 级','绿色 / 2 级','蓝色 / 3 级','紫色 / 4 级','金色 / 5 级','红色 / 6 级'];for(var i=1;i<=6;i++)if(collectionMatchesGrade(r,String(i)))return labels[i-1];return '等级未标注'}
 function filteredCollections(){
   var list=collectionRecords(),selectedGroup=$("collectionFilterGroup").value,q=$("collectionSearch").value.trim().toLowerCase();
   return list.filter(function(r){return collectionMatchesGrade(r,$("collectionFilterGrade").value)&&(!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
@@ -1573,9 +1601,12 @@ function renderCollections(){
   $("collectionStats").textContent=list.length+" 件物品 · 已集齐 "+list.filter(function(r){return collectionStatus(r)==="已集齐"}).length+" 件 · "+list.reduce(function(n,r){return n+r.acquisitions.length},0)+" 次获取";
   populate("collectionFilterGame",uniq(list.map(function(r){return r.game})),"全部游戏");populate("collectionFilterCategory",uniq(list.map(function(r){return r.category})),"全部分类");
   var shown=filteredCollections();
+  collectionSelection.forEach(function(id){if(!list.some(function(r){return r.id===id}))collectionSelection.delete(id)});$("collectionSelectionCount").textContent="已选 "+collectionSelection.size+" 件（含隐藏的已选项）";$("deleteSelectedCollectionsBtn").disabled=!collectionSelection.size;
+  var filterCount=["collectionFilterGame","collectionFilterCategory","collectionFilterGroup","collectionFilterStatus"].filter(function(id){return $(id).value}).length;$("collectionFilterSummary").textContent="更多筛选"+(filterCount?"（已选 "+filterCount+" 项）":"");
   $("deleteFilteredCollectionsBtn").disabled=!shown.length;$("deleteFilteredCollectionsBtn").textContent="删除筛选结果（"+shown.length+" 件）";
   $("deleteAllCollectionsBtn").disabled=!list.length;
-$("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+' · '+esc(window.FPSCatalog.group(r)||'普通库存')+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 '+n+' / 目标 '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+collectionGuideHTML(r)+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">获取明细</button><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
+$("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card collection-item">'+($("collectionManage").open?'<label class="collection-select"><input type="checkbox" data-collection-select="'+esc(r.id)+'" '+(collectionSelection.has(r.id)?'checked':'')+'> 选择此物品</label>':'')+'<div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3><button class="collection-title-button" data-collection-detail="'+esc(r.id)+'">'+esc(r.name)+'</button></h3><div class="muted">'+esc(collectionGradeText(r))+' · '+esc(r.game)+' · '+esc(r.category)+' · '+esc(window.FPSCatalog.group(r)||'普通库存')+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 '+n+' / 目标 '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+'<p class="collection-guide-brief">获取方式：'+esc(window.FPSCatalog.acquisitionGuide(r).summary)+'</p>'+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">详情</button><details class="collection-more"><summary>更多</summary><div class="actions"><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></details></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
+  document.querySelectorAll("[data-collection-select]").forEach(function(b){b.onchange=function(){if(b.checked)collectionSelection.add(b.dataset.collectionSelect);else collectionSelection.delete(b.dataset.collectionSelect);renderCollections()}});
   document.querySelectorAll("[data-stock]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.stock,false)}});
   document.querySelectorAll("[data-correct]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.correct,true)}});
   document.querySelectorAll("[data-acquire]").forEach(function(b){b.onclick=function(){quickAcquire(b.dataset.acquire)}});
@@ -1587,7 +1618,7 @@ $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function
 }
 function renderCollectionDetail(){
   var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"});$("collectionDetail").hidden=!r;if(!r)return;
-  $("collectionDetailTitle").textContent=r.name+" · 获取与库存历史";$("collectionDetailSummary").textContent="当前库存 "+collectionQuantity(r)+" / 目标 "+r.target+" · 已填写花费合计 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
+  $("collectionDetailGuide").innerHTML=collectionGuideHTML(r)+(r.note?'<p class="muted">备注：'+esc(r.note)+'</p>':'');$("collectionDetailTitle").textContent=r.name+" · 获取与库存历史";$("collectionDetailSummary").textContent="当前库存 "+collectionQuantity(r)+" / 目标 "+r.target+" · 已填写花费合计 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
   $("acquisitionList").innerHTML=(r.starting_quantity!=null&&(r.import_source==="screenshot"||r.import_source==="warehouse")?'<div class="collection-log"><div><b>初始数量快照 · '+num(r.starting_quantity)+'</b><p class="muted">'+esc(r.snapshot_date||'')+' 导入确认 · 不代表历史获取时间、来源或花费</p></div></div>':'')+r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date||'日期未填写')+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · '+(a.cost==null?'花费未填写':'花费 '+num(a.cost).toFixed(2))+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><div class="actions"><button class="btn" data-acquisition-edit="'+esc(a.id)+'">补充 / 编辑</button><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
   renderInventoryHistory(r);
   document.querySelectorAll("[data-acquisition-edit]").forEach(function(b){b.onclick=function(){editAcquisition(r.id,b.dataset.acquisitionEdit)}});
@@ -1601,7 +1632,7 @@ function quickAcquire(itemId){
   var a={id:uid(),date:"",quantity:1,source:"",cost:null,note:"",inventory_seq:window.FPSInventory.nextSequence(r)},workspace=activeWorkspace;var candidate=JSON.parse(JSON.stringify(r));candidate.acquisitions.push(a);if(!validInventory(candidate)||!commitInventory(r,candidate))return;
   showToast(r.name+"：已记录获取 1 件","撤销",function(){if(activeWorkspace!==workspace)return;var live=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!live)return;var index=live.acquisitions.findIndex(function(x){return x.id===a.id});if(index>=0){if(acquisitionEditingId===a.id)resetAcquisitionForm();var candidate=JSON.parse(JSON.stringify(live));candidate.acquisitions.splice(index,1);if(!validInventory(candidate))return;live.acquisitions.splice(index,1);touchCollection(live)}});
 }
-function editAcquisition(itemId,acquisitionId){
+function editAcquisition(itemId,acquisitionId){$("acquisitionEditor").open=true;
   var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"}),a=r&&r.acquisitions.find(function(x){return x.id===acquisitionId});if(!a)return;
   collectionSelectedId=itemId;acquisitionEditingId=acquisitionId;
   [["Date","date"],["Quantity","quantity"],["Source","source"],["Cost","cost"],["Note","note"]].forEach(function(p){$("acquisition"+p[0]).value=a[p[1]]==null?"":a[p[1]]});
@@ -1631,7 +1662,7 @@ function deleteAcquisition(itemId,acquisitionId){
 function validInventory(r){try{window.FPSInventory.validate(r);return true}catch(e){showToast(e.message);return false}}
 function updateInventoryForm(){var correction=$("inventoryType").value==="correction";$("inventoryQuantityLabel").textContent=correction?"核对后的当前总数量（必填，可为 0）":"变动数量（默认 1）";$("inventoryQuantity").min=correction?"0":"1";$("inventoryQuantity").required=correction}
 function resetInventoryForm(){inventoryEditingId=null;$("inventoryForm").reset();$("inventoryType").value="consume";$("inventoryQuantity").value="1";$("inventoryDate").value="";$("inventoryNote").value="";$("inventoryFormTitle").textContent="记录库存变动";$("saveInventoryBtn").textContent="保存库存变动";updateInventoryForm()}
-function openInventory(id,correction){collectionSelectedId=id;resetAcquisitionForm();resetInventoryForm();var r=records.find(function(x){return x.id===id&&x.kind==="collection"});if(!r)return;if(correction){$("inventoryType").value="correction";$("inventoryQuantity").value=collectionQuantity(r)}updateInventoryForm();renderCollectionDetail();$("inventoryForm").scrollIntoView({behavior:"smooth",block:"center"})}
+function openInventory(id,correction){$("inventoryEditor").open=true;collectionSelectedId=id;resetAcquisitionForm();resetInventoryForm();var r=records.find(function(x){return x.id===id&&x.kind==="collection"});if(!r)return;if(correction){$("inventoryType").value="correction";$("inventoryQuantity").value=collectionQuantity(r)}updateInventoryForm();renderCollectionDetail();$("inventoryForm").scrollIntoView({behavior:"smooth",block:"center"})}
 function commitInventory(r,candidate){
   candidate.updated_at=isoNow();candidate.local_dirty=true;
   try{localStorage.setItem(workspaceRecordsKey(),JSON.stringify(records.map(function(x){return x.id===r.id?candidate:x})))}catch(e){showToast("空间不足，库存未修改。请先导出备份并释放空间。");return false}
@@ -1649,7 +1680,7 @@ function saveInventory(e){
   Object.assign(entry,{type:type,quantity:quantity,date:date,note:note});if(!validInventory(candidate)||!commitInventory(r,candidate))return;
   var eventId=entry.id,workspace=activeWorkspace,epoch=workspaceEpoch;resetInventoryForm();showToast("库存已更新："+collectionQuantity(r)+" 件","撤销",function(){if(activeWorkspace!==workspace||workspaceEpoch!==epoch)return;if(!previousEntry){voidInventory(r.id,eventId);return}var live=records.find(function(x){return x.id===r.id&&x.kind==="collection"});if(!live)return;var restored=JSON.parse(JSON.stringify(live)),idx=restored.inventory_events.findIndex(function(x){return x.id===eventId&&!x.voided});if(idx<0)return;restored.inventory_events[idx]=previousEntry;if(validInventory(restored))commitInventory(live,restored)})
 }
-function editInventory(itemId,eventId){var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"}),entry=r&&r.inventory_events.find(function(x){return x.id===eventId&&!x.voided});if(!entry)return;collectionSelectedId=itemId;inventoryEditingId=eventId;$("inventoryType").value=entry.type;$("inventoryQuantity").value=entry.quantity;$("inventoryDate").value=entry.date;$("inventoryNote").value=entry.note;$("inventoryFormTitle").textContent="编辑库存变动";$("saveInventoryBtn").textContent="保存修改";updateInventoryForm();$("inventoryForm").scrollIntoView({behavior:"smooth",block:"center"})}
+function editInventory(itemId,eventId){$("inventoryEditor").open=true;var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"}),entry=r&&r.inventory_events.find(function(x){return x.id===eventId&&!x.voided});if(!entry)return;collectionSelectedId=itemId;inventoryEditingId=eventId;$("inventoryType").value=entry.type;$("inventoryQuantity").value=entry.quantity;$("inventoryDate").value=entry.date;$("inventoryNote").value=entry.note;$("inventoryFormTitle").textContent="编辑库存变动";$("saveInventoryBtn").textContent="保存修改";updateInventoryForm();$("inventoryForm").scrollIntoView({behavior:"smooth",block:"center"})}
 function voidInventory(itemId,eventId){
   var r=records.find(function(x){return x.id===itemId&&x.kind==="collection"});if(!r)return;var candidate=JSON.parse(JSON.stringify(r)),entry=candidate.inventory_events.find(function(x){return x.id===eventId&&!x.voided});if(!entry)return;
   entry.voided=true;if(!validInventory(candidate)||!commitInventory(r,candidate))return;if(inventoryEditingId===eventId)resetInventoryForm();
@@ -1670,6 +1701,11 @@ function exportCollectionCSV(){
 function renderAll(){renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel()}
 
 $("deleteFilteredCollectionsBtn").addEventListener("click",function(){requestBulkDelete("filtered")});
+$("collectionManage").addEventListener("toggle",renderCollections);
+$("selectFilteredCollectionsBtn").addEventListener("click",function(){filteredCollections().forEach(function(r){collectionSelection.add(r.id)});renderCollections()});
+$("clearCollectionSelectionBtn").addEventListener("click",function(){collectionSelection.clear();renderCollections()});
+$("deleteSelectedCollectionsBtn").addEventListener("click",function(){requestBulkDelete("selected")});
+$("closeCollectionDetailBtn").addEventListener("click",function(){collectionSelectedId=null;renderCollectionDetail();$("collectionList").scrollIntoView({behavior:"smooth",block:"start"})});
 $("deleteAllCollectionsBtn").addEventListener("click",function(){requestBulkDelete("collections")});
 $("deleteConfirmCancel").addEventListener("click",cancelBulkDelete);
 $("deleteConfirmAccept").addEventListener("click",confirmBulkDelete);
@@ -1682,7 +1718,7 @@ $("importCatalogBtn").addEventListener("click",importCollectionCatalog);
 $("reloadCatalogBtn").addEventListener("click",function(){if(catalogLoading)return;collectionCatalog=null;loadCollectionCatalog()});
 $("catalogGrade").addEventListener("change",renderCatalogInfo);
 $("collectionMoreBtn").addEventListener("click",function(){collectionVisibleLimit+=24;renderCollections()});
-$("newCollectionBtn").addEventListener("click",function(){resetCollectionForm();$("collectionForm").scrollIntoView({behavior:"smooth",block:"center"});$("collectionGame").focus()});
+$("newCollectionBtn").addEventListener("click",function(){resetCollectionForm();$("collectionEditor").open=true;$("collectionForm").scrollIntoView({behavior:"smooth",block:"start"});$("collectionName").focus()});
 $("cancelCollectionBtn").addEventListener("click",resetCollectionForm);
 $("exportCollectionCsvBtn").addEventListener("click",exportCollectionCSV);
 ["collectionSearch","collectionFilterGame","collectionFilterCategory","collectionFilterGrade","collectionFilterGroup","collectionFilterStatus"].forEach(function(id){$(id).addEventListener("input",renderCollections);$(id).addEventListener("change",renderCollections)});

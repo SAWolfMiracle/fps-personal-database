@@ -47,7 +47,7 @@ function mount(options){
  function status(t){$('warehouseStatus').textContent=t}
  function current(){return pages[active]}
  function allReview(){return pages.reduce(function(rows,p){return rows.concat(p.review)},[])}
- function controls(){['warehouseScan','warehouseSingle','warehousePages','warehouseFile','warehouseClearReview','warehouseRemovePage'].forEach(function(id){$(id).disabled=busy});$('warehouseSave').disabled=busy||!allReview().length;$('warehouseCancel').disabled=!scanController}
+ function controls(){['warehouseScan','warehouseSingle','warehousePages','warehouseFile','warehouseClearReview','warehouseRemovePage'].forEach(function(id){$(id).disabled=busy});var count=allReview().length;$('warehouseSave').disabled=busy||!count;$('warehouseCancel').disabled=!scanController;$('warehouseSetup').hidden=!image;$('warehouseResults').hidden=!count;$('warehouseStep').textContent=scanController?'3 / 4 · 正在识别':count?'4 / 4 · 核对物品后保存':image?'2 / 4 · 框选仓库区域，设置行列后识别':'1 / 4 · 选择仓库截图'}
  function draw(){var p=current();if(!image||!p)return;canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;ctx.drawImage(image,0,0);if(p.rect){ctx.strokeStyle='#60d49b';ctx.lineWidth=Math.max(2,canvas.width/400);ctx.strokeRect(p.rect.x,p.rect.y,p.rect.w,p.rect.h)}}
  function syncSettings(){var p=current();if(!p)return;p.cols=Number($('warehouseCols').value);p.rows=Number($('warehouseRows').value);p.trim=$('warehouseTrim').checked}
  function escape(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
