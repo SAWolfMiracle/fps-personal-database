@@ -1,5 +1,11 @@
 # 云同步状态（v0.5.2）
 
+## 邮箱验证码配置（待控制台完成）
+
+前端已准备验证码登录与匿名邮箱绑定入口。发布前将 `supabase/email-otp-template.html` 分别应用到 Authentication → Email Templates 的 Magic Link、Confirm sign up 和 Change email address，保留现有验证码有效期、邮件限速和安全确认设置。模板同时显示 `{{ .Token }}` 与 `{{ .ConfirmationURL }}`，继续支持链接验证。
+
+主屏幕应用发送邮件后需在同一应用输入验证码；匿名绑定使用 `email_change` 验证，并核对原 user_id。真实邮件投递、验证码验证和 iPhone 主屏幕持久登录尚待实测。不要在聊天中提交验证码。
+
 当前已完成：
 - Tokyo Supabase + RLS。
 - guest 与每个 user_id 的本地 workspace 分离。

@@ -585,13 +585,17 @@ tbody tr:hover td{background:#101821}
       <button class="btn" id="mergeGuestBtn">合并到当前账号</button>
     </div>
     <div class="actions"><button class="btn primary" id="cloudSyncBtn">立即同步</button></div><details class="inline-panel"><summary>登录与同步设置</summary><div class="cloud-auth">
-      <div class="field cloud-email-field"><label>可恢复账号（邮箱魔法链接）</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+      <div class="field cloud-email-field"><label for="cloudEmail">邮箱账号</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
       <div class="actions cloud-actions">
         <button class="btn primary" id="cloudEmailBtn" title="需先在 Supabase Auth 配置站点重定向">发送登录链接</button>
+        <button class="btn primary" id="cloudOtpSendBtn">发送验证码</button>
         <button class="btn" id="cloudAnonBtn" title="需先在 Supabase Auth 启用 Anonymous Sign-Ins">匿名云身份</button>
         <button class="btn ghost" id="cloudSignOutBtn">退出云身份</button>
       </div>
     </div>
+    <p class="muted">主屏幕版请使用验证码：收到邮件后回到这里输入，不必打开邮件链接。</p>
+    <div id="cloudOtpBox" hidden><div class="field"><label for="cloudOtpCode">邮件验证码</label><input id="cloudOtpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="输入邮件中的数字验证码"></div><button class="btn primary" id="cloudOtpVerifyBtn">验证并登录</button></div>
+    <p id="cloudOtpStatus" class="muted" role="status" aria-live="polite"></p>
     <div class="cloud-toggles">
       <label class="toggle-row"><input id="cloudAutoSync" type="checkbox" checked><span><b>自动同步</b><small>保存、编辑或删除后，在联网时自动同步。</small></span></label>
       <label class="toggle-row"><input id="communityOptIn" type="checkbox"><span><b>匿名贡献社区统计</b><small>仅允许聚合统计使用；原始记录仍受 RLS 隔离，默认关闭。</small></span></label>
@@ -699,7 +703,7 @@ var tabs=[
   ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","database","收藏"],["data","database","数据"]
 ];
 var records=[];
-var screenshotImporter=null,warehouseImporter=null,collectionSelection=new Set();
+var screenshotImporter=null,warehouseImporter=null,collectionSelection=new Set(),pendingEmailOtp=null;
 var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null,inventoryEditingId=null;
 var collectionCatalog=null,catalogLoading=false,collectionVisibleLimit=24;
 var editingId=null;
@@ -1240,6 +1244,7 @@ function renderCloudPanel(){
   $("cloudAnonBtn").disabled=!cloudClient||!!cloudUser||cloudBusy||!cfg.anonymousAuth;
   $("cloudEmailBtn").textContent=cloudUser&&cloudUser.is_anonymous?"绑定邮箱":"发送登录链接";
   $("cloudEmailBtn").disabled=!cloudClient||cloudBusy||(cloudUser?(cloudUser.is_anonymous?!cfg.manualLinking:true):!cfg.emailMagicLink);
+  $("cloudOtpSendBtn").disabled=$("cloudEmailBtn").disabled;$("cloudOtpBox").hidden=!pendingEmailOtp;$("cloudOtpVerifyBtn").disabled=!cloudClient||cloudBusy||!pendingEmailOtp;$("cloudOtpVerifyBtn").textContent=pendingEmailOtp&&pendingEmailOtp.userId?"验证并绑定邮箱":"验证并登录";
   $("guestMergeBox").hidden=!mergeAvailable;
   if(mergeAvailable)$("guestMergeText").textContent="本机 guest workspace 有 "+guest.length+" 条记录；合并后仍保留 guest 副本，避免误删。";
   if(!cloudConfigured()){setCloudBadge("未配置","cloud-off");setCloudMessage("当前未配置 Supabase，数据只保存在当前 workspace。")}
@@ -1251,6 +1256,7 @@ function renderCloudPanel(){
 function activateWorkspaceForUser(user){
   var next=workspaceForUser(user);
   if(activeWorkspace===next)return;
+  pendingEmailOtp=null;$("cloudOtpCode").value="";$("cloudOtpStatus").textContent="";
   saveDraftNow();if(screenshotImporter)screenshotImporter.clear();if(warehouseImporter)warehouseImporter.clear();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();resetAcquisitionForm();resetInventoryForm();
   clearForm(false,false);renderAll();restoreDraft()
 }
@@ -1304,6 +1310,32 @@ async function cloudEmailSignIn(){
     }
   }catch(err){setCloudBadge("发送失败","cloud-error");setCloudMessage("邮箱操作失败："+err.message)}
   finally{cloudBusy=false;renderCloudPanel()}
+}
+async function cloudSendEmailOtp(){
+  if(!cloudClient||cloudBusy)return;var email=$("cloudEmail").value.trim(),cfg=cloudConfig();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showToast("请填写有效邮箱");return}
+  if(cloudUser&&!cloudUser.is_anonymous){showToast("当前账号已登录");return}
+  if(pendingEmailOtp&&pendingEmailOtp.email===email&&Date.now()-pendingEmailOtp.sentAt<60000){$("cloudOtpStatus").textContent="请至少等待 60 秒再重新发送验证码。";return}
+  var userId=cloudUser?cloudUser.id:null,ticket=workspaceEpoch;cloudBusy=true;renderCloudPanel();
+  try{
+    if(userId&&!cfg.manualLinking)throw Error("匿名邮箱绑定尚未配置");if(!userId&&!cfg.emailMagicLink)throw Error("邮箱认证尚未配置");
+    var result=userId?await cloudClient.auth.updateUser({email:email},{emailRedirectTo:location.origin+location.pathname}):await cloudClient.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.origin+location.pathname}});
+    if(result.error)throw result.error;if(ticket!==workspaceEpoch||(cloudUser?cloudUser.id:null)!==userId)return;
+    pendingEmailOtp={email:email,userId:userId,type:userId?"email_change":"email",sentAt:Date.now()};$("cloudOtpCode").value="";
+    $("cloudOtpStatus").textContent="已向 "+email+" 发送邮件。请在当前应用输入验证码；验证码和链接只能使用一次。";
+  }catch(err){$("cloudOtpStatus").textContent="发送失败："+err.message}finally{cloudBusy=false;renderCloudPanel()}
+}
+async function cloudVerifyEmailOtp(){
+  if(!cloudClient||cloudBusy||!pendingEmailOtp)return;var challenge=pendingEmailOtp,token=$("cloudOtpCode").value.replace(/\s/g,"");
+  if(!/^\d{6,10}$/.test(token)){$("cloudOtpStatus").textContent="请输入邮件中的数字验证码。";return}
+  if((cloudUser?cloudUser.id:null)!==challenge.userId){pendingEmailOtp=null;$("cloudOtpCode").value="";$("cloudOtpStatus").textContent="登录身份已变化，请重新发送验证码。";renderCloudPanel();return}
+  cloudBusy=true;renderCloudPanel();
+  try{
+    var result=await cloudClient.auth.verifyOtp({email:challenge.email,token:token,type:challenge.type});if(result.error)throw result.error;
+    var user=result.data&&result.data.user;if(!user)throw Error("未取得登录身份，请重试");if(challenge.userId&&user.id!==challenge.userId)throw Error("邮箱绑定身份不一致，请停止操作");
+    cloudUser=user;pendingEmailOtp=null;$("cloudOtpCode").value="";activateWorkspaceForUser(user);$("cloudOtpStatus").textContent=challenge.userId?"邮箱已验证并绑定，原 user_id 和数据保留。":"已在当前应用登录。本机访客数据保留，不会自动合并。";
+    showToast(challenge.userId?"邮箱绑定成功":"验证码登录成功");scheduleCloudSync(100);
+  }catch(err){$("cloudOtpStatus").textContent="验证失败："+err.message+"。如验证码已失效，请重新发送。"}finally{cloudBusy=false;renderCloudPanel()}
 }
 async function cloudSignOut(){
   if(!cloudClient||!cloudUser)return;
@@ -1738,6 +1770,8 @@ $("game").addEventListener("input",renderDatalists);
 $("exportJsonBtn").addEventListener("click",exportJSON);$("exportCsvBtn").addEventListener("click",exportCSV);$("importFile").addEventListener("change",importJSON);$("clearAllBtn").addEventListener("click",clearAll);
 $("cloudAnonBtn").addEventListener("click",cloudAnonymousSignIn);
 $("cloudEmailBtn").addEventListener("click",cloudEmailSignIn);
+$("cloudOtpSendBtn").addEventListener("click",cloudSendEmailOtp);
+$("cloudOtpVerifyBtn").addEventListener("click",cloudVerifyEmailOtp);
 $("cloudSyncBtn").addEventListener("click",function(){cloudSync({silent:false})});
 $("cloudSignOutBtn").addEventListener("click",cloudSignOut);
 $("mergeGuestBtn").addEventListener("click",mergeGuestIntoCurrent);
