@@ -118,6 +118,9 @@ tbody tr:hover td{background:#101821}
 .mobile-nav button.active{color:#fff}
 .mobile-nav strong{display:block;font-size:18px;margin-bottom:2px}
 .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#18212c;border:1px solid var(--line);padding:10px 12px;border-radius:11px;opacity:0;pointer-events:none;transition:.2s;z-index:100;display:flex;gap:10px;align-items:center;max-width:calc(100vw - 30px)}
+.delete-confirm[hidden]{display:none}
+.delete-confirm{position:fixed;inset:0;background:#0009;z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.delete-confirm .card{width:min(100%,480px);max-height:85vh;overflow:auto}
 .toast.show{opacity:1;pointer-events:auto}
 .toast button{border:0;background:transparent;color:var(--accent);font-weight:700;padding:4px}
 .mobile-records{display:none}
@@ -278,7 +281,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.11</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.12</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -502,6 +505,7 @@ tbody tr:hover td{background:#101821}
       <div class="field"><label for="collectionFilterStatus">收集状态</label><select id="collectionFilterStatus"><option value="">全部状态</option><option>未获得</option><option>当前无库存</option><option>已获得</option><option>已集齐</option></select></div>
     </div>
   </div>
+  <div class="actions" style="margin:12px 0"><button class="btn danger" id="deleteFilteredCollectionsBtn">删除筛选结果</button><button class="btn danger" id="deleteAllCollectionsBtn">删除全部收藏</button></div>
   <p id="collectionGuideCoverage" class="muted"></p>
   <div id="collectionSpecial" class="card" hidden></div>
   <div id="collectionList" class="collection-grid"></div>
@@ -642,6 +646,7 @@ tbody tr:hover td{background:#101821}
 </div>
 
 <nav class="mobile-nav" id="mobileNav"></nav>
+<div id="deleteConfirm" class="delete-confirm" hidden><section class="card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle"><h2 id="deleteConfirmTitle">确认删除</h2><p id="deleteConfirmText"></p><p class="muted">仅影响当前工作区。删除后可在 10 秒内撤销；账号开启同步时，删除也会同步到云端。</p><div class="actions"><button class="btn" id="deleteConfirmCancel">取消删除</button><button class="btn danger" id="deleteConfirmAccept">确认删除</button></div></section></div>
 <div class="toast" id="toast"><span id="toastText"></span><button id="toastAction" hidden>撤销</button></div>
 
 <script src="./ocr-import.js"></script>
@@ -654,7 +659,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.11";
+var APP_VERSION="0.6.12";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -675,6 +680,7 @@ var editingId=null;
 var deletedSnapshot=null;
 var deleteTimer=null;
 var activeWorkspace="guest",workspaceEpoch=0;
+var pendingBulkDelete=null;
 var cloudTombstones=[];
 var cloudClient=null;
 var cloudUser=null;
@@ -750,6 +756,7 @@ function migrateLegacyWorkspace(){
 }
 function loadWorkspace(name){
   workspaceEpoch++;activeWorkspace=name||"guest";
+  pendingBulkDelete=null;$("deleteConfirm").hidden=true;
   try{
     var raw=JSON.parse(localStorage.getItem(workspaceRecordsKey())||"[]");
     records=Array.isArray(raw)?raw.map(migrateRecord):[];
@@ -768,7 +775,7 @@ function saveAndRender(skipCloud){
   if(!skipCloud)scheduleCloudSync()
 }
 
-function showToast(msg,actionLabel,action){
+function showToast(msg,actionLabel,action,duration){
   clearTimeout(deleteTimer);
   $("toastText").textContent=msg;
   var b=$("toastAction");
@@ -776,7 +783,7 @@ function showToast(msg,actionLabel,action){
     b.hidden=false;b.textContent=actionLabel||"撤销";b.onclick=function(){action();hideToast()};
   }else{b.hidden=true;b.onclick=null}
   $("toast").classList.add("show");
-  deleteTimer=setTimeout(hideToast,5000);
+  deleteTimer=setTimeout(hideToast,duration||5000);
 }
 function hideToast(){$("toast").classList.remove("show")}
 
@@ -1456,8 +1463,38 @@ function importJSON(e){
     finally{e.target.value=""}
   };rd.readAsText(f)
 }
-function clearAll(){
-  if(confirm("确定清空当前 workspace 的全部对局和收藏？建议先导出 JSON 备份。")){records.forEach(function(r){addTombstone(r.id,num(r.cloud_revision))});records=[];editingId=null;clearDraft();saveAndRender();showToast("已清空当前 workspace")}
+function clearAll(){requestBulkDelete("all")}
+function cancelBulkDelete(){pendingBulkDelete=null;$("deleteConfirm").hidden=true}
+function requestBulkDelete(scope){
+  var targets=scope==="all"?records:scope==="collections"?collectionRecords():filteredCollections();
+  if(!targets.length){showToast("没有可删除的记录");return}
+  pendingBulkDelete={ids:targets.map(function(r){return r.id}),workspace:activeWorkspace,epoch:workspaceEpoch};
+  $("deleteConfirmTitle").textContent=scope==="all"?"清空当前工作区":scope==="collections"?"删除全部收藏":"删除筛选结果";
+  $("deleteConfirmText").textContent="将删除 "+targets.length+" 条"+(scope==="all"?"对局及收藏记录。":"收藏记录（含物品的获取明细和库存变动）。")+(scope==="filtered"?"包括符合筛选条件但尚未加载显示的物品。":"")+"建议先导出 JSON 备份。";
+  $("deleteConfirm").hidden=false;$("deleteConfirmCancel").focus();
+}
+function confirmBulkDelete(){
+  var plan=pendingBulkDelete;cancelBulkDelete();
+  if(!plan||plan.workspace!==activeWorkspace||plan.epoch!==workspaceEpoch)return;
+  var ids=new Set(plan.ids),removed=records.filter(function(r){return ids.has(r.id)});
+  if(removed.length!==plan.ids.length){showToast("记录已变化，请重新确认删除范围");return}
+  var previous=records,previousTombs=cloudTombstones.slice(),workspace=activeWorkspace,epoch=workspaceEpoch,deadline=Date.now()+10000;
+  removed.forEach(function(r){addTombstone(r.id,num(r.cloud_revision));cloudTombstones.find(function(t){return t.id===r.id}).ready_after=deadline+200});
+  records=records.filter(function(r){return !ids.has(r.id)});
+  try{persist()}catch(e){records=previous;cloudTombstones=previousTombs;try{persist()}catch(ignore){}showToast("保存失败，未删除记录");return}
+  if(ids.has(editingId)){editingId=null;clearDraft()}
+  if(ids.has(collectionEditingId))resetCollectionForm();
+  if(ids.has(collectionSelectedId)){collectionSelectedId=null;resetAcquisitionForm();resetInventoryForm()}
+  renderAll();renderCloudPanel();
+  showToast("已删除 "+removed.length+" 条记录（10 秒内可撤销）","撤销",function(){
+    if(activeWorkspace!==workspace||workspaceEpoch!==epoch||Date.now()>deadline)return;
+    var current=records,currentTombs=cloudTombstones.slice(),present=new Set(records.map(function(r){return r.id}));
+    records=removed.filter(function(r){return !present.has(r.id)}).map(function(r){return Object.assign({},r,{updated_at:isoNow(),local_dirty:true})}).concat(records);
+    removed.forEach(function(r){removeTombstone(r.id)});
+    try{persist()}catch(e){records=current;cloudTombstones=currentTombs;try{persist()}catch(ignore){}showToast("撤销保存失败，请导出备份后重试");return}
+    renderAll();renderCloudPanel();scheduleCloudSync();
+  },10000);
+  scheduleCloudSync(10200);
 }
 
 
@@ -1519,6 +1556,10 @@ function collectionMatchesGrade(r,selected){
   var known=Number.isInteger(grade)&&grade>=1&&grade<=6;
   return selected==="unknown"?!known:known&&String(grade)===selected;
 }
+function filteredCollections(){
+  var list=collectionRecords(),selectedGroup=$("collectionFilterGroup").value,q=$("collectionSearch").value.trim().toLowerCase();
+  return list.filter(function(r){return collectionMatchesGrade(r,$("collectionFilterGrade").value)&&(!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
+}
 function renderCollections(){
   renderCatalogInfo();
   var list=collectionRecords();
@@ -1531,8 +1572,9 @@ function renderCollections(){
   $("collectionSpecial").innerHTML='<h3>专项收集 · 阿萨拉牌</h3><p>当前持有 '+deck.owned+' / '+deck.total+' 种牌 · 牌盒：'+(deck.box?'已持有':'未持有')+'</p><p class="muted">按不同牌种计数，重复牌不增加进度；牌盒不计入 54 种。这里只记录当前持有，不代表已在游戏中收藏或交付。</p><details><summary>缺少 '+deck.missing.length+' 种牌</summary><p>'+deck.missing.map(esc).join(' · ')+'</p></details>';
   $("collectionStats").textContent=list.length+" 件物品 · 已集齐 "+list.filter(function(r){return collectionStatus(r)==="已集齐"}).length+" 件 · "+list.reduce(function(n,r){return n+r.acquisitions.length},0)+" 次获取";
   populate("collectionFilterGame",uniq(list.map(function(r){return r.game})),"全部游戏");populate("collectionFilterCategory",uniq(list.map(function(r){return r.category})),"全部分类");
-  var q=$("collectionSearch").value.trim().toLowerCase();
-var shown=list.filter(function(r){return collectionMatchesGrade(r,$("collectionFilterGrade").value)&&(!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
+  var shown=filteredCollections();
+  $("deleteFilteredCollectionsBtn").disabled=!shown.length;$("deleteFilteredCollectionsBtn").textContent="删除筛选结果（"+shown.length+" 件）";
+  $("deleteAllCollectionsBtn").disabled=!list.length;
 $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card"><div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3>'+esc(r.name)+'</h3><div class="muted">'+esc(r.game)+' · '+esc(r.category)+' · '+esc(window.FPSCatalog.group(r)||'普通库存')+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 '+n+' / 目标 '+r.target+'</div><div class="collection-progress"><span style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+collectionGuideHTML(r)+(r.note?'<p class="muted">'+esc(r.note)+'</p>':'')+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">记录获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">获取明细</button><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
   document.querySelectorAll("[data-stock]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.stock,false)}});
   document.querySelectorAll("[data-correct]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.correct,true)}});
@@ -1627,6 +1669,11 @@ function exportCollectionCSV(){
 
 function renderAll(){renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel()}
 
+$("deleteFilteredCollectionsBtn").addEventListener("click",function(){requestBulkDelete("filtered")});
+$("deleteAllCollectionsBtn").addEventListener("click",function(){requestBulkDelete("collections")});
+$("deleteConfirmCancel").addEventListener("click",cancelBulkDelete);
+$("deleteConfirmAccept").addEventListener("click",confirmBulkDelete);
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("deleteConfirm").hidden)cancelBulkDelete()});
 $("collectionForm").addEventListener("submit",saveCollection);
 $("acquisitionForm").addEventListener("submit",saveAcquisition);
 $("inventoryForm").addEventListener("submit",saveInventory);$("inventoryType").addEventListener("change",updateInventoryForm);$("cancelInventoryBtn").addEventListener("click",resetInventoryForm);

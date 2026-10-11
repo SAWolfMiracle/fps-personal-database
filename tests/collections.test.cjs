@@ -4,17 +4,38 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const vm=require('node:vm');
 function app(){
+ let clock=Date.now();class TestDate extends Date{static now(){return clock}}
  const fields=new Map(),store=new Map();
- const element=id=>{if(!fields.has(id))fields.set(id,{value:'',innerHTML:'',textContent:'',hidden:false,reset(){},scrollIntoView(){},classList:{add(){},remove(){}}});return fields.get(id)};
+ const element=id=>{if(!fields.has(id))fields.set(id,{value:'',innerHTML:'',textContent:'',hidden:false,reset(){},focus(){},scrollIntoView(){},classList:{add(){},remove(){}}});return fields.get(id)};
  const html=readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
- source=source.slice(0,source.indexOf('$("collectionForm").addEventListener'));
+ source=source.slice(0,source.indexOf('$("deleteFilteredCollectionsBtn").addEventListener'));
  source+=`renderAll=function(){};renderCloudPanel=function(){};refreshCommunityStats=function(){};scheduleCloudSync=function(){};saveAndRender=function(){persist()};showToast=function(msg,label,action){window.undo=action};download=function(blob,name){window.lastDownload={blob,name}};
  window.test={collectionGuideHTML,exportCollectionCSV,saveInventory,voidInventory,editInventory,resetInventoryForm,openInventory,planBackupImport,applyBackupImport,cloudSync,setCloudUser:function(u){cloudUser=u},importCollectionCatalog,setCatalog:function(c){collectionCatalog=c},migrateRecord,collectionQuantity,collectionStatus,matchRecords,collectionRecords,summary,filtered,saveCollection,saveAcquisition,quickAcquire,editAcquisition,resetAcquisitionForm,deleteAcquisition,pushRecordWithRevision,remoteToLocal,cloudPayload,loadWorkspace,persist,deleteRecord,
- setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)},collectionMatchesGrade};})();`;
+ setRecords:function(x){records=x},getRecords:function(){return records},setClient:function(x){cloudClient=x},select:function(id){collectionSelectedId=id},workspace:function(name){loadWorkspace(name)},collectionMatchesGrade,requestBulkDelete,confirmBulkDelete,cancelBulkDelete,filteredCollections};})();`;
  const window={FPSInventory:require('../inventory.js'),FPSCatalog:require('../collection-catalog.js'),FPS_CLOUD_CONFIG:{enabled:true,url:'https://example.test',publishableKey:'test-publishable-key'}},context={window,document:{getElementById:element,querySelectorAll:()=>[]},localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>{if(store.failWrites)throw Error("storage full");store.set(k,v)},removeItem:k=>store.delete(k)},navigator:{onLine:true},setTimeout:()=>0,clearTimeout(){},URL,Blob,console};
- vm.runInNewContext(source,context);return {api:window.test,window,element,store};
+ context.Date=TestDate;vm.runInNewContext(source,context);return {api:window.test,window,element,store,advanceTime:ms=>{clock+=ms}};
 }
+test('bulk filtered deletion includes unrendered matches, keeps matches and other grades, and undo restores inventory histories',()=>{
+ const {api,window,element}=app();api.workspace('bulk');
+ const items=Array.from({length:30},(_,i)=>api.migrateRecord({id:'red'+i,kind:'collection',game:'三角洲行动',name:'红'+i,catalog_grade:6,acquisitions:[{id:'a'+i,quantity:1,date:'',source:'',cost:null,note:''}],inventory_events:[]}));
+ const white=api.migrateRecord({id:'white',kind:'collection',catalog_grade:1,name:'白',game:'三角洲行动'}),match=api.migrateRecord({id:'match',game:'CS2'});
+ api.setRecords(items.concat([white,match]));element('collectionFilterGrade').value='6';api.requestBulkDelete('filtered');assert.match(element('deleteConfirmText').textContent,/30 条/);assert.equal(api.getRecords().length,32);
+ api.cancelBulkDelete();api.confirmBulkDelete();assert.equal(api.getRecords().length,32);
+ api.requestBulkDelete('filtered');api.confirmBulkDelete();assert.deepEqual(Array.from(api.getRecords(),r=>r.id),['white','match']);window.undo();assert.equal(api.getRecords().length,32);assert.equal(api.getRecords()[0].acquisitions[0].quantity,1);
+ api.workspace('bulk');assert.equal(api.getRecords().length,32);
+});
+test('bulk tombstones persist, wait through undo window, and synchronize deletion with the original revision',async()=>{
+ const {api,advanceTime}=app();api.workspace('sync_bulk');api.setCloudUser({id:'sync_bulk'});api.setRecords([api.migrateRecord({id:'cloud_item',kind:'collection',name:'云记录',cloud_revision:7,local_dirty:false})]);let calls=[];
+ api.setClient({from:()=>({select:()=>({order:()=>({range:async()=>({data:[]})})})}),rpc:async(name,args)=>{calls.push(args);return {data:[{applied:true,current_revision:8}]}}});
+ api.requestBulkDelete('collections');api.confirmBulkDelete();api.workspace('sync_bulk');await api.cloudSync({silent:true});assert.equal(calls.length,0);assert.equal(api.getRecords().length,0);
+ advanceTime(11000);await api.cloudSync({silent:true});assert.equal(calls.length,1);assert.equal(calls[0].p_id,'cloud_item');assert.equal(calls[0].p_base_revision,7);assert.equal(calls[0].p_deleted,true);assert.equal(calls[0].p_share_community,false);
+});
+test('bulk deletion confirmation and undo cannot cross workspace switches; failed saves keep all records',()=>{
+ const {api,window,store}=app();api.workspace('one');const r=api.migrateRecord({id:'one',kind:'collection',name:'测试'});api.setRecords([r]);api.requestBulkDelete('collections');api.workspace('two');api.setRecords([api.migrateRecord({id:'two',kind:'collection',name:'其他'})]);api.confirmBulkDelete();assert.equal(api.getRecords()[0].id,'two');
+ api.requestBulkDelete('all');store.failWrites=true;api.confirmBulkDelete();assert.equal(api.getRecords()[0].id,'two');store.failWrites=false;
+ api.requestBulkDelete('collections');api.confirmBulkDelete();assert.equal(api.getRecords().length,0);api.workspace('one');window.undo();assert.equal(api.getRecords().length,0);
+});
 test('grade filter uses saved grades and catalogue identities without mixing other games or changing records',()=>{
  const {api}=app();api.setCatalog(require('../collection-catalog.json'));
  const red={game:'三角洲行动',name:'自定义名字',catalog_item_id:'orzice:p1518',catalog_grade:6,starting_quantity:2};const before=JSON.stringify(red);
