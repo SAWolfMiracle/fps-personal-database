@@ -20,6 +20,60 @@ function cardName(r){if(gameKey(r.game)!=='三角洲行动')return '';var name=d
 function group(r){if(r.collection_group==='普通库存')return '';if(r.collection_group)return String(r.collection_group).slice(0,80);return cardName(r)?'阿萨拉牌':''}
 function deckProgress(records,quantity){var held=new Set(),box=false;records.filter(function(r){return r.kind==='collection'&&group(r)==='阿萨拉牌'}).forEach(function(r){var name=cardName(r);if(!name||quantity(r)<1)return;if(name==='阿萨拉牌-牌盒')box=true;else held.add(name)});return {owned:held.size,total:54,box:box,missing:Object.values(deckNames).filter(function(n){return n!=='阿萨拉牌-牌盒'&&!held.has(n)})}}
 var modelNames={'orzice:p1628':'德小兰','orzice:p1629':'灰鲭鲨模型','orzice:p1630':'德小兰·灰鲭鲨模型'};
+var legacyFiveMaps=['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱'];
+var researchedMapContexts={
+ 'orzice:p1457':{maps:legacyFiveMaps,note:'S9 限时藏宝堆路线：当时五张烽火地带地图均有藏宝堆；属于历史活动地图，不代表当前仍开放。'},
+ 'orzice:p1456':{maps:legacyFiveMaps,note:'S9 历史掉落范围：当时五张烽火地带地图的各类容器均有低概率掉落；没有固定刷新点，当前掉落状态未核实。'},
+ 'orzice:p1348':{maps:legacyFiveMaps,note:'S8 历史容器路线覆盖当时五张地图；春节联动福贝点位另见零号大坝、长弓溪谷、航天基地、潮汐监狱。活动已结束，返场未核实。'},
+ 'orzice:p1361':{maps:['零号大坝','巴克什','航天基地'],note:'S8 赤枭巡猎历史地图：零号大坝、巴克什、航天基地；当前玩法是否开放未核实。'},
+ 'orzice:p1350':{maps:['零号大坝','巴克什','航天基地'],note:'S8 赤枭巡猎历史地图：零号大坝、巴克什、航天基地；当前玩法是否开放未核实。'},
+ 'orzice:p1489':{maps:legacyFiveMaps,note:'肯德基联动历史路线：活动期间五张烽火地带地图的鸟窝、旅行包均可能产出；活动已结束，返场未核实。'},
+ 'orzice:p1496':{maps:legacyFiveMaps,note:'2026 猛攻节藏宝堆历史路线：当时五张烽火地带地图均有藏宝堆；活动已结束，当前掉落未核实。'},
+ 'orzice:p1499':{maps:legacyFiveMaps,note:'古墓丽影联动期间从藏宝堆获取钥匙；当时五张地图均有藏宝堆。历史活动范围，不代表当前仍可获取。'},
+ 'orzice:p1500':{maps:legacyFiveMaps,note:'古墓丽影联动期间从藏宝堆获取钥匙；当时五张地图均有藏宝堆。历史活动范围，不代表当前仍可获取。'},
+ 'orzice:p1501':{maps:legacyFiveMaps,note:'古墓丽影联动期间从藏宝堆获取钥匙；当时五张地图均有藏宝堆。历史活动范围，不代表当前仍可获取。'},
+ 'orzice:p1502':{maps:legacyFiveMaps,note:'古墓丽影联动期间从藏宝堆获取钥匙；当时五张地图均有藏宝堆。历史活动范围，不代表当前仍可获取。'},
+ 'orzice:p1503':{maps:legacyFiveMaps,note:'古墓丽影联动期间从藏宝堆获取钥匙；当时五张地图均有藏宝堆。历史活动范围，不代表当前仍可获取。'},
+ 'orzice:p1504':{maps:legacyFiveMaps,note:'古墓丽影联动期间从藏宝堆获取钥匙；当时五张地图均有藏宝堆。历史活动范围，不代表当前仍可获取。'},
+ 'orzice:p1488':{maps:['零号大坝','长弓溪谷','巴克什','航天基地'],note:'契约之钥兑换点为牛角之神雕像；雕像分布于这四张地图。历史活动点位，当前活动状态未核实。'},
+ 'orzice:p1498':{maps:['零号大坝','长弓溪谷','巴克什','航天基地'],note:'普通劳拉手办可在这四张地图的牛角之神雕像处兑换；大坝水泥厂是攻略记录的其中一个点位。历史活动点位，当前活动状态未核实。'},
+ 'orzice:p189':{maps:['零号大坝','长弓溪谷','巴克什','航天基地','AZ-3'],note:'二周年哈夫克保险小队历史地图：零号大坝、长弓溪谷、巴克什、航天基地、AZ-3；不含潮汐监狱及零号大坝黑夜行动。活动已于 2026-10-08 结束。'},
+ 'orzice:p187':{maps:legacyFiveMaps,note:'2026 猛攻节大红砖返场历史地图：活动期间五张烽火地带地图均可参与；活动已结束，其他返场未核实。'},
+ 'orzice:p1089':{maps:legacyFiveMaps,note:'2026 猛攻节大红砖返场历史地图：活动期间五张烽火地带地图均可参与；活动已结束，其他返场未核实。'},
+ 'orzice:p1249':{maps:legacyFiveMaps,note:'2026 猛攻节大红砖返场历史地图：活动期间五张烽火地带地图均可参与；活动已结束，其他返场未核实。'},
+ 'orzice:1061':{maps:['潮汐监狱'],note:'潮汐监狱系列地图收藏品；旧赛季资料记载仅在潮汐监狱产出，当前掉落状态未实机复核。'},
+ 'orzice:1054':{maps:['潮汐监狱'],note:'潮汐监狱系列地图收藏品；旧赛季资料记载仅在潮汐监狱产出，当前掉落状态未实机复核。'},
+ 'orzice:1056':{maps:['潮汐监狱'],note:'潮汐监狱系列地图收藏品；旧赛季资料记载仅在潮汐监狱产出，当前掉落状态未实机复核。'},
+ 'orzice:1062':{maps:['潮汐监狱'],note:'潮汐监狱系列地图收藏品；旧赛季资料记载仅在潮汐监狱产出，当前掉落状态未实机复核。'},
+ 'orzice:955':{maps:['潮汐监狱'],note:'旧赛季资料记载为潮汐监狱首领渡鸦掉落；当前掉落状态未实机复核。'},
+ 'orzice:964':{maps:['潮汐监狱'],note:'旧赛季资料记载为潮汐监狱产出；当前掉落状态未实机复核。'},
+ 'orzice:1204':{maps:['潮汐监狱'],note:'旧赛季资料将潮汐监狱列为主要产出地图；特殊兵种补给等跨图说法未核实。'},
+ 'orzice:962':{maps:['航天基地','长弓溪谷'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:1064':{maps:['航天基地','零号大坝'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:978':{maps:['航天基地','长弓溪谷'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:1284':{maps:['零号大坝','航天基地'],note:'资料记载零号大坝水泥厂及航天基地可产出；当前掉落状态未实机复核。'},
+ 'orzice:1257':{maps:['航天基地','零号大坝'],note:'资料记载航天基地核心区、零号大坝行政区可产出；当前掉落状态未实机复核。'},
+ 'orzice:p1455':{maps:['巴克什'],note:'旧赛季资料记录的固定刷新点在巴克什；其他地图容器随机产出的说法相互冲突，未纳入确认范围。'},
+ 'orzice:1283':{maps:legacyFiveMaps,note:'S9 赛季资料记载的工具刷新范围为当时五张烽火地带地图；属于旧赛季范围，新增地图及当前掉落未核实。'},
+ 'orzice:1218':{maps:['航天基地','长弓溪谷'],note:'S6 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:p1338':{maps:legacyFiveMaps,note:'2026 年 1 月限时活动：当时五张烽火地带地图的鸟窝可能产出；活动已结束，返场未核实。'},
+ 'orzice:1217':{maps:['所有地图（历史资料）'],note:'S6 赛季资料记载为全地图产出；属于旧赛季记录，当前范围未实机复核。'},
+ 'orzice:1199':{maps:['潮汐监狱'],note:'S6 赛季资料记载主要产自潮汐监狱；当前掉落状态未实机复核。'},
+ 'orzice:1200':{maps:['潮汐监狱'],note:'S6 赛季资料记载主要产自潮汐监狱；当前掉落状态未实机复核。'},
+ 'orzice:1207':{maps:['航天基地','零号大坝'],note:'S6 赛季资料记载的产出地图；当前掉落状态未实机复核。'},
+ 'orzice:1203':{maps:['航天基地','长弓溪谷'],note:'S6 赛季资料记载的产出地图；当前掉落状态未实机复核。'},
+ 'orzice:1201':{maps:['所有地图（历史资料）'],note:'S6 资料有全地图产出的记录，也有攻略称主要产自航天基地、长弓溪谷；具体范围存在分歧，当前未实机复核。'},
+ 'orzice:1202':{maps:['航天基地','零号大坝'],note:'S6 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:1205':{maps:['潮汐监狱'],note:'S6 赛季资料记载为潮汐监狱首领掉落；当前掉落状态未实机复核。'},
+ 'orzice:1206':{maps:['航天基地','长弓溪谷'],note:'S6 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:1209':{maps:['航天基地','零号大坝'],note:'S6 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:1208':{maps:['航天基地','零号大坝'],note:'S6 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:p1086':{maps:['潮汐监狱'],note:'S5 赛季资料记载仅在潮汐监狱产出；当前掉落状态未实机复核。'},
+ 'orzice:1065':{maps:['潮汐监狱'],note:'S5 赛季资料记载为潮汐监狱专属；当前掉落状态未实机复核。'},
+ 'orzice:900':{maps:['航天基地','长弓溪谷'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:902':{maps:['航天基地','长弓溪谷'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:952':{maps:['航天基地','长弓溪谷'],note:'S5 赛季资料记载的主要产出地图；渡鸦首领掉落关联地图未据此额外推断，当前范围未实机复核。'}
+};
 function acquisitionGuide(r,now){
  if(r.obtain_method&&String(r.obtain_method).trim())return {summary:'个人补充',text:String(r.obtain_method).trim().slice(0,2000),status:'未独立核实',source:'',checked:''};
  if(gameKey(r.game)!=='三角洲行动')return {summary:'待核实',text:'尚未补充可靠获取资料；可在编辑中填写个人补充。',status:'待核实',source:'',checked:''};
@@ -58,6 +112,7 @@ function acquisitionDetails(r){
  if(!personal&&fact&&fact.guide&&['orzice:p1390','orzice:p1347','orzice:p1346'].indexOf(r.catalog_item_id)>=0&&maps.indexOf('航天基地')>=0&&guide.text.indexOf('航天基地绝密')>=0)difficultyContexts=['航天基地：绝密'];
  if(!personal&&r.catalog_item_id==='orzice:p188'&&maps.length){difficultyContexts=maps.map(function(n){return n+'：常规 / 机密'})}
  if(!personal&&['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0){maps=['航天基地','AZ-3'];difficultyContexts=['航天基地：机密 / 绝密','AZ-3：机密'];mapNote='极星守望限时玩法，开放时间和身份条件见活动说明。'}
+ if(!personal&&researchedMapContexts[r.catalog_item_id]){var researched=researchedMapContexts[r.catalog_item_id];maps=researched.maps.slice();mapNote=researched.note;mapChecked='2026-10-12'}
  return {guide:guide,maps:personal?[]:maps,difficultyContexts:personal?[]:difficultyContexts,mapNote:personal?'个人补充不会作为地图证据':mapNote,mapChecked:mapChecked,containers:!personal&&fact?(fact.containers||[]):[],exchange:!personal&&fact?(fact.exchange||[]):[],tradeable:!personal&&fact?fact.tradeable:null,description:personal||!fact||fact.guide||['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0?guide.text:(fact.explicit_source||''),difficulty:'未核实具体行动难度与掉落概率'};
 }
 function guideCoverage(){var ids=Object.keys(guideEntries),list=ids.map(function(id){return acquisitionGuide({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})}),details=ids.map(function(id){return acquisitionDetails({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})});return {total:list.length,known:list.filter(function(g){return g.summary!=='待核实'}).length,pending:list.filter(function(g){return g.summary==='待核实'}).length,mapsKnown:details.filter(function(d){return d.maps.length}).length,mapsPending:details.filter(function(d){return !d.maps.length}).length,difficultiesKnown:details.filter(function(d){return d.difficultyContexts.length}).length,difficultiesPending:details.filter(function(d){return !d.difficultyContexts.length}).length}}
