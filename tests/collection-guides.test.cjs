@@ -17,7 +17,9 @@ test('browser script order exposes same guide data and unknowns do not invent ro
  assert.equal(api.acquisitionGuide({game:'其他游戏',name:catalog.items[0].name}).summary,'待核实');
 });
 test('structured acquisition details keep map evidence separate from container evidence',()=>{
- const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1225'});assert.deepEqual(detail.maps,['航天基地','零号大坝']);assert.equal(detail.containers.length,13);assert.match(detail.mapNote,/2025-11-19/);assert.match(detail.difficulty,/未核实/);assert.equal(detail.mapChecked,'2026-10-12');
+ const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1225'});assert.deepEqual(detail.maps,['航天基地','零号大坝']);assert.deepEqual(detail.difficultyContexts,[]);assert.equal(detail.containers.length,13);assert.match(detail.mapNote,/2025-11-19/);assert.match(detail.difficulty,/未核实/);assert.equal(detail.mapChecked,'2026-10-12');
+ const eventItem=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1628'});assert.deepEqual(eventItem.maps,['航天基地','AZ-3']);assert.deepEqual(eventItem.difficultyContexts,['航天基地：机密 / 绝密','AZ-3：机密']);
  const unknown=api.acquisitionDetails({game:'其他游戏',name:'超声波切割刀'});assert.deepEqual(unknown.maps,[]);assert.deepEqual(unknown.containers,[]);
  const personal=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1225',obtain_method:'我的记录'});assert.deepEqual(personal.maps,[]);assert.deepEqual(personal.containers,[]);assert.equal(personal.description,'我的记录');
+ const coverage=api.guideCoverage();assert.equal(coverage.mapsKnown+coverage.mapsPending,534);assert.equal(coverage.difficultiesKnown+coverage.difficultiesPending,534);assert.ok(coverage.mapsKnown>0);assert.ok(coverage.difficultiesKnown>0);
 });
