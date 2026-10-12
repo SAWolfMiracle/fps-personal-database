@@ -26,7 +26,7 @@ var researchedMapContexts={
  'orzice:p1456':{maps:legacyFiveMaps,note:'S9 历史掉落范围：当时五张烽火地带地图的各类容器均有低概率掉落；没有固定刷新点，当前掉落状态未核实。'},
  'orzice:p1348':{maps:legacyFiveMaps,note:'S8 历史容器路线覆盖当时五张地图；春节联动福贝点位另见零号大坝、长弓溪谷、航天基地、潮汐监狱。活动已结束，返场未核实。'},
  'orzice:p1361':{maps:['零号大坝','巴克什','航天基地'],note:'S8 赤枭巡猎历史地图：零号大坝、巴克什、航天基地；当前玩法是否开放未核实。'},
- 'orzice:p1350':{maps:['零号大坝','巴克什','航天基地'],note:'S8 赤枭巡猎历史地图：零号大坝、巴克什、航天基地；当前玩法是否开放未核实。'},
+ 'orzice:p1350':{maps:['零号大坝','巴克什','航天基地'],difficultyContexts:['机密行动：零号大坝、巴克什、航天基地（S8 赤枭巡猎）','绝密行动：巴克什、航天基地（S8 赤枭巡猎）'],note:'S8 赤枭巡猎历史掉落路线；物品来自玩家赤枭夹层或专属补给包。玩法当前开放状态与掉率未核实。',checked:'2026-10-12'},
  'orzice:p1489':{maps:legacyFiveMaps,note:'肯德基联动历史路线：活动期间五张烽火地带地图的鸟窝、旅行包均可能产出；活动已结束，返场未核实。'},
  'orzice:p1496':{maps:legacyFiveMaps,note:'2026 猛攻节藏宝堆历史路线：当时五张烽火地带地图均有藏宝堆；活动已结束，当前掉落未核实。'},
  'orzice:p1499':{maps:legacyFiveMaps,note:'古墓丽影联动期间从藏宝堆获取钥匙；当时五张地图均有藏宝堆。历史活动范围，不代表当前仍可获取。'},
@@ -48,7 +48,7 @@ var researchedMapContexts={
  'orzice:955':{maps:['潮汐监狱'],note:'旧赛季资料记载为潮汐监狱首领渡鸦掉落；当前掉落状态未实机复核。'},
  'orzice:964':{maps:['潮汐监狱'],note:'旧赛季资料记载为潮汐监狱产出；当前掉落状态未实机复核。'},
  'orzice:1204':{maps:['潮汐监狱'],note:'旧赛季资料将潮汐监狱列为主要产出地图；特殊兵种补给等跨图说法未核实。'},
- 'orzice:962':{maps:['航天基地','长弓溪谷'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
+ 'orzice:962':{maps:['航天基地','长弓溪谷'],difficultyContexts:['长弓溪谷二周年鸟窝谜题使用：GamerSky称普通/机密均可，游侠网称仅普通；来源有冲突，且不是物品掉落难度。'],note:'保留S5资料所列航天基地、长弓溪谷历史产出地图；另有S11长弓溪谷鸟窝谜题使用八音盒×2，这只是使用地点。两篇谜题攻略对难度有冲突，当前掉落未实机复核。',checked:'2026-10-12'},
  'orzice:1064':{maps:['航天基地','零号大坝'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
  'orzice:978':{maps:['航天基地','长弓溪谷'],note:'S5 赛季资料记载的主要产出地图；当前掉落状态未实机复核。'},
  'orzice:1284':{maps:['零号大坝','航天基地'],note:'资料记载零号大坝水泥厂及航天基地可产出；当前掉落状态未实机复核。'},
@@ -258,6 +258,22 @@ var researchedMapContexts={
  'orzice:p1358':{maps:['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱'],note:'2026-01 银鹭联动资料将该品名列为“一箱好粥道”五种粥品之一；3DM 点位指南记载活动容器曾分布于零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱。活动期 2026-01-16 至 01-28，已结束；此为历史路线，不代表当前仍可获取。',checked:'2026-10-12'},
  'orzice:p1366':{maps:['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱'],note:'2026-01 银鹭联动资料将该品名列为“一箱好粥道”五种粥品之一；3DM 点位指南记载活动容器曾分布于零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱。活动期 2026-01-16 至 01-28，已结束；此为历史路线，不代表当前仍可获取。',checked:'2026-10-12'},
  'orzice:p1371':{maps:['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱'],note:'2026-01 银鹭联动资料将该品名列为“一箱好粥道”五种粥品之一；3DM 点位指南记载活动容器曾分布于零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱。活动期 2026-01-16 至 01-28，已结束；此为历史路线，不代表当前仍可获取。',checked:'2026-10-12'},
+ 'orzice:p1694':{maps:['航天基地','AZ-3'],difficultyContexts:['机密行动：航天基地、AZ-3（极星守望）','绝密行动：航天基地（极星守望）'],note:'安全总监德穆兰入场消耗的工卡；地图表示可使用工卡进入的玩法地图，不是工卡掉落地点。官方计划于2026-10-16 00:00至2027-01-21 02:00开放。',checked:'2026-10-12'},
+ 'orzice:p1497':{maps:legacyFiveMaps,note:'古墓丽影联动历史路线：当时五张烽火地带地图的藏宝堆可产出六种钥匙；契约之钥由六钥在活动界面合成，不是地图直接掉落。活动已结束，当前无法据此推断返场。',checked:'2026-10-12'},
+ 'orzice:p1357':{maps:['零号大坝','巴克什','航天基地'],difficultyContexts:['机密行动：零号大坝、巴克什、航天基地（S8 赤枭巡猎）','绝密行动：巴克什、航天基地（S8 赤枭巡猎）'],note:'赤枭身份每局入场消耗一张赤枭档案；此处记录历史玩法可用地图/难度，不是档案掉落地图。',checked:'2026-10-12'},
+ 'orzice:1262':{maps:['航天基地'],difficultyContexts:['航天基地绝密：2026-03季中调整提高哈德森掉落哮喘吸入器的概率；非绝密独有，当前概率未核实。'],note:'S8资料记载哈德森可概率掉落；历史路线，当前掉落和概率未实机复核。',checked:'2026-10-12'},
+ 'orzice:1321':{maps:['AZ-3'],note:'3DM物品页仅推测该装备可能来自AZ-3首领H1000，也可能从电子物品容器获得；仅作为候选地图线索，不确认掉落或首领专属，行动难度未知。',checked:'2026-10-12'},
+ 'orzice:795':{maps:['航天基地'],difficultyContexts:['S9任务路线：在任意机密/绝密行动完成首领信物带出目标；这是任务条件，不表示该物品的掉率仅限这些难度。'],note:'攻略资料记载德穆兰可在航天基地花园或发射区出现，击败后有概率获得脑机控制端子；地图为首领掉落路线。',checked:'2026-10-12'},
+ 'orzice:953':{maps:['长弓溪谷'],difficultyContexts:['长弓溪谷二周年鸟窝谜题使用：GamerSky称普通/机密均可，游侠网称仅普通；来源有冲突，且不是物品掉落难度。'],note:'二周年鸟窝彩蛋需摆放卫队金扳指×2；仅记谜题使用地点，不表示该物品在此掉落。GamerSky与游侠网对行动难度说法冲突。',checked:'2026-10-12'},
+ 'orzice:1008':{maps:['长弓溪谷'],difficultyContexts:['长弓溪谷二周年鸟窝谜题使用：GamerSky称普通/机密均可，游侠网称仅普通；来源有冲突，且不是物品掉落难度。'],note:'二周年鸟窝彩蛋需摆放信号棒×4；仅记谜题使用地点，不表示该物品在此掉落。GamerSky与游侠网对行动难度说法冲突。',checked:'2026-10-12'},
+ 'orzice:907':{maps:['长弓溪谷'],difficultyContexts:['长弓溪谷二周年鸟窝谜题使用：GamerSky称普通/机密均可，游侠网称仅普通；来源有冲突，且不是物品掉落难度。'],note:'二周年鸟窝彩蛋需摆放糖三角×8；仅记谜题使用地点，不表示该物品在此掉落。GamerSky与游侠网对行动难度说法冲突。',checked:'2026-10-12'},
+ 'orzice:p1256':{maps:['所有地图（S6历史资料）'],note:'2025-09 S6攻略称普通款兰小登可从烽火地带全地图野外物资箱获得；不同版本/款式掉落时段有差异。历史资料，不代表当前仍可获取。',checked:'2026-10-12'},
+ 'orzice:p1100':{maps:['零号大坝','长弓溪谷'],note:'普通款克小圈的历史快递箱路线，攻略列出零号大坝与长弓溪谷；不套用炫彩克小圈路线，也不代表当前仍可获取。',checked:'2026-10-12'},
+ 'orzice:p235':{maps:['所有地图（2025-06返场活动）'],note:'2025-06-20至07-02限时返场期间，烽火地带所有地图鸟窝有概率产出麦小蛋；活动已结束，当前掉落未核实。',checked:'2026-10-12'},
+ 'orzice:1057':{maps:[],difficultyContexts:['S9任务路线：机密/绝密行动可完成首领信物带出目标；这是任务条件，不证明该物品的专属掉落难度。'],note:'S9任务攻略将其列入可带出的首领信物；现有来源未把该物品掉落绑定到具体地图。',checked:'2026-10-12'},
+ 'orzice:p1326':{maps:['所有地图（S7历史资料）'],note:'S7资料把渡鸦录音数据作为系列记载，称至少五种、全地图可产出；单件独立概率与当前掉落未核实。',checked:'2026-10-12'},
+ 'orzice:p1327':{maps:['所有地图（S7历史资料）'],note:'S7资料把渡鸦录音数据作为系列记载，称至少五种、全地图可产出；单件独立概率与当前掉落未核实。',checked:'2026-10-12'},
+ 'orzice:p1328':{maps:['所有地图（S7历史资料）'],note:'S7资料把渡鸦录音数据作为系列记载，称至少五种、全地图可产出；单件独立概率与当前掉落未核实。',checked:'2026-10-12'},
 };
 function acquisitionGuide(r,now){
  if(r.obtain_method&&String(r.obtain_method).trim())return {summary:'个人补充',text:String(r.obtain_method).trim().slice(0,2000),status:'未独立核实',source:'',checked:''};
@@ -268,7 +284,7 @@ function acquisitionGuide(r,now){
  var status=time<start?'尚未开放':time>=end?'活动已结束；历史途径':'公告开放期内；以游戏内为准';
 var text=name==='德小兰·灰鲭鲨模型'?'集齐德小兰和灰鲭鲨模型后组装。材料的公告获取途径为极星守望限时玩法；本站不会自动合成或扣除材料。':'极星守望玩法：提高绩效等级，领取德穆兰嘉奖箱后有概率开出；或以 G.T.I. 干员击败玩家扮演的德穆兰，搜索其夹层，有概率获得。公告未公布掉落概率。';
  text+=' 玩法时间（北京时间）：2026-10-16 00:00 至 2027-01-21 02:00。地图：航天基地机密 / 绝密、AZ-3 机密。扮演德穆兰需先完成德穆兰档案，入局消耗安全总监工卡；副官需与德穆兰组队。上述身份条件不等于 G.T.I. 搜夹层的条件。';
- return {summary:name==='德小兰·灰鲭鲨模型'?'集齐两件材料后组装':'限时玩法 · 嘉奖箱 / 德穆兰夹层',text:text,status:status,source:'https://steamcommunity.com/app/2507950/announcements/?l=schinese',checked:'2026-10-11',sourceLabel:'官方 10 月 10 日更新公告（发布于 10 月 9 日）'};
+ return {summary:name==='德小兰·灰鲭鲨模型'?'集齐两件材料后组装':'限时玩法 · 嘉奖箱 / 德穆兰夹层',text:text,status:status,source:'https://steamcommunity.com/app/2507950/announcements/?l=schinese',checked:'2026-10-12',sourceLabel:'官方 10 月 10 日更新公告（发布于 10 月 9 日）'};
 }
 function referenceGuide(r){
  var fact=guideEntries[r.catalog_item_id]||guideEntries[guideNames[String(r.name||'').trim()]],parts=[],labels=[];
@@ -296,7 +312,7 @@ function acquisitionDetails(r){
  }
  if(!personal&&fact&&fact.guide&&['orzice:p1390','orzice:p1347','orzice:p1346'].indexOf(r.catalog_item_id)>=0&&maps.indexOf('航天基地')>=0&&guide.text.indexOf('航天基地绝密')>=0)difficultyContexts=['航天基地：绝密'];
  if(!personal&&r.catalog_item_id==='orzice:p188'&&maps.length){difficultyContexts=maps.map(function(n){return n+'：常规 / 机密'})}
- if(!personal&&['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0){maps=['航天基地','AZ-3'];difficultyContexts=['航天基地：机密 / 绝密','AZ-3：机密'];mapNote='极星守望限时玩法，开放时间和身份条件见活动说明。'}
+ if(!personal&&['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0){maps=['航天基地','AZ-3'];difficultyContexts=['航天基地：机密 / 绝密','AZ-3：机密'];mapNote='极星守望计划于2026-10-16 00:00至2027-01-21 02:00开放；这些是玩法地图/奖励路线，不表示各地图都有相同掉率。'}
  if(!personal&&researchedMapContexts[r.catalog_item_id]){var researched=researchedMapContexts[r.catalog_item_id];maps=researched.maps.slice();mapNote=researched.note;mapChecked=researched.checked||'2026-10-12';if(Array.isArray(researched.difficultyContexts))difficultyContexts=researched.difficultyContexts.slice()}
  if(!personal&&maps.length&&!mapChecked)mapChecked=fact&&fact.checked||guide.checked||'2026-10-12';
  return {guide:guide,maps:personal?[]:maps,difficultyContexts:personal?[]:difficultyContexts,mapNote:personal?'个人补充不会作为地图证据':mapNote,mapChecked:mapChecked,containers:!personal&&fact?(fact.containers||[]):[],exchange:!personal&&fact?(fact.exchange||[]):[],tradeable:!personal&&fact?fact.tradeable:null,description:personal||!fact||fact.guide||['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0?guide.text:(fact.explicit_source||''),difficulty:'未核实具体行动难度与掉落概率'};
