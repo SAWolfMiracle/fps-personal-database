@@ -323,7 +323,7 @@ body{min-height:100vh;min-height:100svh}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.20</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.21</span></h1>
   <div class="sub">对局复盘 · 收藏管理</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -495,7 +495,7 @@ body{min-height:100vh;min-height:100svh}
 
 <section id="collections" class="section">
   <div class="section-title-row"><div><h2 style="margin:0 0 6px">收藏簿</h2><div class="muted">收藏品、任务物品、皮肤与装备，都可以在这里记录。</div></div><button class="btn" id="newCollectionBtn">新增物品</button></div>
-  <div id="collectionStats" class="collection-stats"></div>
+  <div id="collectionStats" class="collection-stats"></div><p id="collectionDuplicateInfo" class="muted"></p>
   <div class="card">
     <div class="collection-fields">
       <div class="field"><label for="collectionSearch">搜索</label><input id="collectionSearch" placeholder="物品、分类、来源、备注"></div>
@@ -509,7 +509,7 @@ body{min-height:100vh;min-height:100svh}
     </div></details>
   </div>
 
-<details class="card tool-panel" id="collectionManage"><summary>管理 / 批量选择</summary><p id="collectionSelectionCount" class="muted">已选 0 件</p><div class="actions"><button class="btn" id="selectFilteredCollectionsBtn">全选筛选结果</button><button class="btn" id="clearCollectionSelectionBtn">取消选择</button><button class="btn danger" id="deleteSelectedCollectionsBtn" disabled>删除选中物品</button></div>  <div class="actions" style="margin:12px 0"><button class="btn danger" id="deleteFilteredCollectionsBtn">删除筛选结果</button><button class="btn danger" id="deleteAllCollectionsBtn">删除全部收藏</button></div>
+<details class="card tool-panel" id="collectionManage"><summary>管理 / 批量选择</summary><div class="actions"><button class="btn" id="cleanupCollectionDuplicatesBtn">清理空白重复目录</button><label><input type="checkbox" id="showCollectionDuplicates"> 显示重复原始条目</label></div><p id="collectionSelectionCount" class="muted">已选 0 件</p><div class="actions"><button class="btn" id="selectFilteredCollectionsBtn">全选筛选结果</button><button class="btn" id="clearCollectionSelectionBtn">取消选择</button><button class="btn danger" id="deleteSelectedCollectionsBtn" disabled>删除选中物品</button></div>  <div class="actions" style="margin:12px 0"><button class="btn danger" id="deleteFilteredCollectionsBtn">删除筛选结果</button><button class="btn danger" id="deleteAllCollectionsBtn">删除全部收藏</button></div>
 </details>
   <div id="collectionSpecial" class="card" hidden></div>
   <div id="collectionList" class="collection-grid"></div>
@@ -687,12 +687,13 @@ body{min-height:100vh;min-height:100svh}
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
 <script src="./home-dashboard.js"></script>
+<script src="./collection-duplicates.js"></script>
 <script src="./cloud-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.20";
+var APP_VERSION="0.6.21";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1392,14 +1393,14 @@ function mergeGuestIntoCurrent(){
   var guest=unmergedGuestRecords();if(!guest.length){showToast("没有新的本机记录可合并");return}
   if(!confirm("把本机 guest workspace 的 "+guest.length+" 条新记录复制到当前账号？guest 副本会继续保留。"))return;
   var ids={};records.forEach(function(r){ids[r.id]=true});
-  var merged=guestMergedIds(),added=0;
+  var merged=guestMergedIds(),added=0,skipped=0;
   guest.forEach(function(r){
-    var originalId=r.id,x=Object.assign({},r);
+    var originalId=r.id;if(window.FPSDuplicates.skipGuest(r,records)){merged.push(originalId);skipped++;return}var x=Object.assign({},r);
     if(ids[x.id])x.id=uid();
     x.cloud_revision=0;x.cloud_server_updated_at="";x.local_dirty=true;x.updated_at=isoNow();
     records.unshift(x);ids[x.id]=true;merged.push(originalId);added++
   });
-  localStorage.setItem(guestMergeFlagKey(),JSON.stringify(uniq(merged)));saveAndRender();showToast("已合并 "+added+" 条本机记录")
+  localStorage.setItem(guestMergeFlagKey(),JSON.stringify(uniq(merged)));saveAndRender();showToast("已合并 "+added+" 条本机记录，跳过 "+skipped+" 条重复空目录")
 }
 
 function addTombstone(id,baseRevision){
@@ -1565,6 +1566,7 @@ function importJSON(e){
   };rd.readAsText(f)
 }
 function clearAll(){requestBulkDelete("all")}
+function requestDuplicateCleanup(){var plan=window.FPSDuplicates.plan(collectionRecords());if(!plan.remove.length){showToast("没有可清理的空白重复目录");return}pendingBulkDelete={ids:plan.remove,workspace:activeWorkspace,epoch:workspaceEpoch,kind:"duplicates"};$("deleteConfirmTitle").textContent="清理空白重复目录";$("deleteConfirmText").textContent="将移除 "+plan.remove.length+" 条空白目录副本。每种物品保留至少一条；有库存、获取历史、库存变动或个人修改的记录保留。10 秒内可撤销，并通过现有删除流程同步。";$("deleteConfirm").hidden=false;$("deleteConfirmCancel").focus()}
 function cancelBulkDelete(){pendingBulkDelete=null;$("deleteConfirm").hidden=true}
 function requestBulkDelete(scope){
   var targets=scope==="all"?records:scope==="collections"?collectionRecords():scope==="selected"?collectionRecords().filter(function(r){return collectionSelection.has(r.id)}):filteredCollections();
@@ -1577,6 +1579,7 @@ function requestBulkDelete(scope){
 function confirmBulkDelete(){
   var plan=pendingBulkDelete;cancelBulkDelete();
   if(!plan||plan.workspace!==activeWorkspace||plan.epoch!==workspaceEpoch)return;
+  if(plan.kind==="duplicates"){var stillEmpty=new Set(window.FPSDuplicates.plan(collectionRecords()).remove);if(plan.ids.some(function(id){return !stillEmpty.has(id)})){showToast("记录已变化，请重新检查重复目录");return}}
   var ids=new Set(plan.ids),removed=records.filter(function(r){return ids.has(r.id)});
   if(removed.length!==plan.ids.length){showToast("记录已变化，请重新确认删除范围");return}
   var previous=records,previousTombs=cloudTombstones.slice(),workspace=activeWorkspace,epoch=workspaceEpoch,deadline=Date.now()+10000;
@@ -1661,11 +1664,13 @@ function collectionMatchesGrade(r,selected){
 function collectionGradeText(r){var labels=['白色 / 1 级','绿色 / 2 级','蓝色 / 3 级','紫色 / 4 级','金色 / 5 级','红色 / 6 级'];for(var i=1;i<=6;i++)if(collectionMatchesGrade(r,String(i)))return labels[i-1];return '等级未标注'}
 function filteredCollections(){
   var list=collectionRecords(),selectedGroup=$("collectionFilterGroup").value,q=$("collectionSearch").value.trim().toLowerCase();
-  return list.filter(function(r){return collectionMatchesGrade(r,$("collectionFilterGrade").value)&&(!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
+  var duplicates=window.FPSDuplicates.plan(list),hidden=new Set($("showCollectionDuplicates").checked?[]:duplicates.remove);
+  return list.filter(function(r){return !hidden.has(r.id)&&collectionMatchesGrade(r,$("collectionFilterGrade").value)&&(!selectedGroup||(window.FPSCatalog.group(r)||"普通库存")===selectedGroup)&&(!q||[r.game,r.name,r.category,r.note].concat(r.acquisitions.map(function(a){return a.source+" "+a.note})).join(" ").toLowerCase().indexOf(q)>=0)&&(!$("collectionFilterGame").value||r.game===$("collectionFilterGame").value)&&(!$("collectionFilterCategory").value||r.category===$("collectionFilterCategory").value)&&(!$("collectionFilterStatus").value||collectionStatus(r)===$("collectionFilterStatus").value)});
 }
 function renderCollections(){
   renderCatalogInfo();
   var list=collectionRecords();
+  var duplicatePlan=window.FPSDuplicates.plan(list);$("cleanupCollectionDuplicatesBtn").disabled=!duplicatePlan.remove.length;$("cleanupCollectionDuplicatesBtn").textContent="清理空白重复目录（"+duplicatePlan.remove.length+"）";$("collectionDuplicateInfo").textContent=duplicatePlan.remove.length||duplicatePlan.conflicts.length?"已折叠 "+duplicatePlan.remove.length+" 条空白重复目录；"+duplicatePlan.conflicts.length+" 组含库存、历史或个人修改的重复记录保留，需核对。管理中可显示原始条目并清理空目录。":"";
   var coverage=window.FPSCatalog.guideCoverage();$("collectionGuideCoverage").textContent='内置目录获取资料：有明确途径 '+coverage.known+' / '+coverage.total+' 件 · 待核实 '+coverage.pending+' 件。核对日期见各卡片；并非全部已实机验证。';
   var groups=uniq(list.map(function(r){return window.FPSCatalog.group(r)||"普通库存"}));
   populate("collectionFilterGroup",groups,"全部库存与专项");
@@ -1776,6 +1781,8 @@ function exportCollectionCSV(){
 function renderAll(){renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel()}
 
 $("deleteFilteredCollectionsBtn").addEventListener("click",function(){requestBulkDelete("filtered")});
+$("cleanupCollectionDuplicatesBtn").addEventListener("click",requestDuplicateCleanup);
+$("showCollectionDuplicates").addEventListener("change",renderCollections);
 $("collectionManage").addEventListener("toggle",renderCollections);
 $("selectFilteredCollectionsBtn").addEventListener("click",function(){filteredCollections().forEach(function(r){collectionSelection.add(r.id)});renderCollections()});
 $("clearCollectionSelectionBtn").addEventListener("click",function(){collectionSelection.clear();renderCollections()});
