@@ -305,12 +305,14 @@ tbody tr:hover td{background:#101821}
 @media(max-width:600px){header h1{font-size:24px}header .version{font-size:10px}header>p{font-size:13px}.home-summaries{gap:10px}.home-summary{padding:14px}.home-value b{font-size:28px}.home-summary-line{font-size:13px}.home-shortcuts .btn{flex:1}.home-summary>span{font-size:13px}#recent>div{grid-template-columns:1fr auto!important}#recent>div>span:first-child{grid-column:1/-1;font-size:12px}}
 
 .home-custom{padding:14px 18px;margin-bottom:14px}.home-custom>summary{cursor:pointer;font-weight:600}.home-custom .field{margin-top:16px}.home-config-toggles{display:flex;flex-wrap:wrap;gap:14px}.home-config-toggles label{min-height:44px;display:flex;align-items:center;gap:6px}.home-pin-manage{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-top:1px solid var(--line);margin-top:12px;padding-top:8px}.home-pin-manage b{flex:1;min-width:100px;overflow-wrap:anywhere}.home-pin h3{margin:0;overflow-wrap:anywhere}.home-pin-progress{font-size:20px;font-weight:600}.home-pin .muted{font-size:13px;line-height:1.6}.home-missing{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.home-missing .btn{font-size:14px;white-space:normal;overflow-wrap:anywhere;max-width:100%;min-height:44px}.home-pin details>summary{padding:10px 0;cursor:pointer}.home-summaries:has(>.home-summary[hidden]){grid-template-columns:1fr}.home-summary progress{appearance:none;border:0;border-radius:8px;overflow:hidden;background:var(--line)}.home-summary progress::-webkit-progress-bar{background:var(--line)}.home-summary progress::-webkit-progress-value{background:#6e9ee8}.home-summary progress::-moz-progress-bar{background:#6e9ee8}
+
+.deck-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.deck-tabs .btn{flex:1;min-height:44px;padding:10px 8px}.deck-action{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px;min-height:64px}.deck-action b{display:block;margin-bottom:10px}.deck-scroll{max-height:420px;overflow:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:12px;padding:10px}.deck-suits,.deck-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.deck-suits{position:sticky;top:-10px;background:var(--panel);z-index:1;padding:8px 0;font-size:12px;text-align:center}.deck-cell{min-width:0;min-height:64px;border:1px solid var(--line);border-radius:10px;background:transparent;color:var(--text);padding:8px 3px;cursor:pointer}.deck-cell b{font-size:13px;display:block}.deck-cell small{display:block;font-size:11px;margin-top:5px;color:var(--muted)}.deck-owned{background:#123c31;border-color:#337c60}.deck-owned small{color:#8de0b5}.deck-selected{outline:2px solid #6e9ee8;outline-offset:-2px}.deck-extras{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}@media(max-width:600px){.deck-book{padding:16px}.deck-scroll{max-height:340px}.deck-action .actions{gap:8px}.deck-action .btn{flex:1;font-size:14px;padding:10px 6px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.18</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.19</span></h1>
   <div class="sub">对局复盘 · 收藏管理</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -679,7 +681,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.18";
+var APP_VERSION="0.6.19";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -774,7 +776,7 @@ function migrateLegacyWorkspace(){
   }catch(e){}
   localStorage.setItem(MIGRATION_KEY,"1")
 }
-function loadWorkspace(name){collectionSelection.clear();
+function loadWorkspace(name){collectionSelection.clear();homeDeckSelected="";homeDeckFilter="all";
   workspaceEpoch++;activeWorkspace=name||"guest";
   pendingBulkDelete=null;$("deleteConfirm").hidden=true;
   try{
@@ -1047,6 +1049,29 @@ function sessionGroups(){
   })
 }
 
+var homeDeckFilter="all",homeDeckSelected="";
+function deckState(){return window.FPSHome.deck(window.FPSCatalog.deckItems(),collectionRecords(),collectionQuantity,window.FPSCatalog.cardName,window.FPSCatalog.group)}
+function deckBookHTML(){
+ var items=deckState(),cards=items.filter(function(x){return x.name!=="阿萨拉牌-牌盒"}),owned=cards.filter(function(x){return x.quantity>0}).length,selected=items.find(function(x){return x.id===homeDeckSelected});
+ function visible(x){return homeDeckFilter==="all"||homeDeckFilter==="owned"&&x.quantity>0||homeDeckFilter==="missing"&&x.quantity===0}
+ function cell(x){return '<button class="deck-cell '+(x.quantity?'deck-owned':'deck-missing')+(x.id===homeDeckSelected?' deck-selected':'')+'" data-deck-select="'+esc(x.id)+'" aria-pressed="'+(x.id===homeDeckSelected)+'" aria-label="'+esc(x.name.replace('阿萨拉牌-',''))+'，'+(x.quantity?'拥有 '+x.quantity+' 件':'缺失')+'"><b>'+esc(x.name.replace('阿萨拉牌-',''))+'</b><small>'+(x.quantity?'✓ '+x.quantity:'缺失')+'</small></button>'}
+ var suits=['黑桃','红桃','梅花','方片'],ranks=['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
+ var grid=ranks.map(function(rank){var row=suits.map(function(suit){return cards.find(function(x){return x.name==='阿萨拉牌-'+suit+rank})});if(!row.some(visible))return '';return row.map(function(x){return visible(x)?cell(x):'<span class="deck-spacer" aria-hidden="true"></span>'}).join('')}).join('');
+ var extras=items.filter(function(x){return /阿萨拉牌-(大王|小王|牌盒)$/.test(x.name)&&visible(x)});
+ return '<h3>阿萨拉牌册</h3><p class="home-pin-progress">已拥有 '+owned+' / 54 · 缺失 '+(54-owned)+'</p><div class="deck-tabs">'+[['all','全部'],['missing','缺失'],['owned','已拥有']].map(function(pair){return '<button class="btn '+(homeDeckFilter===pair[0]?'primary':'')+'" data-deck-filter="'+pair[0]+'" aria-pressed="'+(homeDeckFilter===pair[0])+'">'+pair[1]+'</button>'}).join('')+'</div><div class="deck-action" role="status">'+(selected?'<b>'+esc(selected.name.replace('阿萨拉牌-',''))+' · 当前 '+selected.quantity+' 件</b><div class="actions"><button class="btn primary" data-deck-add="'+selected.id+'">记录获取 +1</button><button class="btn ghost" data-deck-detail="'+selected.id+'">查看明细</button></div>':'<span class="muted">点选一张牌，再记录获取；无需填写时间和来源。</span>')+'</div><div class="deck-scroll"><div class="deck-suits"><span>♠ 黑桃</span><span>♥ 红桃</span><span>♣ 梅花</span><span>♦ 方片</span></div><div class="deck-grid">'+grid+'</div><div class="deck-extras">'+extras.map(cell).join('')+'</div>'+(!grid&&!extras.length?'<p class="muted">此筛选下暂无牌。</p>':'')+'</div><p class="muted">绿色为当前拥有；重复获取只增加数量。牌盒单独记录，不计入 54 种牌，也不代表游戏内已交付。</p>';
+}
+function bindDeckBook(){
+ document.querySelectorAll('[data-deck-filter]').forEach(function(b){b.onclick=function(){homeDeckFilter=b.dataset.deckFilter;renderAll()}});
+ document.querySelectorAll('[data-deck-select]').forEach(function(b){b.onclick=function(){homeDeckSelected=b.dataset.deckSelect;renderAll()}});
+ document.querySelectorAll('[data-deck-add]').forEach(function(b){b.onclick=function(){quickDeckAcquire(b.dataset.deckAdd)}});
+ document.querySelectorAll('[data-deck-detail]').forEach(function(b){b.onclick=function(){var x=deckState().find(function(x){return x.id===b.dataset.deckDetail});if(x)openHomeCollection('阿萨拉牌',x.name)}});
+}
+function quickDeckAcquire(id){
+ var x=deckState().find(function(x){return x.id===id});if(!x)return;if(x.recordId){quickAcquire(x.recordId);return}
+ var a={id:uid(),date:'',quantity:1,source:'',cost:null,note:'',inventory_seq:1},stamp=isoNow(),workspace=activeWorkspace;
+ var r=migrateRecord({id:uid(),kind:'collection',game:'三角洲行动',name:x.name,catalog_item_id:x.id,collection_group:'阿萨拉牌',target:1,starting_quantity:0,acquisitions:[a],inventory_events:[],updated_at:stamp,local_dirty:true});
+ records.unshift(r);try{persist()}catch(e){records.shift();showToast('保存失败，未记录获取');return}renderAll();scheduleCloudSync();showToast(x.name+'：已记录获取 1 件','撤销',function(){if(activeWorkspace!==workspace)return;var live=records.find(function(t){return t.id===r.id});if(!live)return;var candidate=JSON.parse(JSON.stringify(live));candidate.acquisitions=candidate.acquisitions.filter(function(t){return t.id!==a.id});if(validInventory(candidate))commitInventory(live,candidate)});
+}
 function homePreferences(){try{return window.FPSHome.settings(JSON.parse(localStorage.getItem("fps_home_"+activeWorkspace)||"null"))}catch(e){return window.FPSHome.settings(null)}}
 function saveHomePreferences(prefs){try{localStorage.setItem("fps_home_"+activeWorkspace,JSON.stringify(window.FPSHome.settings(prefs)));renderDashboard()}catch(e){showToast("主页设置保存失败，请检查本机存储")}}
 function openHomeCollection(group,name){switchTab("collections");["collectionFilterGame","collectionFilterCategory","collectionFilterGrade","collectionFilterStatus"].forEach(function(id){$(id).value=""});$("collectionFilterGroup").value=group;$("collectionSearch").value=name||"";renderCollections();$("collectionSearch").scrollIntoView({behavior:"smooth",block:"center"})}
@@ -1054,9 +1079,10 @@ function renderHomePins(prefs,list){
   $("homeShowMatches").checked=prefs.matches;$("homeShowCollections").checked=prefs.collections;
   var groups=uniq(["阿萨拉牌"].concat(list.map(function(r){return window.FPSCatalog.group(r)})).filter(Boolean));populate("homePinGroup",groups,"选择专项收集");
   $("homePinManage").innerHTML=prefs.pins.map(function(g,i){return '<div class="home-pin-manage"><b>'+esc(g)+'</b><button class="btn ghost" data-home-up="'+i+'" '+(i===0?'disabled':'')+' aria-label="上移 '+esc(g)+'">上移</button><button class="btn ghost" data-home-down="'+i+'" '+(i===prefs.pins.length-1?'disabled':'')+' aria-label="下移 '+esc(g)+'">下移</button><button class="btn ghost" data-home-remove="'+i+'" aria-label="移除主页 '+esc(g)+'">移除</button></div>'}).join("");
-  $("homePinnedCollections").innerHTML=prefs.pins.map(function(g,i){var subset=list.filter(function(r){return window.FPSCatalog.group(r)===g}),deck=g==="阿萨拉牌",p=deck?window.FPSCatalog.deckProgress(list,collectionQuantity):window.FPSHome.progress(subset,collectionQuantity),done=deck?p.owned:p.complete,missing=p.missing||[];return '<article class="card home-pin"><div class="section-title-row"><h3>'+esc(g)+'</h3><button class="btn ghost" data-home-group="'+i+'">查看专项</button></div><p class="home-pin-progress">'+done+' / '+p.total+' 种'+(deck?' · 牌盒：'+(p.box?'已持有':'未持有'):'已集齐')+'</p><div class="collection-progress"><span style="width:'+pct(done,p.total)+'%"></span></div><p class="muted">'+(deck?'按当前持有牌种计数，不代表游戏内已交付。':'按已添加到该专项的物品目标统计。')+'</p>'+(missing.length?'<p>还缺 '+missing.length+' 种</p><div class="home-missing">'+missing.slice(0,6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div>'+(missing.length>6?'<details><summary>查看全部缺项（'+missing.length+'）</summary><div class="home-missing">'+missing.slice(6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div></details>':''):'<p class="muted">'+(p.total?'已集齐当前专项':'尚未添加物品；在收藏编辑中指定此专项')+'</p>')+'</article>'}).join("");
+  $("homePinnedCollections").innerHTML=prefs.pins.map(function(g,i){if(g==="阿萨拉牌")return '<article class="card home-pin deck-book">'+deckBookHTML()+'</article>';var subset=list.filter(function(r){return window.FPSCatalog.group(r)===g}),deck=g==="阿萨拉牌",p=deck?window.FPSCatalog.deckProgress(list,collectionQuantity):window.FPSHome.progress(subset,collectionQuantity),done=deck?p.owned:p.complete,missing=p.missing||[];return '<article class="card home-pin"><div class="section-title-row"><h3>'+esc(g)+'</h3><button class="btn ghost" data-home-group="'+i+'">查看专项</button></div><p class="home-pin-progress">'+done+' / '+p.total+' 种'+(deck?' · 牌盒：'+(p.box?'已持有':'未持有'):'已集齐')+'</p><div class="collection-progress"><span style="width:'+pct(done,p.total)+'%"></span></div><p class="muted">'+(deck?'按当前持有牌种计数，不代表游戏内已交付。':'按已添加到该专项的物品目标统计。')+'</p>'+(missing.length?'<p>还缺 '+missing.length+' 种</p><div class="home-missing">'+missing.slice(0,6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div>'+(missing.length>6?'<details><summary>查看全部缺项（'+missing.length+'）</summary><div class="home-missing">'+missing.slice(6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div></details>':''):'<p class="muted">'+(p.total?'已集齐当前专项':'尚未添加物品；在收藏编辑中指定此专项')+'</p>')+'</article>'}).join("");
   ["up","down","remove"].forEach(function(action){document.querySelectorAll("[data-home-"+action+"]").forEach(function(b){b.onclick=function(){var next=homePreferences(),i=Number(b.getAttribute("data-home-"+action));if(action==="remove")next.pins.splice(i,1);else{var j=i+(action==="up"?-1:1);if(j<0||j>=next.pins.length)return;var tmp=next.pins[i];next.pins[i]=next.pins[j];next.pins[j]=tmp}saveHomePreferences(next)}})});
   document.querySelectorAll("[data-home-group]").forEach(function(b){b.onclick=function(){openHomeCollection(prefs.pins[Number(b.dataset.homeGroup)],"")}});
+  bindDeckBook();
   document.querySelectorAll("[data-home-name]").forEach(function(b){b.onclick=function(){openHomeCollection(prefs.pins[Number(b.dataset.homeMissingGroup)],b.dataset.homeName)}});
 }
 function renderDashboard(){
@@ -1635,7 +1661,7 @@ function renderCollections(){
   var selectedGroup=$("collectionFilterGroup").value;
   var deck=window.FPSCatalog.deckProgress(list,collectionQuantity),hasDeck=list.some(function(r){return window.FPSCatalog.group(r)==="阿萨拉牌"});
   $("collectionSpecial").hidden=!hasDeck||(selectedGroup&&selectedGroup!=="阿萨拉牌");
-  $("collectionSpecial").innerHTML='<h3>专项收集 · 阿萨拉牌</h3><p>当前持有 '+deck.owned+' / '+deck.total+' 种牌 · 牌盒：'+(deck.box?'已持有':'未持有')+'</p><p class="muted">按不同牌种计数，重复牌不增加进度；牌盒不计入 54 种。这里只记录当前持有，不代表已在游戏中收藏或交付。</p><details><summary>缺少 '+deck.missing.length+' 种牌</summary><p>'+deck.missing.map(esc).join(' · ')+'</p></details>';
+  $("collectionSpecial").innerHTML=hasDeck?deckBookHTML():"";bindDeckBook();
   $("collectionStats").textContent=list.length+" 件物品 · 已集齐 "+list.filter(function(r){return collectionStatus(r)==="已集齐"}).length+" 件 · "+list.reduce(function(n,r){return n+r.acquisitions.length},0)+" 次获取";
   populate("collectionFilterGame",uniq(list.map(function(r){return r.game})),"全部游戏");populate("collectionFilterCategory",uniq(list.map(function(r){return r.category})),"全部分类");
   var shown=filteredCollections();

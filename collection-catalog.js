@@ -43,5 +43,5 @@ function referenceGuide(r){
  return {summary:labels.join(' / ')||'待核实',text:parts.join(' '),status:labels.length?'公开资料参考 · 非实时验证':'待核实',source:fact.source,sourceLabel:fact.source_label||'',checked:fact.checked};
 }
 function guideCoverage(){var list=Object.keys(guideEntries).map(function(id){return acquisitionGuide({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})});return {total:list.length,known:list.filter(function(g){return g.summary!=='待核实'}).length,pending:list.filter(function(g){return g.summary==='待核实'}).length}}
-return {plan:plan,group:group,cardName:cardName,deckProgress:deckProgress,acquisitionGuide:acquisitionGuide,guideCoverage:guideCoverage};
+return {deckItems:function(){return Object.keys(deckNames).map(function(id){return {id:id,name:deckNames[id]}})},plan:plan,group:group,cardName:cardName,deckProgress:deckProgress,acquisitionGuide:acquisitionGuide,guideCoverage:guideCoverage};
 });
