@@ -1,5 +1,11 @@
 # 云同步状态（v0.5.2）
 
+## 邮箱验证码配置（v0.6.15）
+
+2026-10-12 已在控制台保存 Gmail 自定义 SMTP（465），并将 `supabase/email-otp-template.html` 应用到 Magic link or OTP、Confirm sign up、Change email address 三种模板。模板同时显示 `{{ .Token }}` 与 `{{ .ConfirmationURL }}`，继续支持链接验证。SMTP 密码只保存在 Supabase 控制台；现有验证码有效期、邮件限速及安全确认设置保留。
+
+前端提供验证码登录与匿名邮箱绑定入口。主屏幕应用发送邮件后需在同一应用输入验证码；匿名绑定使用 `email_change` 验证，并核对原 user_id。访客数据不自动合并。真实邮件投递、验证码验证和 iPhone 主屏幕持久登录尚待用户实测；自动化回归使用模拟 Auth API，不代表真实投递成功。不要在聊天中提交验证码。
+
 当前已完成：
 - Tokyo Supabase + RLS。
 - guest 与每个 user_id 的本地 workspace 分离。
