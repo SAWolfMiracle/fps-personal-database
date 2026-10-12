@@ -7,7 +7,8 @@ const data=require('../collection-guides.js');
 const api=require('../collection-catalog.js');
 test('acquisition snapshot covers every catalogue identity with check dates',()=>{
  assert.equal(Object.keys(data.entries).length,catalog.items.length);
- for(const item of catalog.items){const fact=data.entries[item.item_id];assert.equal(fact.name,item.name);assert.equal(fact.source,undefined);assert.equal(item.source_item,undefined);assert.equal(fact.checked,'2026-10-11');assert.equal(fact.error,undefined);const guide=api.acquisitionGuide({game:catalog.game,name:'renamed',catalog_item_id:item.item_id});assert.ok(guide.text);assert.doesNotMatch(guide.source||'',/orzice/);assert.equal(guide.checked,'2026-10-11');}
+ const rechecked=new Set(['orzice:p1322','orzice:p1325','orzice:p1461','orzice:p1460','orzice:p1448','orzice:p1392','orzice:p1520','orzice:1319']);
+ for(const item of catalog.items){const fact=data.entries[item.item_id];const expectedChecked=rechecked.has(item.item_id)?'2026-10-12':'2026-10-11';assert.equal(fact.name,item.name);assert.equal(fact.source,undefined);assert.equal(item.source_item,undefined);assert.equal(fact.checked,expectedChecked);assert.equal(fact.error,undefined);const guide=api.acquisitionGuide({game:catalog.game,name:'renamed',catalog_item_id:item.item_id});assert.ok(guide.text);assert.doesNotMatch(guide.source||'',/orzice/);assert.equal(guide.checked,expectedChecked);}
  const coverage=api.guideCoverage();assert.equal(coverage.total,534);assert.equal(coverage.known+coverage.pending,coverage.total);
 });
 test('browser script order exposes same guide data and unknowns do not invent routes',()=>{
