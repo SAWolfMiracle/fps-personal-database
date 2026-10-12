@@ -230,6 +230,9 @@ var researchedMapContexts={
  "orzice:p1295":{maps:['所有地图（S7历史活动）'],note:'S7 资料记载炫彩拉小宅可从全地图任意容器低概率掉落；属于赛季历史范围，当前掉落未核实。',checked:'2026-10-12'},
  "orzice:p1294":{maps:['所有地图（S7历史活动）'],note:'S7「寻找比利狼」公告记载活动期间全地图收纳盒有概率产出；活动已结束，当前掉落未核实。',checked:'2026-10-12'},
  "orzice:p1296":{maps:['零号大坝','巴克什','航天基地'],note:'S7 资料列出零号大坝、巴克什、航天基地的露天刷新点；属历史赛季范围，当前刷新未核实。',difficultyContexts:['S7 攻略爆率排序：绝密 > 机密（水淹）> 普通'],checked:'2026-10-12'},
+ 'orzice:1024':{maps:['长弓溪谷','航天基地'],note:'2025-12-14 红色物品图鉴列出长弓溪谷钻石皇后酒店、航天基地核心区的医疗机械人位置；这是历史搜索线索，当前掉落未实机核实。',checked:'2026-10-12'},
+ 'orzice:p174':{maps:['长弓溪谷','航天基地'],note:'2025-12-14 红色物品图鉴列出长弓溪谷钻石皇后酒店、航天基地宿舍区的高级咖啡豆位置；仅记点位线索，当前掉落范围未实机核实。',checked:'2026-10-12'},
+ 'orzice:1229':{maps:['航天基地','长弓溪谷'],note:'S7 收藏品资料列出航天基地与长弓溪谷为飞行员眼镜主要产出地图；属于历史路线，当前刷新范围未实机核实。',checked:'2026-10-12'},
 };
 function acquisitionGuide(r,now){
  if(r.obtain_method&&String(r.obtain_method).trim())return {summary:'个人补充',text:String(r.obtain_method).trim().slice(0,2000),status:'未独立核实',source:'',checked:''};
