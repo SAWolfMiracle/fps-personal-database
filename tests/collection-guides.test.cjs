@@ -24,10 +24,10 @@ test('structured acquisition details keep map evidence separate from container e
  const saeedWatch=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:901'});assert.deepEqual(saeedWatch.maps,['长弓溪谷','航天基地']);assert.match(saeedWatch.mapNote,/钻石皇后酒店/);assert.equal(saeedWatch.mapChecked,'2026-10-12');
  const uranium=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1515'});assert.deepEqual(uranium.maps,['AZ-3']);assert.match(uranium.mapNote,/西区.*核心区.*东区/);
  const reactor=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1318'});assert.deepEqual(reactor.maps,['AZ-3']);assert.match(reactor.mapNote,/西区.*核心区.*东区/);
- const fusion=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1247'});assert.deepEqual(fusion.maps,['AZ-3','航天基地','零号大坝']);assert.match(fusion.mapNote,/赛季资料范围有差异/);
+ const fusion=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1247'});assert.deepEqual(fusion.maps,['AZ-3','航天基地','零号大坝']);assert.match(fusion.mapNote,/组装车间二楼卡房.*行政楼旁工地地面/);
  const gas=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1224'});assert.deepEqual(gas.maps,['航天基地','零号大坝']);assert.match(gas.mapNote,/S7.*历史线索/);
  const radio=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:790'});assert.deepEqual(radio.maps,['零号大坝']);assert.match(radio.mapNote,/游客中心二楼/);
- const phonograph=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1050'});assert.deepEqual(phonograph.maps,['巴克什']);assert.match(phonograph.mapNote,/巴别塔总裁室/);
+ const phonograph=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1050'});assert.deepEqual(phonograph.maps,['巴克什']);assert.match(phonograph.mapNote,/巴别塔厕所.*海洋区跑步机/);
  const africaHeart=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1044'});assert.deepEqual(africaHeart.maps,['长弓溪谷','航天基地','巴克什']);assert.match(africaHeart.mapNote,/巴克什-巴别塔总裁室/);
  const laptop=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:789'});assert.deepEqual(laptop.maps,['长弓溪谷','航天基地','零号大坝']);assert.match(laptop.mapNote,/游客中心二楼/);
  for(const id of ['orzice:p1120','orzice:p1119','orzice:p1122','orzice:p1121'])assert.deepEqual(api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id}).maps,['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱']);
