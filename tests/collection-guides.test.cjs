@@ -38,4 +38,5 @@ test('structured acquisition details keep map evidence separate from container e
  const unknown=api.acquisitionDetails({game:'其他游戏',name:'超声波切割刀'});assert.deepEqual(unknown.maps,[]);assert.deepEqual(unknown.containers,[]);
  const personal=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1225',obtain_method:'我的记录'});assert.deepEqual(personal.maps,[]);assert.deepEqual(personal.containers,[]);assert.equal(personal.description,'我的记录');
  const coverage=api.guideCoverage();assert.equal(coverage.mapsKnown+coverage.mapsPending,534);assert.equal(coverage.difficultiesKnown+coverage.difficultiesPending,534);assert.equal(coverage.mapsKnown,85);assert.ok(coverage.difficultiesKnown>0);
+ for(const item of catalog.items){const detail=api.acquisitionDetails({game:catalog.game,catalog_item_id:item.item_id,name:item.name});if(detail.maps.length)assert.ok(detail.mapChecked,item.item_id+' map check date')}
 });
