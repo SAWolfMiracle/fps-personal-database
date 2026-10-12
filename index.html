@@ -300,48 +300,31 @@ tbody tr:hover td{background:#101821}
  .mobile-nav button{min-width:0}.card{overflow-wrap:anywhere}.collection-stats{font-size:13px;margin-bottom:12px}
 }
 
+/* Compact dashboard summaries */
+.home-shortcuts{margin:0 0 14px}.home-summaries{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:14px}.home-summary{margin:0;padding:18px;min-width:0}.home-value{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:12px}.home-value b{font-size:32px;line-height:1.15}.home-value span{font-size:13px;color:var(--muted)}.home-summary p{font-size:13px;line-height:1.5;margin:10px 0}.home-summary-line{display:flex;justify-content:space-between;gap:8px;margin:12px 0 6px}.home-summary small{display:block;font-size:12px;line-height:1.5}.home-summary progress{width:100%;height:8px;accent-color:var(--accent);margin:12px 0}.home-summary .btn{padding:8px 0;min-height:44px}.home-match-stats{margin-bottom:14px}.home-insights{padding:8px 4px 18px}.home-insights h3{font-size:16px;margin:0 0 8px}.home-empty h3{margin:0 0 8px}.home-empty p{margin:0 0 14px}.home-summaries [hidden],#dashboard [hidden]{display:none!important}
+@media(max-width:600px){header h1{font-size:24px}header .version{font-size:10px}header>p{font-size:13px}.home-summaries{gap:10px}.home-summary{padding:14px}.home-value b{font-size:28px}.home-summary-line{font-size:13px}.home-shortcuts .btn{flex:1}.home-summary>span{font-size:13px}#recent>div{grid-template-columns:1fr auto!important}#recent>div>span:first-child{grid-column:1/-1;font-size:12px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.16</span></h1>
-  <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
+  <h1>FPS 个人数据库 <span class="version">v0.6.17</span></h1>
+  <div class="sub">对局复盘 · 收藏管理</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
 
 <section id="dashboard" class="section active">
-  <div class="dashboard-hero">
-    <div class="stat stat-hero">
-      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" stroke="currentColor" stroke-width="1.8"/></svg></div>
-      <span>累计对局</span>
-      <b id="stTotal">0</b>
-      <small id="stTotalHint">从第一局开始积累你的样本</small>
-    </div>
-    <div class="stat stat-hero">
-      <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="6.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></div>
-      <span>总体 K/D</span>
-      <b id="stKD">0.00</b>
-      <small id="stRecentKD">积累更多记录后显示近期状态</small>
-    </div>
-    <div class="mini-stats">
-      <div class="stat"><span>总击杀</span><b id="stKills">0</b></div>
-      <div class="stat"><span>场均击杀</span><b id="stAvgKills">0.00</b></div>
-      <div class="stat"><span>最常用武器</span><b id="stWeapon">暂无</b></div>
-      <div class="stat"><span>最常见死因</span><b id="stCause">暂无</b></div>
-    </div>
+  <div class="actions home-shortcuts"><button class="btn primary" id="homeAddMatch">记录一局</button><button class="btn" id="homeAddCollection">记录获取</button></div>
+  <div class="home-summaries">
+    <div class="card home-summary"><span class="muted">对局摘要</span><div class="home-value"><b id="stTotal">0</b><span>局</span></div><p class="muted" id="stTotalHint"></p><div class="home-summary-line"><span>总体 K/D</span><b id="stKD">—</b></div><small class="muted" id="stRecentKD"></small></div>
+    <div class="card home-summary"><span class="muted">收藏进度</span><div class="home-value"><b id="homeCollected">0</b><span>种已获得</span></div><p class="muted" id="homeCollectionHint"></p><progress id="homeCollectionProgress" max="1" value="0" aria-label="收藏集齐进度"></progress><button class="btn ghost" id="homeViewCollections">查看收藏</button></div>
   </div>
-  <div class="grid2" style="margin-top:14px">
-    <div class="card"><h3>当前结论</h3><div id="insights" class="muted"></div></div>
-    <div class="card"><h3>最近 10 局</h3><div id="recent"></div></div>
-  </div>
-  <div class="grid2">
-    <div class="card"><h3>游戏分布</h3><div id="rankGame"></div></div>
-    <div class="card"><h3>武器使用</h3><div id="rankWeapon"></div></div>
-  </div>
-  <div class="card">
-    <div class="section-title-row"><h3 style="margin:0">最近时段</h3><span class="muted" id="sessionCount"></span></div>
-    <div id="sessionOverview"></div>
+  <div class="card home-empty" id="homeMatchEmpty"><h3>还没有对局记录</h3><p class="muted">记录第一局，开始积累你的对局表现。</p><button class="btn primary" id="homeFirstMatch">记录第一局</button></div>
+  <div id="homeMatchDetails" hidden>
+    <div class="mini-stats home-match-stats"><div class="stat"><span>总击杀</span><b id="stKills">0</b></div><div class="stat"><span>场均击杀</span><b id="stAvgKills">0.00</b></div></div>
+    <div class="home-insights"><h3>近期表现</h3><div id="insights" class="muted"></div></div>
+    <div class="card"><div class="section-title-row"><h3>最近对局</h3><button class="btn ghost" id="homeViewRecords">查看全部</button></div><div id="recent"></div></div>
+    <div class="card"><div class="section-title-row"><h3 style="margin:0">最近时段</h3><span class="muted" id="sessionCount"></span></div><div id="sessionOverview"></div></div>
   </div>
 </section>
 
@@ -471,6 +454,8 @@ tbody tr:hover td{background:#101821}
 </section>
 
 <section id="analytics" class="section">
+  <div class="mini-stats"><div class="stat"><span>最常用武器</span><b id="stWeapon">暂无</b></div><div class="stat"><span>最常见死因</span><b id="stCause">暂无</b></div></div>
+  <div class="grid2"><div class="card"><h3>游戏分布</h3><div id="rankGame"></div></div><div class="card"><h3>武器使用</h3><div id="rankWeapon"></div></div></div>
   <div class="grid3">
     <div class="card"><h3>游戏表现</h3><div id="anaGames"></div></div>
     <div class="card"><h3>武器表现</h3><div id="anaWeapons"></div></div>
@@ -689,7 +674,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.16";
+var APP_VERSION="0.6.17";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1060,11 +1045,14 @@ function sessionGroups(){
 function renderDashboard(){
   var records=matchRecords();
   var s=summary(records),tw=topEntry(counter("weapon")),tc=topEntry(counter("cause",records.filter(function(r){return r.cause&&r.cause!=="无 / 未死亡"})));
-  $("stTotal").textContent=s.games;$("stKills").textContent=s.k;$("stKD").textContent=s.kd.toFixed(2);$("stAvgKills").textContent=s.avgK.toFixed(2);
+  $("stTotal").textContent=s.games;$("stKills").textContent=s.k;$("stKD").textContent=s.games?s.kd.toFixed(2):"—";$("stAvgKills").textContent=s.avgK.toFixed(2);
   $("stWeapon").textContent=tw?tw[0]:"暂无";$("stCause").textContent=tc?tc[0]:"暂无";
   $("stTotalHint").textContent=s.games?("已积累 "+s.games+" 局可查询样本"):"从第一局开始积累你的样本";
   var recentList=records.slice(0,Math.min(10,records.length)),recentSummary=summary(recentList);
   if(recentList.length>=3){var delta=recentSummary.kd-s.kd,arrow=delta>.005?"↑":delta<-.005?"↓":"→";$("stRecentKD").textContent="最近 "+recentList.length+" 局 "+recentSummary.kd.toFixed(2)+" · "+arrow+" "+Math.abs(delta).toFixed(2)+" vs 总体"}else{$("stRecentKD").textContent="积累至少 3 局后显示近期状态"}
+  var collections=collectionRecords(),obtained=collections.filter(function(r){return collectionQuantity(r)>0}).length,complete=collections.filter(function(r){return collectionStatus(r)==="已集齐"}).length;
+  $("homeCollected").textContent=obtained;$("homeCollectionHint").textContent=collections.length?"已集齐 "+complete+" / "+collections.length+" 种":"添加物品，开始你的收藏簿";$("homeCollectionProgress").max=collections.length||1;$("homeCollectionProgress").value=complete;
+  $("homeMatchEmpty").hidden=s.games>0;$("homeMatchDetails").hidden=s.games===0;
   var ins=[];
   if(records.length<5)ins.push("当前样本较少，先记录 5–10 局再看稳定趋势。");
   if(tc&&records.length>=5){
@@ -1076,7 +1064,7 @@ function renderDashboard(){
     ins.push("当前样本：单排总体 K/D "+summary(solo).kd.toFixed(2)+"；三排总体 K/D "+summary(trio).kd.toFixed(2)+"。");
   }
   $("insights").innerHTML=ins.map(function(x){return "• "+x}).join("<br>")||"暂无可分析内容。";
-  $("recent").innerHTML=records.slice(0,10).map(function(r){
+  $("recent").innerHTML=records.slice(0,3).map(function(r){
     return '<div style="display:grid;grid-template-columns:95px 1fr auto;gap:7px;padding:7px 0;border-bottom:1px solid var(--line)"><span class="muted">'+esc(r.time)+'</span><span>'+esc(r.game)+' · '+esc(r.weapon)+'</span><span class="result-pill '+resultTone(r.result)+'">'+esc(r.result)+'</span></div>'
   }).join("")||'<div class="empty">暂无记录</div>';
   $("rankGame").innerHTML=rankHTML(counter("game"));$("rankWeapon").innerHTML=rankHTML(counter("weapon"));
@@ -1770,6 +1758,9 @@ $("game").addEventListener("input",renderDatalists);
 $("exportJsonBtn").addEventListener("click",exportJSON);$("exportCsvBtn").addEventListener("click",exportCSV);$("importFile").addEventListener("change",importJSON);$("clearAllBtn").addEventListener("click",clearAll);
 $("cloudAnonBtn").addEventListener("click",cloudAnonymousSignIn);
 $("cloudEmailBtn").addEventListener("click",cloudEmailSignIn);
+["homeAddMatch","homeFirstMatch"].forEach(function(id){$(id).addEventListener("click",function(){switchTab("add")})});
+["homeAddCollection","homeViewCollections"].forEach(function(id){$(id).addEventListener("click",function(){switchTab("collections");$("collectionSearch").focus()})});
+$("homeViewRecords").addEventListener("click",function(){switchTab("records")});
 $("cloudOtpSendBtn").addEventListener("click",cloudSendEmailOtp);
 $("cloudOtpVerifyBtn").addEventListener("click",cloudVerifyEmailOtp);
 $("cloudSyncBtn").addEventListener("click",function(){cloudSync({silent:false})});
