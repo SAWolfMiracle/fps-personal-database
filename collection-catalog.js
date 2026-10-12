@@ -216,7 +216,20 @@ var researchedMapContexts={
  "orzice:p1448":{maps:['零号大坝','长弓溪谷'],note:'2026-02 限时锦鲤活动资料明确列出零号大坝与长弓溪谷；活动已结束，返场与当前掉落未核实。',checked:'2026-10-12'},
  "orzice:p1392":{maps:legacyFiveMaps,note:'2026-02 春节活动资料记载当时全地图野外物资箱/弹药箱概率产出；大坝、长弓、巴克什另有护送烟花鼠鼠路线。活动已结束，当前规则未核实。',checked:'2026-10-12'},
  "orzice:p1520":{maps:['AZ-3'],note:'核电站 AZ-3 的露天物资点攻略明确列出该物品；这是搜索线索，不代表唯一产出地图或完整范围，当前掉落未实机复核。',checked:'2026-10-12'},
- "orzice:1319":{maps:['AZ-3'],note:'S10 任务攻略将微型燃料棒列为核电站专属藏品，并提供 AZ-3 能源物资路线；当前跨赛季掉落范围、难度与概率未实机复核。',checked:'2026-10-12'},
+ "orzice:1319":{maps:['AZ-3'],note:'S10 任务攻略提供 AZ-3 微型燃料棒路线；攻略称机密模式稳定刷新、普通模式概率极低。跨赛季当前掉落与概率未实机核实。',difficultyContexts:['AZ-3：机密稳定刷新；普通概率极低'],checked:'2026-10-12'},
+ "orzice:p1515":{maps:['AZ-3'],note:'S10 核电站露天点位攻略将浓缩铀样本列为 AZ-3 专属红色物资，并给出西区、核心区、东区的露天刷新点线索；另一攻略推荐机密模式并称普通模式刷新率较低。点位与当前赛季掉落未实机核实。',difficultyContexts:['AZ-3：机密推荐（普通模式刷新率较低）'],checked:'2026-10-12'},
+ "orzice:p1518":{maps:['AZ-3'],note:'S10 牌盒攻略明确推荐普通核电站与机密核电站路线；这是历史搜索线索，不代表唯一地图，当前掉落未实机复核。',difficultyContexts:['AZ-3：普通 / 机密（S10 攻略路线）'],checked:'2026-10-12'},
+ "orzice:p1627":{maps:['所有地图（群星赛季活动）'],note:'群星赛季活动说明：2026-09-08 至 2026-11-09，全地图容器低概率掉落炫彩花小蝶；截至本次核对日活动仍在公告期限内，实际掉落未实机复核。',checked:'2026-10-12'},
+ "orzice:1256":{maps:['航天基地'],note:'S8 资料将便携式生命支持系统列在航天基地核心区；2026-06 玩家讨论中也有巴克什容器和旧赛包报告，地图范围存在冲突。此处只记明确攻略线索，不代表唯一地图，当前范围待核实。',checked:'2026-10-12'},
+ "orzice:1258":{maps:['航天基地','长弓溪谷'],note:'S8 资料列出航天核心区、长弓雷达站机箱/服务器；历史搜索线索，当前赛季未实机核实。',checked:'2026-10-12'},
+ "orzice:1259":{maps:['航天基地','零号大坝'],note:'S8 资料列出航天工业区、零号大坝水泥厂及露天点位；历史搜索线索，当前赛季未实机核实。',checked:'2026-10-12'},
+ "orzice:1260":{maps:['航天基地','零号大坝'],note:'S8 资料列出航天核心区、零号大坝行政区露天点位；历史搜索线索，当前赛季未实机核实。',checked:'2026-10-12'},
+ "orzice:1261":{maps:['航天基地','长弓溪谷'],note:'S8 资料列出航天核心区、长弓酒店医疗类容器；历史搜索线索，当前赛季未实机核实。',checked:'2026-10-12'},
+ "orzice:1285":{maps:['长弓溪谷','航天基地'],note:'S9 收藏品资料将检眼镜的主要产出地图列为长弓溪谷与航天基地；未给出行动难度，当前刷新范围未实机核实。',checked:'2026-10-12'},
+ "orzice:p1299":{maps:['所有地图（S7历史活动）'],note:'S7「寻找拉小宅」活动说明记载 2025-11-13 至 2025-11-27 全地图手提箱可产出；活动已结束，当前路线未核实。',checked:'2026-10-12'},
+ "orzice:p1295":{maps:['所有地图（S7历史活动）'],note:'S7 资料记载炫彩拉小宅可从全地图任意容器低概率掉落；属于赛季历史范围，当前掉落未核实。',checked:'2026-10-12'},
+ "orzice:p1294":{maps:['所有地图（S7历史活动）'],note:'S7「寻找比利狼」公告记载活动期间全地图收纳盒有概率产出；活动已结束，当前掉落未核实。',checked:'2026-10-12'},
+ "orzice:p1296":{maps:['零号大坝','巴克什','航天基地'],note:'S7 资料列出零号大坝、巴克什、航天基地的露天刷新点；属历史赛季范围，当前刷新未核实。',difficultyContexts:['S7 攻略爆率排序：绝密 > 机密（水淹）> 普通'],checked:'2026-10-12'},
 };
 function acquisitionGuide(r,now){
  if(r.obtain_method&&String(r.obtain_method).trim())return {summary:'个人补充',text:String(r.obtain_method).trim().slice(0,2000),status:'未独立核实',source:'',checked:''};
@@ -256,7 +269,7 @@ function acquisitionDetails(r){
  if(!personal&&fact&&fact.guide&&['orzice:p1390','orzice:p1347','orzice:p1346'].indexOf(r.catalog_item_id)>=0&&maps.indexOf('航天基地')>=0&&guide.text.indexOf('航天基地绝密')>=0)difficultyContexts=['航天基地：绝密'];
  if(!personal&&r.catalog_item_id==='orzice:p188'&&maps.length){difficultyContexts=maps.map(function(n){return n+'：常规 / 机密'})}
  if(!personal&&['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0){maps=['航天基地','AZ-3'];difficultyContexts=['航天基地：机密 / 绝密','AZ-3：机密'];mapNote='极星守望限时玩法，开放时间和身份条件见活动说明。'}
- if(!personal&&researchedMapContexts[r.catalog_item_id]){var researched=researchedMapContexts[r.catalog_item_id];maps=researched.maps.slice();mapNote=researched.note;mapChecked=researched.checked||'2026-10-12'}
+ if(!personal&&researchedMapContexts[r.catalog_item_id]){var researched=researchedMapContexts[r.catalog_item_id];maps=researched.maps.slice();mapNote=researched.note;mapChecked=researched.checked||'2026-10-12';if(Array.isArray(researched.difficultyContexts))difficultyContexts=researched.difficultyContexts.slice()}
  if(!personal&&maps.length&&!mapChecked)mapChecked=fact&&fact.checked||guide.checked||'2026-10-12';
  return {guide:guide,maps:personal?[]:maps,difficultyContexts:personal?[]:difficultyContexts,mapNote:personal?'个人补充不会作为地图证据':mapNote,mapChecked:mapChecked,containers:!personal&&fact?(fact.containers||[]):[],exchange:!personal&&fact?(fact.exchange||[]):[],tradeable:!personal&&fact?fact.tradeable:null,description:personal||!fact||fact.guide||['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0?guide.text:(fact.explicit_source||''),difficulty:'未核实具体行动难度与掉落概率'};
 }
