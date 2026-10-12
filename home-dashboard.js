@@ -1,0 +1,7 @@
+(function(root,factory){if(typeof module==='object'&&module.exports)module.exports=factory();else root.FPSHome=factory()})(typeof window==='object'?window:this,function(){
+'use strict';
+function settings(raw){raw=raw&&typeof raw==='object'?raw:{};return {matches:raw.matches!==false,collections:raw.collections!==false,pins:Array.from(new Set((Array.isArray(raw.pins)?raw.pins:['阿萨拉牌']).filter(function(x){return typeof x==='string'&&x.trim()&&x.length<=80}))).slice(0,12)}}
+function key(r){var game=String(r.game||'').trim().toLowerCase();if(/^(三角洲|delta force)$/.test(game))game='三角洲行动';return JSON.stringify([game,r.catalog_item_id||String(r.name||'').trim().toLowerCase()])}
+function progress(records,quantity){var types=new Map();records.filter(function(r){return r.kind==='collection'}).forEach(function(r){var id=key(r),old=types.get(id),n=quantity(r),target=Math.max(1,Number(r.target)||1);if(!old)types.set(id,{name:r.name,owned:n>0,complete:n>=target});else{old.owned=old.owned||n>0;old.complete=old.complete||n>=target}});var items=Array.from(types.values());return {total:items.length,owned:items.filter(function(x){return x.owned}).length,complete:items.filter(function(x){return x.complete}).length,missing:items.filter(function(x){return !x.complete}).map(function(x){return x.name})}}
+return {settings:settings,progress:progress};
+});

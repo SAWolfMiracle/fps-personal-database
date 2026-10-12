@@ -303,22 +303,26 @@ tbody tr:hover td{background:#101821}
 /* Compact dashboard summaries */
 .home-shortcuts{margin:0 0 14px}.home-summaries{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:14px}.home-summary{margin:0;padding:18px;min-width:0}.home-value{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:12px}.home-value b{font-size:32px;line-height:1.15}.home-value span{font-size:13px;color:var(--muted)}.home-summary p{font-size:13px;line-height:1.5;margin:10px 0}.home-summary-line{display:flex;justify-content:space-between;gap:8px;margin:12px 0 6px}.home-summary small{display:block;font-size:12px;line-height:1.5}.home-summary progress{width:100%;height:8px;accent-color:var(--accent);margin:12px 0}.home-summary .btn{padding:8px 0;min-height:44px}.home-match-stats{margin-bottom:14px}.home-insights{padding:8px 4px 18px}.home-insights h3{font-size:16px;margin:0 0 8px}.home-empty h3{margin:0 0 8px}.home-empty p{margin:0 0 14px}.home-summaries [hidden],#dashboard [hidden]{display:none!important}
 @media(max-width:600px){header h1{font-size:24px}header .version{font-size:10px}header>p{font-size:13px}.home-summaries{gap:10px}.home-summary{padding:14px}.home-value b{font-size:28px}.home-summary-line{font-size:13px}.home-shortcuts .btn{flex:1}.home-summary>span{font-size:13px}#recent>div{grid-template-columns:1fr auto!important}#recent>div>span:first-child{grid-column:1/-1;font-size:12px}}
+
+.home-custom{padding:14px 18px;margin-bottom:14px}.home-custom>summary{cursor:pointer;font-weight:600}.home-custom .field{margin-top:16px}.home-config-toggles{display:flex;flex-wrap:wrap;gap:14px}.home-config-toggles label{min-height:44px;display:flex;align-items:center;gap:6px}.home-pin-manage{display:flex;flex-wrap:wrap;align-items:center;gap:6px;border-top:1px solid var(--line);margin-top:12px;padding-top:8px}.home-pin-manage b{flex:1;min-width:100px;overflow-wrap:anywhere}.home-pin h3{margin:0;overflow-wrap:anywhere}.home-pin-progress{font-size:20px;font-weight:600}.home-pin .muted{font-size:13px;line-height:1.6}.home-missing{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.home-missing .btn{font-size:14px;white-space:normal;overflow-wrap:anywhere;max-width:100%;min-height:44px}.home-pin details>summary{padding:10px 0;cursor:pointer}.home-summaries:has(>.home-summary[hidden]){grid-template-columns:1fr}.home-summary progress{appearance:none;border:0;border-radius:8px;overflow:hidden;background:var(--line)}.home-summary progress::-webkit-progress-bar{background:var(--line)}.home-summary progress::-webkit-progress-value{background:#6e9ee8}.home-summary progress::-moz-progress-bar{background:#6e9ee8}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.17</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.18</span></h1>
   <div class="sub">对局复盘 · 收藏管理</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
 
 <section id="dashboard" class="section active">
+  <details class="card home-custom"><summary>自定义主页</summary><p class="muted">设置只保存在本机，账号与访客工作区分别保存。</p><div class="home-config-toggles"><label><input id="homeShowMatches" type="checkbox"> 显示对局模块</label><label><input id="homeShowCollections" type="checkbox"> 显示收藏摘要</label></div><div class="field"><label for="homePinGroup">置顶专项收集</label><select id="homePinGroup"></select></div><button class="btn" id="homePinAdd">添加到主页</button><p class="muted">自定义专项：在收藏物品的编辑页填写「专项收集」，然后在这里置顶。最多 12 项，可调整顺序。</p><div id="homePinManage"></div></details>
   <div class="actions home-shortcuts"><button class="btn primary" id="homeAddMatch">记录一局</button><button class="btn" id="homeAddCollection">记录获取</button></div>
   <div class="home-summaries">
-    <div class="card home-summary"><span class="muted">对局摘要</span><div class="home-value"><b id="stTotal">0</b><span>局</span></div><p class="muted" id="stTotalHint"></p><div class="home-summary-line"><span>总体 K/D</span><b id="stKD">—</b></div><small class="muted" id="stRecentKD"></small></div>
-    <div class="card home-summary"><span class="muted">收藏进度</span><div class="home-value"><b id="homeCollected">0</b><span>种已获得</span></div><p class="muted" id="homeCollectionHint"></p><progress id="homeCollectionProgress" max="1" value="0" aria-label="收藏集齐进度"></progress><button class="btn ghost" id="homeViewCollections">查看收藏</button></div>
+    <div class="card home-summary" id="homeMatchSummary"><span class="muted">对局摘要</span><div class="home-value"><b id="stTotal">0</b><span>局</span></div><p class="muted" id="stTotalHint"></p><div class="home-summary-line"><span>总体 K/D</span><b id="stKD">—</b></div><small class="muted" id="stRecentKD"></small></div>
+    <div class="card home-summary" id="homeCollectionSummary"><span class="muted">收藏进度</span><div class="home-value"><b id="homeCollected">0</b><span>种已获得</span></div><p class="muted" id="homeCollectionHint"></p><progress id="homeCollectionProgress" max="1" value="0" aria-label="收藏集齐进度"></progress><button class="btn ghost" id="homeViewCollections">查看收藏</button></div>
   </div>
+  <div id="homePinnedCollections"></div>
   <div class="card home-empty" id="homeMatchEmpty"><h3>还没有对局记录</h3><p class="muted">记录第一局，开始积累你的对局表现。</p><button class="btn primary" id="homeFirstMatch">记录第一局</button></div>
   <div id="homeMatchDetails" hidden>
     <div class="mini-stats home-match-stats"><div class="stat"><span>总击杀</span><b id="stKills">0</b></div><div class="stat"><span>场均击杀</span><b id="stAvgKills">0.00</b></div></div>
@@ -669,12 +673,13 @@ tbody tr:hover td{background:#101821}
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
+<script src="./home-dashboard.js"></script>
 <script src="./cloud-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.17";
+var APP_VERSION="0.6.18";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1042,6 +1047,18 @@ function sessionGroups(){
   })
 }
 
+function homePreferences(){try{return window.FPSHome.settings(JSON.parse(localStorage.getItem("fps_home_"+activeWorkspace)||"null"))}catch(e){return window.FPSHome.settings(null)}}
+function saveHomePreferences(prefs){try{localStorage.setItem("fps_home_"+activeWorkspace,JSON.stringify(window.FPSHome.settings(prefs)));renderDashboard()}catch(e){showToast("主页设置保存失败，请检查本机存储")}}
+function openHomeCollection(group,name){switchTab("collections");["collectionFilterGame","collectionFilterCategory","collectionFilterGrade","collectionFilterStatus"].forEach(function(id){$(id).value=""});$("collectionFilterGroup").value=group;$("collectionSearch").value=name||"";renderCollections();$("collectionSearch").scrollIntoView({behavior:"smooth",block:"center"})}
+function renderHomePins(prefs,list){
+  $("homeShowMatches").checked=prefs.matches;$("homeShowCollections").checked=prefs.collections;
+  var groups=uniq(["阿萨拉牌"].concat(list.map(function(r){return window.FPSCatalog.group(r)})).filter(Boolean));populate("homePinGroup",groups,"选择专项收集");
+  $("homePinManage").innerHTML=prefs.pins.map(function(g,i){return '<div class="home-pin-manage"><b>'+esc(g)+'</b><button class="btn ghost" data-home-up="'+i+'" '+(i===0?'disabled':'')+' aria-label="上移 '+esc(g)+'">上移</button><button class="btn ghost" data-home-down="'+i+'" '+(i===prefs.pins.length-1?'disabled':'')+' aria-label="下移 '+esc(g)+'">下移</button><button class="btn ghost" data-home-remove="'+i+'" aria-label="移除主页 '+esc(g)+'">移除</button></div>'}).join("");
+  $("homePinnedCollections").innerHTML=prefs.pins.map(function(g,i){var subset=list.filter(function(r){return window.FPSCatalog.group(r)===g}),deck=g==="阿萨拉牌",p=deck?window.FPSCatalog.deckProgress(list,collectionQuantity):window.FPSHome.progress(subset,collectionQuantity),done=deck?p.owned:p.complete,missing=p.missing||[];return '<article class="card home-pin"><div class="section-title-row"><h3>'+esc(g)+'</h3><button class="btn ghost" data-home-group="'+i+'">查看专项</button></div><p class="home-pin-progress">'+done+' / '+p.total+' 种'+(deck?' · 牌盒：'+(p.box?'已持有':'未持有'):'已集齐')+'</p><div class="collection-progress"><span style="width:'+pct(done,p.total)+'%"></span></div><p class="muted">'+(deck?'按当前持有牌种计数，不代表游戏内已交付。':'按已添加到该专项的物品目标统计。')+'</p>'+(missing.length?'<p>还缺 '+missing.length+' 种</p><div class="home-missing">'+missing.slice(0,6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div>'+(missing.length>6?'<details><summary>查看全部缺项（'+missing.length+'）</summary><div class="home-missing">'+missing.slice(6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div></details>':''):'<p class="muted">'+(p.total?'已集齐当前专项':'尚未添加物品；在收藏编辑中指定此专项')+'</p>')+'</article>'}).join("");
+  ["up","down","remove"].forEach(function(action){document.querySelectorAll("[data-home-"+action+"]").forEach(function(b){b.onclick=function(){var next=homePreferences(),i=Number(b.getAttribute("data-home-"+action));if(action==="remove")next.pins.splice(i,1);else{var j=i+(action==="up"?-1:1);if(j<0||j>=next.pins.length)return;var tmp=next.pins[i];next.pins[i]=next.pins[j];next.pins[j]=tmp}saveHomePreferences(next)}})});
+  document.querySelectorAll("[data-home-group]").forEach(function(b){b.onclick=function(){openHomeCollection(prefs.pins[Number(b.dataset.homeGroup)],"")}});
+  document.querySelectorAll("[data-home-name]").forEach(function(b){b.onclick=function(){openHomeCollection(prefs.pins[Number(b.dataset.homeMissingGroup)],b.dataset.homeName)}});
+}
 function renderDashboard(){
   var records=matchRecords();
   var s=summary(records),tw=topEntry(counter("weapon")),tc=topEntry(counter("cause",records.filter(function(r){return r.cause&&r.cause!=="无 / 未死亡"})));
@@ -1050,9 +1067,10 @@ function renderDashboard(){
   $("stTotalHint").textContent=s.games?("已积累 "+s.games+" 局可查询样本"):"从第一局开始积累你的样本";
   var recentList=records.slice(0,Math.min(10,records.length)),recentSummary=summary(recentList);
   if(recentList.length>=3){var delta=recentSummary.kd-s.kd,arrow=delta>.005?"↑":delta<-.005?"↓":"→";$("stRecentKD").textContent="最近 "+recentList.length+" 局 "+recentSummary.kd.toFixed(2)+" · "+arrow+" "+Math.abs(delta).toFixed(2)+" vs 总体"}else{$("stRecentKD").textContent="积累至少 3 局后显示近期状态"}
-  var collections=collectionRecords(),obtained=collections.filter(function(r){return collectionQuantity(r)>0}).length,complete=collections.filter(function(r){return collectionStatus(r)==="已集齐"}).length;
-  $("homeCollected").textContent=obtained;$("homeCollectionHint").textContent=collections.length?"已集齐 "+complete+" / "+collections.length+" 种":"添加物品，开始你的收藏簿";$("homeCollectionProgress").max=collections.length||1;$("homeCollectionProgress").value=complete;
-  $("homeMatchEmpty").hidden=s.games>0;$("homeMatchDetails").hidden=s.games===0;
+  var collections=collectionRecords(),homeProgress=window.FPSHome.progress(collections,collectionQuantity),prefs=homePreferences();
+  $("homeCollected").textContent=homeProgress.owned;$("homeCollectionHint").textContent=homeProgress.total?"已集齐 "+homeProgress.complete+" / "+homeProgress.total+" 种":"添加物品，开始你的收藏簿";$("homeCollectionProgress").max=homeProgress.total||1;$("homeCollectionProgress").value=homeProgress.complete;
+  $("homeMatchSummary").hidden=!prefs.matches;$("homeCollectionSummary").hidden=!prefs.collections;$("homeMatchEmpty").hidden=!prefs.matches||s.games>0;$("homeMatchDetails").hidden=!prefs.matches||s.games===0;
+  renderHomePins(prefs,collections);
   var ins=[];
   if(records.length<5)ins.push("当前样本较少，先记录 5–10 局再看稳定趋势。");
   if(tc&&records.length>=5){
@@ -1758,6 +1776,9 @@ $("game").addEventListener("input",renderDatalists);
 $("exportJsonBtn").addEventListener("click",exportJSON);$("exportCsvBtn").addEventListener("click",exportCSV);$("importFile").addEventListener("change",importJSON);$("clearAllBtn").addEventListener("click",clearAll);
 $("cloudAnonBtn").addEventListener("click",cloudAnonymousSignIn);
 $("cloudEmailBtn").addEventListener("click",cloudEmailSignIn);
+$("homeShowMatches").addEventListener("change",function(){var p=homePreferences();p.matches=this.checked;saveHomePreferences(p)});
+$("homeShowCollections").addEventListener("change",function(){var p=homePreferences();p.collections=this.checked;saveHomePreferences(p)});
+$("homePinAdd").addEventListener("click",function(){var g=$("homePinGroup").value,p=homePreferences();if(!g)return;if(p.pins.indexOf(g)>=0){showToast("此专项已在主页");return}if(p.pins.length>=12){showToast("最多置顶 12 项");return}p.pins.push(g);saveHomePreferences(p)});
 ["homeAddMatch","homeFirstMatch"].forEach(function(id){$(id).addEventListener("click",function(){switchTab("add")})});
 ["homeAddCollection","homeViewCollections"].forEach(function(id){$(id).addEventListener("click",function(){switchTab("collections");$("collectionSearch").focus()})});
 $("homeViewRecords").addEventListener("click",function(){switchTab("records")});
