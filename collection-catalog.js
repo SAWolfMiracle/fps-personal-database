@@ -45,7 +45,16 @@ function referenceGuide(r){
 function acquisitionDetails(r){
  var guide=acquisitionGuide(r),sameGame=gameKey(r.game)==='三角洲行动',fact=sameGame&&(guideEntries[r.catalog_item_id]||guideEntries[guideNames[String(r.name||'').trim()]]),personal=!!(r.obtain_method&&String(r.obtain_method).trim());
  var maps=fact&&Array.isArray(fact.map_contexts)?fact.map_contexts.slice():[],difficultyContexts=fact&&Array.isArray(fact.difficulty_contexts)?fact.difficulty_contexts.slice():[],mapNote=fact&&fact.map_note||'',mapChecked=fact&&fact.map_checked||'';
- if(!personal&&!maps.length&&fact&&fact.guide){var text=guide.text,names=['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱','AZ-3'];maps=names.filter(function(n){return text.indexOf(n)>=0});if(/全地图|所有地图|各地图/.test(text)){maps=['所有地图（历史资料）'];mapNote='历史规则提及各地图；当前活动开放状态见下方说明。'}else if(maps.length)mapNote='资料提及的地图线索；不表示仅限这些地图，也不保证当前仍可获取。'}
+ if(!personal&&fact){
+  var evidenceText=[fact.guide&&fact.guide.summary,fact.guide&&fact.guide.text,fact.explicit_source].filter(Boolean).join(' '),mapNames=[['零号大坝','大坝'],['长弓溪谷','长弓'],['航天基地','航天城','航天'],['巴克什'],['潮汐监狱','监狱'],['AZ-3']],mentioned=[];
+  mapNames.forEach(function(aliases){if(aliases.some(function(alias){return evidenceText.toLowerCase().indexOf(alias.toLowerCase())>=0})){mentioned.push(aliases[0])}});
+  var allMaps=/全地图|所有地图|各地图|全部地图/.test(evidenceText);
+  mentioned.forEach(function(name){if(maps.indexOf(name)<0)maps.push(name)});
+  if(allMaps&&maps.indexOf('所有地图（历史资料）')<0)maps.unshift('所有地图（历史资料）');
+  if(!mapNote&&allMaps)mapNote='资料提及全地图或各地图范围；具体活动期限及当前状态见获取说明。';
+  else if(!mapNote&&fact.explicit_source&&/仅限/.test(fact.explicit_source)&&mentioned.length)mapNote='物品说明注明仅限所列地图产出；行动难度和具体刷新点仍待核实。';
+  else if(!mapNote&&mentioned.length)mapNote='资料提及的地图线索；不代表仅限这些地图，也不保证当前仍可获取。';
+ }
  if(!personal&&fact&&fact.guide&&['orzice:p1390','orzice:p1347','orzice:p1346'].indexOf(r.catalog_item_id)>=0&&maps.indexOf('航天基地')>=0&&guide.text.indexOf('航天基地绝密')>=0)difficultyContexts=['航天基地：绝密'];
  if(!personal&&r.catalog_item_id==='orzice:p188'&&maps.length){difficultyContexts=maps.map(function(n){return n+'：常规 / 机密'})}
  if(!personal&&['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0){maps=['航天基地','AZ-3'];difficultyContexts=['航天基地：机密 / 绝密','AZ-3：机密'];mapNote='极星守望限时玩法，开放时间和身份条件见活动说明。'}
