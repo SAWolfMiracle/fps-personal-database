@@ -21,6 +21,7 @@ test('structured acquisition details keep map evidence separate from container e
  const eventItem=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1628'});assert.deepEqual(eventItem.maps,['航天基地','AZ-3']);assert.deepEqual(eventItem.difficultyContexts,['航天基地：机密 / 绝密','AZ-3：机密']);
  const rocketFuel=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p141'});assert.deepEqual(rocketFuel.maps,['航天基地']);assert.deepEqual(rocketFuel.difficultyContexts,[]);assert.match(rocketFuel.mapNote,/仅限/);assert.match(rocketFuel.description,/仅限航天城产出/);
  const satellite=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p149'});assert.deepEqual(satellite.maps,['航天基地']);
+ const saeedWatch=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:901'});assert.deepEqual(saeedWatch.maps,['长弓溪谷','航天基地']);assert.match(saeedWatch.mapNote,/钻石皇后酒店/);assert.equal(saeedWatch.mapChecked,'2026-10-12');
  for(const id of ['orzice:p1120','orzice:p1119','orzice:p1122','orzice:p1121'])assert.deepEqual(api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id}).maps,['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱']);
  const flower=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1693'});assert.deepEqual(flower.maps,['所有地图（历史资料）','AZ-3']);
  const apple=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1329'});assert.deepEqual(apple.maps,['所有地图（历史资料）','零号大坝']);
@@ -37,6 +38,6 @@ test('structured acquisition details keep map evidence separate from container e
  for(const id of ['orzice:p1497','orzice:p1495','orzice:p1494','orzice:p1493','orzice:p1492','orzice:p1491','orzice:p1490'])assert.deepEqual(api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id}).maps,[],id);
  const unknown=api.acquisitionDetails({game:'其他游戏',name:'超声波切割刀'});assert.deepEqual(unknown.maps,[]);assert.deepEqual(unknown.containers,[]);
  const personal=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1225',obtain_method:'我的记录'});assert.deepEqual(personal.maps,[]);assert.deepEqual(personal.containers,[]);assert.equal(personal.description,'我的记录');
- const coverage=api.guideCoverage();assert.equal(coverage.mapsKnown+coverage.mapsPending,534);assert.equal(coverage.difficultiesKnown+coverage.difficultiesPending,534);assert.equal(coverage.mapsKnown,85);assert.ok(coverage.difficultiesKnown>0);
+ const coverage=api.guideCoverage();assert.equal(coverage.mapsKnown+coverage.mapsPending,534);assert.equal(coverage.difficultiesKnown+coverage.difficultiesPending,534);assert.equal(coverage.mapsKnown,136);assert.ok(coverage.difficultiesKnown>0);
  for(const item of catalog.items){const detail=api.acquisitionDetails({game:catalog.game,catalog_item_id:item.item_id,name:item.name});if(detail.maps.length)assert.ok(detail.mapChecked,item.item_id+' map check date')}
 });
