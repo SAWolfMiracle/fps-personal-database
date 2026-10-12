@@ -318,12 +318,14 @@ body{min-height:100vh;min-height:100svh}
  @supports(height:100dvh){.wrap{min-height:100dvh}}
  .mobile-nav{position:fixed;inset:auto 0 0;z-index:90;margin:0;padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px));transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden}
 }
+
+.guide-sections{display:grid;gap:14px;margin-top:14px}.guide-sections section{border-top:1px solid var(--line);padding-top:12px}.guide-sections h4{font-size:14px;margin:0 0 10px;color:var(--text)}.guide-sections p{font-size:14px;line-height:1.65;margin:8px 0}.guide-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.guide-chips span{border:1px solid var(--line);background:var(--panel3);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.4}.guide-date{font-size:12px!important;line-height:1.6!important;border-top:1px solid var(--line);padding-top:12px}.guide-exchange{margin-bottom:12px}.collection-guide>summary{font-size:15px;line-height:1.6}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.21</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.22</span></h1>
   <div class="sub">对局复盘 · 收藏管理</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -693,7 +695,7 @@ body{min-height:100vh;min-height:100svh}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.21";
+var APP_VERSION="0.6.22";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -1647,9 +1649,13 @@ function importCollectionCatalog(){
   collectionVisibleLimit=24;renderAll();scheduleCloudSync();showToast("已加入 "+plan.added.length+" 件未获得物品，跳过 "+plan.skipped+" 件已有物品");
 }
 function collectionGuideHTML(r){
-  var guide=window.FPSCatalog.acquisitionGuide(r);
-  return '<details class="collection-guide"><summary>获取方式：'+esc(guide.summary)+' · '+esc(guide.status)+'</summary><p>'+esc(guide.text)+'</p>'+(guide.checked?'<p class="muted">核对 '+esc(guide.checked)+'</p>':'')+'</details>';
+  var d=window.FPSCatalog.acquisitionDetails(r),guide=d.guide;
+  function chips(values){return '<div class="guide-chips">'+values.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'}
+  var maps=d.maps.length?chips(d.maps):'<p class="muted">'+(d.mapNote?'未提供具体地图列表':'具体产出地图待核实')+'</p>';
+  var exchange=d.exchange.map(function(x){return '<div class="guide-exchange"><b>'+esc(x.unlock||'解锁条件未注明')+'</b><p>材料：'+esc((x.materials||[]).join('、'))+'</p><small class="muted">'+esc(x.note||'配方与限购以游戏内为准')+'</small></div>'}).join('');
+  return '<details class="collection-guide"><summary>获取方式：'+esc(guide.summary)+'</summary><div class="guide-sections"><section><h4>地图 / 难度</h4>'+maps+(d.mapNote?'<p class="muted">'+esc(d.mapNote)+'</p>':'')+'<small class="muted">'+esc(d.difficulty)+'</small></section>'+(d.containers.length?'<section><h4>搜索容器</h4>'+chips(d.containers)+'<small class="muted">可能掉落，不保证每次搜刮出货。</small></section>':'')+(d.tradeable?'<section><h4>交易行</h4><p>资料标为可交易；当前供货、价格和解锁条件以游戏内为准。</p></section>':'')+(exchange?'<section><h4>军需处兑换</h4>'+exchange+'</section>':'')+(d.description?'<section><h4>'+((d.containers.length||exchange)?'补充说明':'任务 / 活动说明')+'</h4>'+d.description.split(/(?<=[。！？])\s*/).filter(Boolean).map(function(t){return '<p>'+esc(t)+'</p>'}).join('')+'</section>':'')+'</div><p class="guide-date muted">'+esc(guide.status)+(guide.checked?' · 资料核对 '+esc(guide.checked):'')+(d.mapChecked?' · 地图核对 '+esc(d.mapChecked):'')+'</p></details>';
 }
+
 function collectionMatchesGrade(r,selected){
   if(!selected)return true;
   var grade=Number(r.catalog_grade);
