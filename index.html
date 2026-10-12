@@ -305,7 +305,7 @@ tbody tr:hover td{background:#101821}
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.15</span></h1>
+  <h1>FPS 个人数据库 <span class="version">v0.6.16</span></h1>
   <div class="sub">跨游戏记录 · 武器表现 · 时段复盘 · 本地离线保存</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
@@ -587,13 +587,13 @@ tbody tr:hover td{background:#101821}
     <div class="actions"><button class="btn primary" id="cloudSyncBtn">立即同步</button></div><details class="inline-panel"><summary>登录与同步设置</summary><div class="cloud-auth">
       <div class="field cloud-email-field"><label for="cloudEmail">邮箱账号</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
       <div class="actions cloud-actions">
-        <button class="btn primary" id="cloudEmailBtn" title="需先在 Supabase Auth 配置站点重定向">发送登录链接</button>
         <button class="btn primary" id="cloudOtpSendBtn">发送验证码</button>
         <button class="btn" id="cloudAnonBtn" title="需先在 Supabase Auth 启用 Anonymous Sign-Ins">匿名云身份</button>
         <button class="btn ghost" id="cloudSignOutBtn">退出云身份</button>
       </div>
     </div>
-    <p class="muted">主屏幕版请使用验证码：收到邮件后回到这里输入，不必打开邮件链接。</p>
+    <p class="muted">默认使用邮箱验证码：收到邮件后回到这里输入。主屏幕版也可直接登录。</p>
+    <details class="inline-panel"><summary>其他登录方式</summary><p class="muted">也可通过邮件链接在浏览器中验证；链接不会让主屏幕应用自动登录。</p><button class="btn ghost" id="cloudEmailBtn" title="通过邮件链接验证">发送登录链接（备选）</button></details>
     <div id="cloudOtpBox" hidden><div class="field"><label for="cloudOtpCode">邮件验证码</label><input id="cloudOtpCode" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="输入邮件中的数字验证码"></div><button class="btn primary" id="cloudOtpVerifyBtn">验证并登录</button></div>
     <p id="cloudOtpStatus" class="muted" role="status" aria-live="polite"></p>
     <div class="cloud-toggles">
@@ -689,7 +689,7 @@ tbody tr:hover td{background:#101821}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.15";
+var APP_VERSION="0.6.16";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
