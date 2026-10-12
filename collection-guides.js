@@ -638,7 +638,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "S6 暖冬活动 · 平安果获取与兑换",
+    "text": "2025年12月至2026年1月的历史活动资料记载：平安果可通过击败特殊兵种或搜索暖冬工具柜获取，极品平安果可开出红色物资。资料中列出的平安果树是活动使用/兑换点，不据此推断苹果的地图掉落范围；当前返场与地图范围待核实。",
+    "source": "https://news.17173.com/content/12212025/213415566.shtml",
+    "sourceLabel": "17173 2025-12-21 暖冬活动攻略",
+    "status": "历史活动 · 当前状态待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:p1296": {
    "name": "烽火世界杯纪念奖杯",
@@ -2064,7 +2072,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "S10 核电站 AZ-3 · 露天物资点",
+    "text": "核电站露天物资点攻略将便携式同位素识别仪列为可能刷新的物品，并给出 AZ-3 点位路线。这是明确的地图搜索线索，不代表唯一产出地图或完整掉落范围；当前状态、难度和概率未复核。",
+    "source": "https://www.18183.com/gonglue/202607/8973883.html",
+    "sourceLabel": "18183 核电站露天物资点攻略",
+    "status": "S10 地图攻略 · 当前范围待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:1319": {
    "name": "微型燃料棒",
@@ -2075,7 +2091,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "S10 AZ-3 核电站专属能源藏品",
+    "text": "S10 任务路线攻略将微型燃料棒列为核电站专属金色藏品，并列出 AZ-3 核电站的能源物资搜索路线。当前跨赛季掉落、具体难度和刷新概率未实机复核。",
+    "source": "https://ol.3dmgame.com/gl/345223.html",
+    "sourceLabel": "3DM S10 博物强识攻略",
+    "status": "赛季地图攻略 · 当前范围待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:p1501": {
    "name": "牺牲之钥",
@@ -2147,7 +2171,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "S9 限时活动 · 藏宝堆",
+    "text": "S9 历史活动攻略将黄金足球列为藏宝堆可获得的特殊收藏品，并列出当时零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱五张地图的藏宝堆点位。活动是否返场及当前掉落状态未核实。",
+    "source": "https://www.youxiabc.com/p/28712.html",
+    "sourceLabel": "ABC游戏网 2026-04-27 藏宝堆全图路线",
+    "status": "历史活动 · 当前状态待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:p1460": {
    "name": "乌小蛋",
@@ -2155,7 +2187,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "S9 限时活动 · 全地图收纳盒",
+    "text": "S9 历史活动说明记载：活动期间在所有地图的收纳盒中搜索，有概率获得收藏品“乌小蛋”。该范围只对应当时活动规则，不代表当前仍可获取或新增地图的掉落范围。",
+    "source": "https://community-cn.honor.com/cngm/game/topicdetail/topicid-3725222035554305",
+    "sourceLabel": "S9 活动说明",
+    "status": "历史活动 · 当前状态待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:1285": {
    "name": "检眼镜",
@@ -2205,7 +2245,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "2026 元宵限时活动 · 锦鲤",
+    "text": "2026年2月27日至3月12日的限时活动资料记载：零号大坝与长弓溪谷的指定水域刷新不同品质锦鲤，其中包括黄金鲤。活动已结束，当前返场与掉落范围未核实。",
+    "source": "https://news.17173.com/content/03032026/223339463.shtml",
+    "sourceLabel": "17173 2026-03-03 摸鱼活动攻略",
+    "status": "历史活动 · 当前状态待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:p1392": {
    "name": "好运爆红烟花",
@@ -2213,7 +2261,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "2026 春节限时活动 · 搜刮与护送",
+    "text": "2026年2月限时活动资料记载：活动期间在全地图搜索野外物资箱或弹药箱，有概率额外获得好运爆红烟花；大坝、长弓、巴克什另有护送烟花鼠鼠的获取路线。活动已结束，当前刷新与返场未核实。",
+    "source": "https://news.17173.com/content/02132026/180327501.shtml",
+    "sourceLabel": "17173 2026-02-13 春节烟花攻略",
+    "status": "历史活动 · 当前状态待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:p1361": {
    "name": "赤小枭",
@@ -2420,7 +2476,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "S6 暖冬活动 · 平安果获取与兑换",
+    "text": "2025年12月至2026年1月的历史活动资料记载：平安果可通过击败特殊兵种或搜索暖冬工具柜获取；优品平安果属于该活动物品。资料中列出的平安果树是活动使用/兑换点，不据此推断苹果的地图掉落范围；当前返场与地图范围待核实。",
+    "source": "https://news.17173.com/content/12212025/213415566.shtml",
+    "sourceLabel": "17173 2025-12-21 暖冬活动攻略",
+    "status": "历史活动 · 当前状态待核实",
+    "checked": "2026-10-12"
+   }
   },
   "orzice:p1324": {
    "name": "《逆战·未来》OST光碟",
