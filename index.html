@@ -1652,9 +1652,13 @@ function importCollectionCatalog(){
 function collectionGuideHTML(r){
   var d=window.FPSCatalog.acquisitionDetails(r),guide=d.guide;
   function chips(values){return '<div class="guide-chips">'+values.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'}
-  var maps=d.maps.length?chips(d.maps):'<p class="muted">具体产出地图待核实</p>',difficulties=d.difficultyContexts.length?chips(d.difficultyContexts):'<p class="muted">具体行动难度待核实</p>';
+  var mapHeading=d.mapEvidenceType==='container-inferred'?'容器候选地图（容器分布推定）':'地图线索',maps=d.maps.length?chips(d.maps):'<p class="muted">当前具体产出地图待核实</p>';
+  var historicalMaps=d.historicalMaps&&d.historicalMaps.length?'<h4>历史活动地图（活动已结束）</h4>'+chips(d.historicalMaps)+(d.historicalMapNote?'<p class="muted">'+esc(d.historicalMapNote)+'</p>':''):'';
+  var directDifficulty=d.difficultyContextsDirect&&d.difficultyContextsDirect.length?chips(d.difficultyContextsDirect):'<p class="muted">未找到单品级行动难度资料</p>';
+  var inferredDifficulty=d.difficultyContextsInferred&&d.difficultyContextsInferred.length?'<h4>容器分布对应模式（候选）</h4>'+chips(d.difficultyContextsInferred)+(d.difficultyInferenceNote?'<p class="muted">'+esc(d.difficultyInferenceNote)+'</p>':''):'';
+  var difficultyHtml='<h4>资料明确的行动难度</h4>'+directDifficulty+inferredDifficulty;
   var exchange=d.exchange.map(function(x){return '<div class="guide-exchange"><b>'+esc(x.unlock||'解锁条件未注明')+'</b><p>材料：'+esc((x.materials||[]).join('、'))+'</p><small class="muted">'+esc(x.note||'配方与限购以游戏内为准')+'</small></div>'}).join('');
-  return '<details class="collection-guide" open><summary>获取方式：'+esc(guide.summary)+'</summary><div class="guide-sections"><section><h4>出现地图</h4>'+maps+(d.mapNote?'<p class="muted">'+esc(d.mapNote)+'</p>':'')+'<h4>行动难度</h4>'+difficulties+'<small class="muted">掉落概率待核实</small></section>'+(d.containers.length?'<section><h4>搜索容器</h4>'+chips(d.containers)+'<small class="muted">可能掉落，不保证每次搜刮出货。</small></section>':'')+(d.tradeable?'<section><h4>交易行</h4><p>资料标为可交易；当前供货、价格和解锁条件以游戏内为准。</p></section>':'')+(exchange?'<section><h4>军需处兑换</h4>'+exchange+'</section>':'')+(d.description?'<section><h4>'+((d.containers.length||exchange)?'补充说明':'任务 / 活动说明')+'</h4>'+d.description.split(/(?<=[。！？])\s*/).filter(Boolean).map(function(t){return '<p>'+esc(t)+'</p>'}).join('')+'</section>':'')+'</div><p class="guide-date muted">'+esc(guide.status)+(guide.checked?' · 资料核对 '+esc(guide.checked):'')+(d.mapChecked?' · 地图核对 '+esc(d.mapChecked):'')+'</p></details>';
+  return '<details class="collection-guide" open><summary>获取方式：'+esc(guide.summary)+'</summary><div class="guide-sections"><section><h4>'+mapHeading+'</h4>'+maps+(d.mapNote?'<p class="muted">'+esc(d.mapNote)+'</p>':'')+historicalMaps+difficultyHtml+'<small class="muted">单品掉落概率待核实</small></section>'+(d.containers.length?'<section><h4>搜索容器</h4>'+chips(d.containers)+'<small class="muted">可能掉落，不保证每次搜刮出货。</small></section>':'')+(d.tradeable?'<section><h4>交易行</h4><p>资料标为可交易；当前供货、价格和解锁条件以游戏内为准。</p></section>':'')+(exchange?'<section><h4>军需处兑换</h4>'+exchange+'</section>':'')+(d.description?'<section><h4>'+((d.containers.length||exchange)?'补充说明':'任务 / 活动说明')+'</h4>'+d.description.split(/(?<=[。！？])\s*/).filter(Boolean).map(function(t){return '<p>'+esc(t)+'</p>'}).join('')+'</section>':'')+'</div><p class="guide-date muted">'+esc(guide.status)+(guide.checked?' · 资料核对 '+esc(guide.checked):'')+(d.mapChecked?' · 地图核对 '+esc(d.mapChecked):'')+'</p></details>';
 }
 
 function collectionMatchesGrade(r,selected){
@@ -1679,7 +1683,7 @@ function renderCollections(){
   renderCatalogInfo();
   var list=collectionRecords();
   var duplicatePlan=window.FPSDuplicates.plan(list);$("cleanupCollectionDuplicatesBtn").disabled=!duplicatePlan.remove.length;$("cleanupCollectionDuplicatesBtn").textContent="清理空白重复目录（"+duplicatePlan.remove.length+"）";$("collectionDuplicateInfo").textContent=duplicatePlan.remove.length||duplicatePlan.conflicts.length?"已折叠 "+duplicatePlan.remove.length+" 条空白重复目录；"+duplicatePlan.conflicts.length+" 组含库存、历史或个人修改的重复记录保留，需核对。管理中可显示原始条目并清理空目录。":"";
-  var coverage=window.FPSCatalog.guideCoverage();$("collectionGuideCoverage").textContent='内置目录 '+coverage.total+' 件：地图有具体线索 '+coverage.mapsKnown+' 件，难度有具体线索 '+coverage.difficultiesKnown+' 件；其余均明确标为待核实。获取途径明确 '+coverage.known+' 件，待核实 '+coverage.pending+' 件。资料不是实时或逐件实机验证。';
+  var coverage=window.FPSCatalog.guideCoverage();$("collectionGuideCoverage").textContent='内置目录 '+coverage.total+' 件：地图资料明确 '+coverage.mapsKnown+' 件，容器分布推定候选 '+coverage.mapsInferred+' 件，当前地图线索待核实 '+coverage.mapsPending+' 件；另有历史活动地图 '+coverage.mapsHistorical+' 件（与其他地图资料可重叠）。行动难度资料明确 '+coverage.difficultiesKnown+' 件，容器分布推定 '+coverage.difficultiesInferred+' 件，仍待核实 '+coverage.difficultiesPending+' 件。获取途径明确 '+coverage.known+' 件，待核实 '+coverage.pending+' 件。地图候选不代表单品掉落或当前容器刷新。';
   var groups=uniq(list.map(function(r){return window.FPSCatalog.group(r)||"普通库存"}));
   populate("collectionFilterGroup",groups,"全部库存与专项");
   var selectedGroup=$("collectionFilterGroup").value;

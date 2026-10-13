@@ -306,9 +306,28 @@ function referenceGuide(r){
  if(!parts.length)parts.push('已检查该物品资料页，但未找到明确获取途径。具体任务、活动或刷新点仍待核实；禁止交易不等于只能搜刮。');
  return {summary:labels.join(' / ')||'待核实',text:parts.join(' '),status:labels.length?'公开资料参考 · 非实时验证':'待核实',source:fact.source,sourceLabel:fact.source_label||'',checked:fact.checked};
 }
+var containerMapSources={
+ '零号大坝':{modes:'普通 / 机密',types:['保险柜','小保险箱','电脑','电脑机箱','服务器','医疗包','医疗物资堆','实验服','弹药箱','武器箱','大武器箱','工具柜','大工具盒','鸟窝','藏匿物','野外物资箱','衣服','旅行袋','高级旅行箱','手提箱','登山包','储物柜','高级储物箱','航空储物箱','快递箱','抽屉柜','垃圾箱']},
+ '航天基地':{modes:'机密 / 绝密',types:['保险柜','小保险箱','电脑','电脑机箱','服务器','电脑包','医疗包','医疗物资堆','实验服','弹药箱','武器箱','大武器箱','工具柜','大工具盒','鸟窝','藏匿物','野外物资箱','衣服','旅行袋','高级旅行箱','手提箱','登山包','储物柜','高级储物箱','航空储物箱','快递箱','抽屉柜','垃圾箱']},
+ '巴克什':{modes:'普通 / 机密',types:['保险柜','小保险箱','电脑','电脑机箱','服务器','电脑包','医疗包','医疗物资堆','实验服','弹药箱','武器箱','大武器箱','工具柜','大工具盒','鸟窝','藏匿物','野外物资箱','衣服','旅行袋','高级旅行箱','手提箱','登山包','储物柜','高级储物箱','航空储物箱','快递箱','抽屉柜','垃圾箱']}
+};
+var containerMapAliases={'大保险箱':'保险柜','航空箱':'航空储物箱','野外物资堆':'野外物资箱'};
+function containerRouteEvidence(containers){
+ var list=Array.isArray(containers)?containers:[],maps=[],difficultyContexts=[];
+ Object.keys(containerMapSources).forEach(function(map){
+  var source=containerMapSources[map],matched=list.some(function(type){return source.types.indexOf(containerMapAliases[type]||type)>=0});
+  if(matched){maps.push(map);difficultyContexts.push(map+'：'+source.modes+'（容器分布推定）')}
+ });
+ if(list.indexOf('沙色保险箱')>=0){
+  if(maps.indexOf('巴克什')<0)maps.push('巴克什');
+  difficultyContexts.push('巴克什：绝密（沙色保险箱；容器线索推定）');
+ }
+ return {maps:maps,difficultyContexts:difficultyContexts};
+}
 function acquisitionDetails(r){
  var guide=acquisitionGuide(r),sameGame=gameKey(r.game)==='三角洲行动',fact=sameGame&&(guideEntries[r.catalog_item_id]||guideEntries[guideNames[String(r.name||'').trim()]]),personal=!!(r.obtain_method&&String(r.obtain_method).trim());
  var maps=fact&&Array.isArray(fact.map_contexts)?fact.map_contexts.slice():[],difficultyContexts=fact&&Array.isArray(fact.difficulty_contexts)?fact.difficulty_contexts.slice():[],mapNote=fact&&fact.map_note||'',mapChecked=fact&&fact.map_checked||'';
+ var mapEvidenceType=maps.length?'direct':'none',historicalMaps=[],historicalMapNote='',difficultyContextsDirect=difficultyContexts.slice(),difficultyContextsInferred=[];
  if(!personal&&fact){
   var evidenceText=[fact.guide&&fact.guide.summary,fact.guide&&fact.guide.text,fact.explicit_source].filter(Boolean).join(' '),mapNames=[['零号大坝','大坝'],['长弓溪谷','长弓'],['航天基地','航天城','航天'],['巴克什'],['潮汐监狱','监狱'],['AZ-3']],mentioned=[];
   mapNames.forEach(function(aliases){if(aliases.some(function(alias){return evidenceText.toLowerCase().indexOf(alias.toLowerCase())>=0})){mentioned.push(aliases[0])}});
@@ -323,9 +342,39 @@ function acquisitionDetails(r){
  if(!personal&&r.catalog_item_id==='orzice:p188'&&maps.length){difficultyContexts=maps.map(function(n){return n+'：常规 / 机密'})}
  if(!personal&&['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0){maps=['航天基地','AZ-3'];difficultyContexts=['航天基地：机密 / 绝密','AZ-3：机密'];mapNote='极星守望计划于2026-10-16 00:00至2027-01-21 02:00开放；这些是玩法地图/奖励路线，不表示各地图都有相同掉率。'}
  if(!personal&&researchedMapContexts[r.catalog_item_id]){var researched=researchedMapContexts[r.catalog_item_id];maps=researched.maps.slice();mapNote=researched.note;mapChecked=researched.checked||'2026-10-12';if(Array.isArray(researched.difficultyContexts))difficultyContexts=researched.difficultyContexts.slice()}
+ if(!personal&&maps.length)mapEvidenceType='direct';
+ difficultyContextsDirect=difficultyContexts.slice();
+ var historicalSourceNote=/历史|已结束|活动期/.test(mapNote);
+ if(!personal&&fact&&!historicalSourceNote){
+  var routes=containerRouteEvidence(fact.containers||[]);
+  if(!maps.length&&routes.maps.length){
+   maps=routes.maps.slice();mapEvidenceType='container-inferred';
+   mapNote='候选路线由“物品资料列出的容器类型”与“地图物资表包含该容器类型”求交得到；不证明该物品在此地图或模式实际掉落，也不证明本局容器刷新。当前只覆盖零号大坝、航天基地和巴克什。';
+   mapChecked='2026-10-13';
+  }else if(maps.length)mapEvidenceType='direct';
+  if(maps.length&&routes.difficultyContexts.length){
+   routes.difficultyContexts.forEach(function(context){
+    var map=context.split('：')[0],special=context.indexOf('沙色保险箱')>=0;
+    if(maps.indexOf(map)<0)return;
+    var mapContexts=difficultyContexts.filter(function(x){return String(x).indexOf(map+'：')===0});
+    var shouldAdd=special?!mapContexts.some(function(x){return /绝密/.test(x)}):!mapContexts.length;
+    if(shouldAdd&&difficultyContexts.indexOf(context)<0){difficultyContexts.push(context);difficultyContextsInferred.push(context)}
+   });
+  }
+ }
+ if(!personal&&fact&&(fact.containers||[]).indexOf('三角蚌')>=0){
+  historicalMaps=['零号大坝','长弓溪谷','航天基地','潮汐监狱'];
+  historicalMapNote='2026-02-10 至 2026-02-26 海底捞联动历史路线，活动已结束。活动资料列出四图水域蚌点，并称容器奖励受行动难度影响，但未给出可复用的具体模式表。';
+  if(!mapChecked)mapChecked='2026-10-13';
+ }
  if(!personal&&maps.length&&!mapChecked)mapChecked=fact&&fact.checked||guide.checked||'2026-10-12';
- return {guide:guide,maps:personal?[]:maps,difficultyContexts:personal?[]:difficultyContexts,mapNote:personal?'个人补充不会作为地图证据':mapNote,mapChecked:mapChecked,containers:!personal&&fact?(fact.containers||[]):[],exchange:!personal&&fact?(fact.exchange||[]):[],tradeable:!personal&&fact?fact.tradeable:null,description:personal||!fact||fact.guide||['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0?guide.text:(fact.explicit_source||''),difficulty:'未核实具体行动难度与掉落概率'};
+ if(!personal&&difficultyContextsInferred.length&&!mapChecked)mapChecked='2026-10-13';
+ var difficultyEvidenceType=difficultyContextsDirect.length?(difficultyContextsInferred.length?'mixed':'direct'):(difficultyContextsInferred.length?'container-inferred':'none');
+ return {guide:guide,maps:personal?[]:maps,difficultyContexts:personal?[]:difficultyContexts,difficultyContextsDirect:personal?[]:difficultyContextsDirect,difficultyContextsInferred:personal?[]:difficultyContextsInferred,mapEvidenceType:personal?'none':mapEvidenceType,difficultyEvidenceType:personal?'none':difficultyEvidenceType,historicalMaps:personal?[]:historicalMaps,historicalMapNote:personal?'':historicalMapNote,mapInferenceNote:!personal&&mapEvidenceType==='container-inferred'?mapNote:'',difficultyInferenceNote:!personal&&difficultyContextsInferred.length?'模式候选只表示相应地图资料存在物品线索对应的容器类型，不代表该藏品在该模式的单品掉落或爆率。':'',mapNote:personal?'个人补充不会作为地图证据':mapNote,mapChecked:mapChecked,containers:!personal&&fact?(fact.containers||[]):[],exchange:!personal&&fact?(fact.exchange||[]):[],tradeable:!personal&&fact?fact.tradeable:null,description:personal||!fact||fact.guide||['orzice:p1628','orzice:p1629','orzice:p1630'].indexOf(r.catalog_item_id)>=0?guide.text:(fact.explicit_source||''),difficulty:'未核实具体行动难度与掉落概率'};
 }
-function guideCoverage(){var ids=Object.keys(guideEntries),list=ids.map(function(id){return acquisitionGuide({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})}),details=ids.map(function(id){return acquisitionDetails({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})});return {total:list.length,known:list.filter(function(g){return g.summary!=='待核实'}).length,pending:list.filter(function(g){return g.summary==='待核实'}).length,mapsKnown:details.filter(function(d){return d.maps.length}).length,mapsPending:details.filter(function(d){return !d.maps.length}).length,difficultiesKnown:details.filter(function(d){return d.difficultyContexts.length}).length,difficultiesPending:details.filter(function(d){return !d.difficultyContexts.length}).length}}
+function guideCoverage(){
+ var ids=Object.keys(guideEntries),list=ids.map(function(id){return acquisitionGuide({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})}),details=ids.map(function(id){return acquisitionDetails({game:'三角洲行动',catalog_item_id:id,name:guideEntries[id].name})});
+ return {total:list.length,known:list.filter(function(g){return g.summary!=='待核实'}).length,pending:list.filter(function(g){return g.summary==='待核实'}).length,mapsKnown:details.filter(function(d){return d.maps.length&&d.mapEvidenceType==='direct'}).length,mapsInferred:details.filter(function(d){return d.maps.length&&d.mapEvidenceType==='container-inferred'}).length,mapsPending:details.filter(function(d){return !d.maps.length}).length,mapsHistorical:details.filter(function(d){return d.historicalMaps.length}).length,difficultiesKnown:details.filter(function(d){return d.difficultyContextsDirect.length}).length,difficultiesInferred:details.filter(function(d){return d.difficultyContextsInferred.length}).length,difficultiesPending:details.filter(function(d){return !d.difficultyContexts.length}).length,difficultiesWithAny:details.filter(function(d){return d.difficultyContexts.length}).length};
+}
 return {deckItems:function(){return Object.keys(deckNames).map(function(id){return {id:id,name:deckNames[id]}})},plan:plan,group:group,cardName:cardName,deckProgress:deckProgress,acquisitionGuide:acquisitionGuide,acquisitionDetails:acquisitionDetails,guideCoverage:guideCoverage};
 });
