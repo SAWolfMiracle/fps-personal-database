@@ -2567,12 +2567,22 @@
    }
   },
   "orzice:p1324": {
-   "name": "《逆战·未来》OST光碟",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "《逆战·未来》OST光碟",
+    "containers": [
+      "电脑机箱"
+    ],
+    "tradeable": null,
+    "explicit_source": "",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "《逆战：未来》联动 · 电脑机箱",
+      "text": "2025-11-21至12-04联动期间，资料称烽火地带所有地图的电脑机箱均有概率产出《逆战·未来》OST光碟；预约也可领取该收藏品。此处记录限时活动地图路线，活动已结束，未标注行动难度或当前掉落。",
+      "source": "https://news.17173.com/z/nzm2025/content/01022026/193448227.shtml",
+      "sourceLabel": "17173 2026-01-02 联动活动说明",
+      "status": "历史限时活动 · 活动已结束",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:p1299": {
    "name": "拉小宅",
@@ -3955,12 +3965,20 @@
    }
   },
   "orzice:p1467": {
-   "name": "足球",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "足球",
+    "containers": [],
+    "tradeable": null,
+    "explicit_source": "难度效率建议：https://m.ali213.net/news/gl2606/1780899.html",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "S9绿茵盛会 · 黑白足球交互道具",
+      "text": "S9限时绿茵活动资料称黑色足球在当时烽火地带各地图出现，球门全图可见；足球鼠鼠仅在零号大坝、长弓溪谷、巴克什。另一篇攻略建议普通难度零号大坝以提升跑图效率；这是玩法效率建议，不证明难度会改变足球刷新或奖励概率。活动已结束。",
+      "source": "https://shouyou.3dmgame.com/gl/625158.html",
+      "sourceLabel": "3DM/游侠手游 2026-06 S9足球活动地图与路线",
+      "status": "历史限时活动地图 / 效率建议",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:1290": {
    "name": "爽身粉",
@@ -4070,12 +4088,20 @@
    "checked": "2026-10-11"
   },
   "orzice:p1449": {
-   "name": "大肥鲤",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "大肥鲤",
+    "containers": [],
+    "tradeable": null,
+    "explicit_source": "",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "2026元宵锦鲤活动 · 大肥鲤",
+      "text": "2026-02-27至03-12限时锦鲤活动在零号大坝与长弓溪谷部分水域开放；活动资料列大肥鲤为紫色品质。来源笼统称行动地图难度越高，高品质锦鲤概率越高，但未给具体难度档位或大肥鲤单品掉率。活动已结束。",
+      "source": "https://news.17173.com/content/03032026/223339463.shtml",
+      "sourceLabel": "17173/公众号 2026-03-03 元宵锦鲤活动指南",
+      "status": "历史限时活动路线 · 难度概率未细分",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:p1366": {
    "name": "好粥道-黑米粥",
@@ -4142,12 +4168,24 @@
    "checked": "2026-10-11"
   },
   "orzice:p1330": {
-   "name": "渡鸦的录音数据-5",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "渡鸦的录音数据-5",
+    "containers": [
+      "航空箱",
+      "旅行箱",
+      "黄盒子"
+    ],
+    "tradeable": null,
+    "explicit_source": "",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "渡鸦录音数据系列 · 全地图历史线索",
+      "text": "S7攻略称使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可在夹层概率获得渡鸦录音数据；系列至少有五种、所有地图均可产出，因此将明确存在的第5种记入全地图历史线索。来源没有第5种独立概率或当前掉落状态，未推断第6种。",
+      "source": "https://ol.3dmgame.com/gl/323336.html",
+      "sourceLabel": "3DM S7 渡鸦录音数据系列攻略",
+      "status": "系列级历史地图线索 · 单件概率未核实",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:p1329": {
    "name": "阿萨拉平安果",
@@ -4225,12 +4263,23 @@
    "checked": "2026-10-11"
   },
   "orzice:p1288": {
-   "name": "奇怪的蛋",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "奇怪的蛋",
+    "containers": [
+      "鸟窝",
+      "火箭鼠鼠夹层"
+    ],
+    "tradeable": null,
+    "explicit_source": "",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "洲年庆限时活动 · 奇怪的蛋",
+      "text": "2025年洲年庆活动攻略记载，奇怪的蛋可从火箭鼠鼠夹层和鸟窝路线获取；鸟窝点位覆盖当时的零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱。活动为历史路线，当前是否返场及行动难度未核实。",
+      "source": "https://www.taptap.cn/moment/721097371034848209",
+      "sourceLabel": "TapTap 2025-09-27 洲年庆五图鸟窝点位",
+      "status": "历史活动地图路线 · 当前状态未核实",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:1208": {
    "name": "袖珍录像带",
@@ -4251,20 +4300,40 @@
    "checked": "2026-10-11"
   },
   "orzice:p1123": {
-   "name": "高级情报凭证",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "高级情报凭证",
+    "containers": [
+      "罗德岛特殊补给箱"
+    ],
+    "tradeable": null,
+    "explicit_source": "物品名单转载摘要：https://post.m.smzdm.com/zz/p/apr3e4p2/；官方活动公告：https://www.ali213.net/news/html/2025-6/943057.html",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "明日方舟联动 · 罗德岛特殊补给箱",
+      "text": "2025年S5明日方舟联动的地图攻略列出罗德岛特殊补给箱在零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱的点位；转载视频摘要将高级情报凭证列为箱内物品。活动为历史路线，当前状态未核实；物品名单依据转载摘要记录。",
+      "source": "https://www.taptap.cn/moment/700045268720028880",
+      "sourceLabel": "TapTap 2025-07-31 五图点位；箱内物品对照转载摘要",
+      "status": "历史联动箱路线 · 物品名单为转载资料",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:p1102": {
-   "name": "鳄鱼血样",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "鳄鱼血样",
+    "containers": [
+      "鳄鱼巢穴"
+    ],
+    "tradeable": null,
+    "explicit_source": "",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "鳄鱼入侵历史活动 · 鳄鱼巢穴",
+      "text": "2025年鳄鱼入侵资料明确记载，零号大坝与长弓溪谷鳄鱼巢穴可概率掉落紫色医疗收集品（含鳄鱼血样）。该活动仅白天，常规与机密行动刷新巢穴；资料未证实绝密或黑夜路线，当前活动状态未核实。",
+      "source": "https://gl.ali213.net/html/2025-5/1655289.html",
+      "sourceLabel": "游侠网 2025-05 鳄鱼入侵点位与玩法条件",
+      "status": "历史活动地图 / 行动条件 · 当前状态未核实",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:978": {
    "name": "图腾箭矢",
@@ -5607,12 +5676,20 @@
    "checked": "2026-10-11"
   },
   "orzice:p1450": {
-   "name": "小河鲤",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "小河鲤",
+    "containers": [],
+    "tradeable": null,
+    "explicit_source": "",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "2026元宵锦鲤活动 · 小河鲤",
+      "text": "2026-02-27至03-12限时锦鲤活动在零号大坝与长弓溪谷部分水域开放；活动资料列小河鲤为蓝色品质。来源笼统称行动地图难度越高，高品质锦鲤概率越高，但未给具体难度档位或小河鲤单品掉率。活动已结束。",
+      "source": "https://news.17173.com/content/03032026/223339463.shtml",
+      "sourceLabel": "17173/公众号 2026-03-03 元宵锦鲤活动指南",
+      "status": "历史限时活动路线 · 难度概率未细分",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:p1369": {
    "name": "好粥道-紫薯紫米粥",
@@ -5661,12 +5738,22 @@
    "checked": "2026-10-11"
   },
   "orzice:p1124": {
-   "name": "源石碎片",
-   "containers": [],
-   "tradeable": false,
-   "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11"
+    "name": "源石碎片",
+    "containers": [
+      "罗德岛特殊补给箱"
+    ],
+    "tradeable": null,
+    "explicit_source": "物品名单转载摘要：https://post.m.smzdm.com/zz/p/apr3e4p2/；官方活动公告：https://www.ali213.net/news/html/2025-6/943057.html",
+    "exchange": [],
+    "checked": "2026-10-13",
+    "guide": {
+      "summary": "明日方舟联动 · 罗德岛特殊补给箱",
+      "text": "2025年S5明日方舟联动的地图攻略列出罗德岛特殊补给箱在零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱的点位；转载视频摘要将源石碎片列为箱内物品。活动为历史路线，当前状态未核实；物品名单依据转载摘要记录。",
+      "source": "https://www.taptap.cn/moment/700045268720028880",
+      "sourceLabel": "TapTap 2025-07-31 五图点位；箱内物品对照转载摘要",
+      "status": "历史联动箱路线 · 物品名单为转载资料",
+      "checked": "2026-10-13"
+    }
   },
   "orzice:834": {
    "name": "医疗无人机",
