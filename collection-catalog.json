@@ -522,7 +522,8 @@
       "object_id": "15200000071",
       "name": "手办-阿米娅（近卫）",
       "item_id": "orzice:p1119",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-p1119.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15200000069.png",
@@ -538,7 +539,8 @@
       "object_id": "15080050161",
       "name": "Alpha脑机实验数据-渡鸦",
       "item_id": "orzice:1065",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1065.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050151.png",
@@ -554,7 +556,8 @@
       "object_id": "15080050144",
       "name": "浮力补偿设备",
       "item_id": "orzice:p1086",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-p1086.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050142.png",
@@ -562,7 +565,8 @@
       "object_id": "15080050142",
       "name": "海洋之泪",
       "item_id": "orzice:1204",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1204.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15200000059.png",
@@ -602,7 +606,8 @@
       "object_id": "15080050131",
       "name": "“钻石”鱼子酱",
       "item_id": "orzice:1035",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1035.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050128.png",
@@ -610,7 +615,8 @@
       "object_id": "15080050128",
       "name": "ECMO",
       "item_id": "orzice:1021",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1021.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050123.png",
@@ -618,7 +624,8 @@
       "object_id": "15080050123",
       "name": "“纵横”",
       "item_id": "orzice:1047",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1047.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050122.png",
@@ -626,7 +633,8 @@
       "object_id": "15080050122",
       "name": "“天圆地方”",
       "item_id": "orzice:1040",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1040.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050121.png",
@@ -634,7 +642,8 @@
       "object_id": "15080050121",
       "name": "万金泪冠",
       "item_id": "orzice:1048",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1048.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050120.png",
@@ -642,7 +651,8 @@
       "object_id": "15080050120",
       "name": "雷斯的留声机",
       "item_id": "orzice:1050",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1050.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050113.png",
@@ -650,7 +660,8 @@
       "object_id": "15080050113",
       "name": "医疗机械人",
       "item_id": "orzice:1024",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1024.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050100.png",
@@ -658,7 +669,8 @@
       "object_id": "15080050100",
       "name": "动力电池组",
       "item_id": "orzice:1066",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1066.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050099.png",
@@ -666,7 +678,8 @@
       "object_id": "15080050099",
       "name": "装甲车电池",
       "item_id": "orzice:1067",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1067.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050098.png",
@@ -674,7 +687,8 @@
       "object_id": "15080050098",
       "name": "微型反应炉",
       "item_id": "orzice:1068",
-      "category": "收集品"
+      "category": "收集品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1068.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050097.png",
@@ -682,7 +696,8 @@
       "object_id": "15080050097",
       "name": "复苏呼吸机",
       "item_id": "orzice:1023",
-      "category": "医疗道具"
+      "category": "医疗道具",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1023.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050069.png",
@@ -690,7 +705,8 @@
       "object_id": "15080050069",
       "name": "高级咖啡豆",
       "item_id": "orzice:p174",
-      "category": "家居物品"
+      "category": "家居物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-p174.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050067.png",
@@ -698,7 +714,8 @@
       "object_id": "15080050067",
       "name": "强力吸尘器",
       "item_id": "orzice:1037",
-      "category": "家居物品"
+      "category": "家居物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1037.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050066.png",
@@ -706,7 +723,8 @@
       "object_id": "15080050066",
       "name": "扫拖一体机器人",
       "item_id": "orzice:1038",
-      "category": "家居物品"
+      "category": "家居物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1038.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050061.png",
@@ -714,7 +732,8 @@
       "object_id": "15080050061",
       "name": "云存储阵列",
       "item_id": "orzice:1051",
-      "category": "资料情报"
+      "category": "资料情报",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1051.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050058.png",
@@ -722,7 +741,8 @@
       "object_id": "15080050058",
       "name": "自动体外除颤器",
       "item_id": "orzice:1018",
-      "category": "医疗道具"
+      "category": "医疗道具",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1018.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050044.png",
@@ -730,7 +750,8 @@
       "object_id": "15080050044",
       "name": "绝密服务器",
       "item_id": "orzice:1063",
-      "category": "资料情报"
+      "category": "资料情报",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1063.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050042.png",
@@ -738,7 +759,8 @@
       "object_id": "15080050042",
       "name": "名贵机械表",
       "item_id": "orzice:949",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-949.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050041.png",
@@ -754,7 +776,8 @@
       "object_id": "15080050040",
       "name": "主战坦克模型",
       "item_id": "orzice:1041",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1041.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050032.png",
@@ -762,7 +785,8 @@
       "object_id": "15080050032",
       "name": "军用信息终端",
       "item_id": "orzice:784",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-784.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050031.png",
@@ -770,7 +794,8 @@
       "object_id": "15080050031",
       "name": "便携军用雷达",
       "item_id": "orzice:788",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-788.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050030.png",
@@ -778,7 +803,8 @@
       "object_id": "15080050030",
       "name": "曼德尔超算单元",
       "item_id": "orzice:783",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-783.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050014.png",
@@ -794,7 +820,8 @@
       "object_id": "15080050010",
       "name": "万足金条",
       "item_id": "orzice:948",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-948.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050006.png",
@@ -802,7 +829,8 @@
       "object_id": "15080050006",
       "name": "非洲之心",
       "item_id": "orzice:1044",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1044.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080050003.png",
@@ -810,7 +838,8 @@
       "object_id": "15080050003",
       "name": "滑膛枪展品",
       "item_id": "orzice:1046",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1046.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15080040001.png",
@@ -818,7 +847,8 @@
       "object_id": "15080040001",
       "name": "棘龙爪化石",
       "item_id": "orzice:1049",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1049.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15070050001.png",
@@ -826,7 +856,15 @@
       "object_id": "15070050001",
       "name": "量子存储",
       "item_id": "orzice:1055",
-      "category": "资料情报"
+      "category": "资料情报",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1055.glb",
+      "model_variants": [
+        {
+          "id": "first-person",
+          "label": "第一人称模型",
+          "url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1055-first-person.glb"
+        }
+      ]
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15070040003.png",
@@ -834,7 +872,15 @@
       "object_id": "15070040003",
       "name": "实验数据",
       "item_id": "orzice:1053",
-      "category": "资料情报"
+      "category": "资料情报",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1053.glb",
+      "model_variants": [
+        {
+          "id": "first-person",
+          "label": "第一人称模型",
+          "url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1053-first-person.glb"
+        }
+      ]
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15060080015.png",
@@ -842,7 +888,8 @@
       "object_id": "15060080015",
       "name": "奥莉薇娅香槟",
       "item_id": "orzice:1034",
-      "category": "家居物品"
+      "category": "家居物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1034.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15060040004.png",
@@ -850,7 +897,8 @@
       "object_id": "15060040004",
       "name": "呼吸机",
       "item_id": "orzice:1020",
-      "category": "医疗道具"
+      "category": "医疗道具",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1020.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15040050002.png",
@@ -858,7 +906,8 @@
       "object_id": "15040050002",
       "name": "克劳迪乌斯半身像",
       "item_id": "orzice:1042",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1042.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050018.png",
@@ -866,7 +915,8 @@
       "object_id": "15030050018",
       "name": "军用控制终端",
       "item_id": "orzice:781",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-781.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050017.png",
@@ -874,7 +924,8 @@
       "object_id": "15030050017",
       "name": "军用炮弹",
       "item_id": "orzice:1031",
-      "category": "工具材料"
+      "category": "工具材料",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1031.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050014.png",
@@ -882,7 +933,8 @@
       "object_id": "15030050014",
       "name": "飞行记录仪",
       "item_id": "orzice:782",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-782.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050013.png",
@@ -890,7 +942,8 @@
       "object_id": "15030050013",
       "name": "G.T.I卫星通信天线",
       "item_id": "orzice:p149",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-p149.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050012.png",
@@ -898,7 +951,8 @@
       "object_id": "15030050012",
       "name": "高速磁盘阵列",
       "item_id": "orzice:785",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-785.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050008.png",
@@ -906,7 +960,8 @@
       "object_id": "15030050008",
       "name": "刀片服务器",
       "item_id": "orzice:778",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-778.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050007.png",
@@ -914,7 +969,8 @@
       "object_id": "15030050007",
       "name": "笔记本电脑",
       "item_id": "orzice:789",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-789.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050004.png",
@@ -922,7 +978,8 @@
       "object_id": "15030050004",
       "name": "军用电台",
       "item_id": "orzice:777",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-777.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030050002.png",
@@ -938,7 +995,8 @@
       "object_id": "15030050001",
       "name": "显卡",
       "item_id": "orzice:787",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-787.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15030010012.png",
@@ -946,7 +1004,8 @@
       "object_id": "15030010012",
       "name": "摄影机",
       "item_id": "orzice:779",
-      "category": "电子物品"
+      "category": "电子物品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-779.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15020010033.png",
@@ -954,7 +1013,8 @@
       "object_id": "15020010033",
       "name": "火箭燃料",
       "item_id": "orzice:p141",
-      "category": "工具材料"
+      "category": "工具材料",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-p141.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15020010031.png",
@@ -962,7 +1022,8 @@
       "object_id": "15020010031",
       "name": "强化碳纤维板",
       "item_id": "orzice:1027",
-      "category": "工具材料"
+      "category": "工具材料",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1027.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15010050001.png",
@@ -970,7 +1031,8 @@
       "object_id": "15010050001",
       "name": "黄金瞪羚",
       "item_id": "orzice:1043",
-      "category": "工艺藏品"
+      "category": "工艺藏品",
+      "model_url": "https://sawolfmiracle.github.io/fps-personal-database/assets/collection-models/orzice-1043.glb"
     },
     {
       "image": "https://playerhub.df.qq.com/playerhub/60004/object/15200000287.png",

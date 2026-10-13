@@ -1,4 +1,4 @@
-const CACHE="fps-db-v6-42-1";
+const CACHE="fps-db-v6-42-2";
 const CORE=["./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./inventory.js","./home-dashboard.js","./collection-duplicates.js","./collection-model.js","./collection-guides.js","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
 const MODEL_VIEWER_URL="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
 

@@ -697,7 +697,7 @@ body{min-height:100vh;min-height:100svh}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.23";
+var APP_VERSION="0.6.42";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -713,7 +713,7 @@ var tabs=[
 var records=[];
 var screenshotImporter=null,warehouseImporter=null,collectionSelection=new Set(),pendingEmailOtp=null;
 var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null,inventoryEditingId=null;
-var collectionCatalog=null,catalogLoading=false,collectionVisibleLimit=24;
+var collectionCatalog=null,collectionCatalogPromise=null,catalogLoading=false,collectionVisibleLimit=24;
 var editingId=null;
 var deletedSnapshot=null;
 var deleteTimer=null;
@@ -1638,11 +1638,16 @@ function renderCatalogInfo(){
   $("catalogPreview").textContent=collectionCatalog.items.filter(function(r){return !$("catalogGrade").value||String(r.grade)===$("catalogGrade").value}).map(function(r){return r.name+"（"+r.grade+"级）"}).join(" · ");
   $("importCatalogBtn").disabled=!preview.added.length;
 }
-async function loadCollectionCatalog(){
-  if(catalogLoading||collectionCatalog)return;catalogLoading=true;$("importCatalogBtn").disabled=true;$("catalogStatus").textContent="正在加载收藏品目录…";
-  try{var response=await fetch("./collection-catalog.json",{cache:"no-cache"});if(!response.ok)throw Error("目录下载失败");var catalog=await response.json();window.FPSCatalog.plan(catalog,[],function(){return ""},isoNow());collectionCatalog=catalog;renderCatalogInfo()}
-  catch(e){$("catalogStatus").textContent="目录未加载，请联网后点击重新加载。"}
-  finally{catalogLoading=false}
+function loadCollectionCatalog(){
+  if(collectionCatalog)return Promise.resolve(collectionCatalog);
+  if(collectionCatalogPromise)return collectionCatalogPromise;
+  catalogLoading=true;$("importCatalogBtn").disabled=true;$("catalogStatus").textContent="正在加载收藏品目录…";
+  collectionCatalogPromise=(async function(){
+    try{var response=await fetch("./collection-catalog.json",{cache:"no-cache"});if(!response.ok)throw Error("目录下载失败");var catalog=await response.json();window.FPSCatalog.plan(catalog,[],function(){return ""},isoNow());collectionCatalog=catalog;renderCatalogInfo();return catalog}
+    catch(e){$("catalogStatus").textContent="目录未加载，请联网后点击重新加载。";return null}
+    finally{catalogLoading=false;collectionCatalogPromise=null}
+  })();
+  return collectionCatalogPromise;
 }
 function importCollectionCatalog(){
   if(!collectionCatalog)return;
@@ -1652,12 +1657,13 @@ function importCollectionCatalog(){
   collectionVisibleLimit=24;renderAll();scheduleCloudSync();showToast("已加入 "+plan.added.length+" 件未获得物品，跳过 "+plan.skipped+" 件已有物品");
 }
 function collectionModelHTML(r){
-  return '<section class="collection-model card" style="margin:14px 0"><div class="section-title-row"><h4 style="margin:0">3D 模型预览</h4><span class="muted">GLB / GLTF</span></div><div id="collectionModelStage" style="height:min(55vh,420px);min-height:240px;margin-top:10px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#080b10"><p class="muted" style="padding:20px;text-align:center">选择一个藏品来查看模型</p></div><p id="collectionModelStatus" class="muted" role="status" aria-live="polite">可绑定有权使用的 3D 模型。</p><div class="field"><label for="collectionModelUrlInput">模型链接（HTTPS · .glb 或 .gltf）</label><input id="collectionModelUrlInput" type="url" maxlength="1000" value="'+esc(r.model_url||'')+'" placeholder="https://…/model.glb"></div><div class="actions"><button type="button" class="btn primary" id="saveCollectionModelUrl">保存模型链接</button><button type="button" class="btn" id="clearCollectionModelUrl">清除模型链接</button><label class="btn" for="collectionModelFile">导入本机 GLB</label><input id="collectionModelFile" type="file" accept=".glb,model/gltf-binary" hidden><button type="button" class="btn" id="removeCollectionModelFile">移除本机 GLB</button></div><small class="muted">模型可拖动旋转、缩放。本机 GLB 保存在当前浏览器，不参与云同步；模型链接会随物品记录同步。GLTF 外部贴图/二进制文件需允许跨域读取。</small></section>';
+  return '<section class="collection-model card" style="margin:14px 0"><div class="section-title-row"><h4 style="margin:0">3D 模型预览</h4><span class="muted">目录模型 · GLB / GLTF</span></div><div id="collectionModelStage" style="height:min(55vh,420px);min-height:240px;margin-top:10px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#080b10"><p class="muted" style="padding:20px;text-align:center">选择一个藏品来查看模型</p></div><p id="collectionModelStatus" class="muted" role="status" aria-live="polite">目录模型会自动显示；也可绑定个人模型链接。</p><div id="collectionModelVariantField" class="field" hidden><label for="collectionModelVariant">模型视角</label><select id="collectionModelVariant"><option value="">默认展示模型</option></select></div><div class="field"><label for="collectionModelUrlInput">个人模型链接（HTTPS · .glb 或 .gltf）</label><input id="collectionModelUrlInput" type="url" maxlength="1000" value="'+esc(r.model_url||'')+'" placeholder="https://…/model.glb"></div><div class="actions"><button type="button" class="btn primary" id="saveCollectionModelUrl">保存个人模型链接</button><button type="button" class="btn" id="clearCollectionModelUrl">清除个人模型链接</button><label class="btn" for="collectionModelFile">导入本机 GLB</label><input id="collectionModelFile" type="file" accept=".glb,model/gltf-binary" hidden><button type="button" class="btn" id="removeCollectionModelFile">移除本机 GLB</button></div><small class="muted">模型可拖动旋转、缩放。目录模型可在设备间共享；本机 GLB 只保存在当前浏览器。目录导出的网格不包含原材质、贴图、Prefab 层级或动画。</small></section>';
 }
 function bindCollectionModelPanel(r){
   $("saveCollectionModelUrl").onclick=function(){saveCollectionModelLink(r.id)};
   $("clearCollectionModelUrl").onclick=function(){clearCollectionModelLink(r.id)};
   $("removeCollectionModelFile").onclick=function(){removeLocalCollectionModel(r.id)};
+  $("collectionModelVariant").onchange=function(){renderCollectionModel(r,this.value)};
   $("collectionModelFile").onchange=function(){
     var file=this.files&&this.files[0];this.value="";
     if(file)saveLocalCollectionModel(r.id,file);
@@ -1678,6 +1684,7 @@ function clearCollectionModelLink(id){
   if(!r)return;
   if(!r.model_url){showToast("此物品没有已保存的模型链接");return}
   delete r.model_url;
+  $("collectionModelUrlInput").value="";
   touchCollection(r);
   renderCollectionModel(r);
   showToast("模型链接已清除");
@@ -1702,35 +1709,40 @@ async function removeLocalCollectionModel(id){
     showToast("本机 GLB 已移除");
   }catch(err){showToast("移除本机模型失败："+(err&&err.message?err.message:"浏览器存储不可用"))}
 }
-async function renderCollectionModel(r){
+async function renderCollectionModel(r,variantID){
   var token=++collectionModelRenderToken,workspace=activeWorkspace,stage=$("collectionModelStage"),status=$("collectionModelStatus");
   if(!stage||!status)return;
   if(collectionModelObjectURL){window.FPSCollectionModel.revokeObjectURL(collectionModelObjectURL);collectionModelObjectURL=""}
   stage.innerHTML="";
   status.textContent="正在检查模型资源…";
-  var local=null,storageError=false;
-  try{local=await window.FPSCollectionModel.getLocal(window.FPSCollectionModel.storageKey(workspace,r.id))}
-  catch(err){storageError=true}
+  var local=null,storageError=false,catalogPromise=collectionCatalog?Promise.resolve(collectionCatalog):loadCollectionCatalog();
+  var localPromise=window.FPSCollectionModel.getLocal(window.FPSCollectionModel.storageKey(workspace,r.id)).catch(function(){storageError=true;return null});
+  await Promise.all([catalogPromise,localPromise]).then(function(values){local=values[1]});
   if(token!==collectionModelRenderToken||activeWorkspace!==workspace||collectionSelectedId!==r.id)return;
-  var src="";
-  if(local&&local.blob){
+  var variants=window.FPSCollectionModel.catalogModelVariants(collectionCatalog,r.catalog_item_id),selectedVariant=variants.find(function(item){return item.id===String(variantID||"")})||null,variantField=$("collectionModelVariantField"),variantSelect=$("collectionModelVariant");
+  if(variantSelect){variantSelect.innerHTML='<option value="">默认展示模型</option>'+variants.map(function(item){return '<option value="'+esc(item.id)+'">'+esc(item.label)+'</option>'}).join("");variantSelect.value=selectedVariant?selectedVariant.id:"";if(variantField)variantField.hidden=!variants.length}
+  var src="",localActive=false;
+  if(local&&local.blob&&!selectedVariant){
     try{src=window.FPSCollectionModel.createObjectURL(local.blob);collectionModelObjectURL=src}
     catch(err){storageError=true}
+    localActive=!!src;
   }
-  if(!src)src=window.FPSCollectionModel.normalizeURL(r.model_url||"");
+  if(selectedVariant)src=window.FPSCollectionModel.catalogModelURL(collectionCatalog,r.catalog_item_id,selectedVariant.id);
+  else if(!src)src=window.FPSCollectionModel.normalizeURL(r.model_url||"")||window.FPSCollectionModel.catalogModelURL(collectionCatalog,r.catalog_item_id);
   if(!src){
-    stage.innerHTML='<p class="muted" style="padding:20px;text-align:center">收藏目录目前只有物品图片，没有可旋转的 3D 网格。请绑定 HTTPS GLB / GLTF 直链，或导入一个本机 GLB。</p>';
+    stage.innerHTML='<p class="muted" style="padding:20px;text-align:center">此收藏品暂时没有目录模型。你可以绑定个人 HTTPS GLB / GLTF 直链，或导入本机 GLB。</p>';
     status.textContent=storageError?"本机模型存储不可用；可尝试使用 HTTPS 模型链接。":"暂无 3D 模型资源。";
     return;
   }
-  status.textContent=local?"正在载入本机模型…":"正在载入网络模型…";
+  status.textContent=localActive?"正在载入本机模型…":(selectedVariant?"正在载入目录模型视角…":(r.model_url?"正在载入个人网络模型…":"正在载入收藏目录模型…"));
   try{
     await window.FPSCollectionModel.mountViewer(stage,src,r.name,function(message){
       if(token===collectionModelRenderToken&&activeWorkspace===workspace&&collectionSelectedId===r.id)status.textContent=message;
     });
     if(token!==collectionModelRenderToken||activeWorkspace!==workspace||collectionSelectedId!==r.id)return;
-    if(local)status.textContent="本机模型："+(local.name||"GLB")+" · 文件不会同步到其他设备";
-    else status.textContent="网络模型已连接；若无法加载，请检查链接权限和跨域设置。";
+    if(localActive)status.textContent="本机模型："+(local.name||"GLB")+" · 文件不会同步到其他设备";
+    else if(selectedVariant)status.textContent="目录模型视角："+selectedVariant.label;
+    else status.textContent=r.model_url?"个人网络模型已连接。":"收藏目录内置模型已连接。";
   }catch(err){
     if(token!==collectionModelRenderToken)return;
     stage.innerHTML='<p class="muted" style="padding:20px;text-align:center">3D 查看器加载失败；请联网后重试。</p>';

@@ -14,6 +14,25 @@ function normalizeURL(value){
     return url.href;
   }catch(e){return ""}
 }
+function catalogItem(catalog,itemID){
+  if(!catalog||!Array.isArray(catalog.items))return null;
+  return catalog.items.find(function(item){return item&&item.item_id===String(itemID||"")})||null;
+}
+function catalogModelVariants(catalog,itemID){
+  var item=catalogItem(catalog,itemID),variants=item&&Array.isArray(item.model_variants)?item.model_variants:[];
+  return variants.filter(function(variant){return variant&&variant.id&&variant.label&&normalizeURL(variant.url)}).map(function(variant){
+    return {id:String(variant.id),label:String(variant.label),url:normalizeURL(variant.url)};
+  });
+}
+function catalogModelURL(catalog,itemID,variantID){
+  var item=catalogItem(catalog,itemID);
+  if(!item)return "";
+  if(variantID){
+    var variant=catalogModelVariants(catalog,itemID).find(function(entry){return entry.id===String(variantID)});
+    return variant?variant.url:"";
+  }
+  return normalizeURL(item.model_url||"");
+}
 function validateFile(file){
   if(!file||!file.name||!/\.glb$/i.test(file.name))return {ok:false,message:"只支持 .glb 单文件"};
   if(!Number.isFinite(Number(file.size))||Number(file.size)<1)return {ok:false,message:"模型文件为空或无法读取"};
@@ -110,6 +129,8 @@ function mountViewer(container,src,alt,onStatus){
 }
 var api={
   normalizeURL:normalizeURL,
+  catalogModelURL:catalogModelURL,
+  catalogModelVariants:catalogModelVariants,
   validateFile:validateFile,
   storageKey:storageKey,
   getLocal:getLocal,
