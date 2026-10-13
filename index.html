@@ -546,7 +546,7 @@ body{min-height:100vh;min-height:100svh}
 
   <details class="inline-panel"><summary>目录核对情况</summary><p id="collectionGuideCoverage" class="muted"></p></details>
   <div id="collectionDetailParking" hidden><div id="collectionDetail" class="card" hidden style="margin-top:18px">
-    <div class="section-title-row"><h3 id="collectionDetailTitle"></h3><button class="btn" id="closeCollectionDetailBtn">关闭详情</button></div><div id="collectionDetailGuide"></div><p class="muted" id="collectionDetailSummary"></p>
+    <div class="section-title-row"><h3 id="collectionDetailTitle"></h3><button class="btn" id="closeCollectionDetailBtn">关闭详情</button></div><div id="collectionModelPanel"></div><div id="collectionDetailGuide"></div><p class="muted" id="collectionDetailSummary"></p>
     <details class="inline-panel" id="acquisitionEditor"><summary>新增 / 补充获取明细</summary><p class="muted">“记录获取”一键增加 1 件。这里的补充信息均选填，之后随时可编辑。</p><h4 id="acquisitionFormTitle">新增获取明细</h4>
     <form id="acquisitionForm">
       <div class="collection-fields">
@@ -686,6 +686,7 @@ body{min-height:100vh;min-height:100svh}
 
 <script src="./ocr-import.js"></script>
 <script src="./warehouse-import.js"></script>
+<script src="./collection-model.js"></script>
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
@@ -696,7 +697,7 @@ body{min-height:100vh;min-height:100svh}
 <script>
 (function(){
 "use strict";
-var APP_VERSION="0.6.22";
+var APP_VERSION="0.6.23";
 var LEGACY_KEY="fps_database_pwa_v1";
 var WORKSPACE_PREFIX="fps_workspace_v2_";
 var TOMBSTONE_PREFIX="fps_cloud_tombstones_v2_";
@@ -724,6 +725,7 @@ var cloudUser=null;
 var cloudBusy=false,cloudSyncProgress="";
 var cloudSyncTimer=null;
 var draftTimer=null;
+var collectionModelRenderToken=0,collectionModelObjectURL="";
 
 function $(id){return document.getElementById(id)}
 function num(v){var x=Number(v);return Number.isFinite(x)?x:0}
@@ -1649,6 +1651,93 @@ function importCollectionCatalog(){
   try{localStorage.setItem(workspaceRecordsKey(),JSON.stringify(records))}catch(e){records=previous;showToast("空间不足，目录未导入。请先导出备份并释放空间。");return}
   collectionVisibleLimit=24;renderAll();scheduleCloudSync();showToast("已加入 "+plan.added.length+" 件未获得物品，跳过 "+plan.skipped+" 件已有物品");
 }
+function collectionModelHTML(r){
+  return '<section class="collection-model card" style="margin:14px 0"><div class="section-title-row"><h4 style="margin:0">3D 模型预览</h4><span class="muted">GLB / GLTF</span></div><div id="collectionModelStage" style="height:min(55vh,420px);min-height:240px;margin-top:10px;display:grid;place-items:center;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#080b10"><p class="muted" style="padding:20px;text-align:center">选择一个藏品来查看模型</p></div><p id="collectionModelStatus" class="muted" role="status" aria-live="polite">可绑定有权使用的 3D 模型。</p><div class="field"><label for="collectionModelUrlInput">模型链接（HTTPS · .glb 或 .gltf）</label><input id="collectionModelUrlInput" type="url" maxlength="1000" value="'+esc(r.model_url||'')+'" placeholder="https://…/model.glb"></div><div class="actions"><button type="button" class="btn primary" id="saveCollectionModelUrl">保存模型链接</button><button type="button" class="btn" id="clearCollectionModelUrl">清除模型链接</button><label class="btn" for="collectionModelFile">导入本机 GLB</label><input id="collectionModelFile" type="file" accept=".glb,model/gltf-binary" hidden><button type="button" class="btn" id="removeCollectionModelFile">移除本机 GLB</button></div><small class="muted">模型可拖动旋转、缩放。本机 GLB 保存在当前浏览器，不参与云同步；模型链接会随物品记录同步。GLTF 外部贴图/二进制文件需允许跨域读取。</small></section>';
+}
+function bindCollectionModelPanel(r){
+  $("saveCollectionModelUrl").onclick=function(){saveCollectionModelLink(r.id)};
+  $("clearCollectionModelUrl").onclick=function(){clearCollectionModelLink(r.id)};
+  $("removeCollectionModelFile").onclick=function(){removeLocalCollectionModel(r.id)};
+  $("collectionModelFile").onchange=function(){
+    var file=this.files&&this.files[0];this.value="";
+    if(file)saveLocalCollectionModel(r.id,file);
+  };
+}
+function saveCollectionModelLink(id){
+  var r=records.find(function(x){return x.id===id&&x.kind==="collection"});
+  if(!r)return;
+  var raw=$("collectionModelUrlInput").value.trim(),url=raw?window.FPSCollectionModel.normalizeURL(raw):"";
+  if(raw&&!url){showToast("请使用 HTTPS 的 .glb 或 .gltf 文件直链");return}
+  if(url)r.model_url=url;else delete r.model_url;
+  touchCollection(r);
+  renderCollectionModel(r);
+  showToast(url?"模型链接已保存并同步到物品记录":"模型链接已清除");
+}
+function clearCollectionModelLink(id){
+  var r=records.find(function(x){return x.id===id&&x.kind==="collection"});
+  if(!r)return;
+  if(!r.model_url){showToast("此物品没有已保存的模型链接");return}
+  delete r.model_url;
+  touchCollection(r);
+  renderCollectionModel(r);
+  showToast("模型链接已清除");
+}
+async function saveLocalCollectionModel(id,file){
+  var r=records.find(function(x){return x.id===id&&x.kind==="collection"});
+  if(!r)return;
+  var check=window.FPSCollectionModel.validateFile(file);
+  if(!check.ok){showToast(check.message);return}
+  try{
+    await window.FPSCollectionModel.saveLocal(window.FPSCollectionModel.storageKey(activeWorkspace,id),file);
+    await renderCollectionModel(r);
+    showToast("GLB 已保存在本机浏览器；云端只同步模型链接");
+  }catch(err){showToast("保存本机模型失败："+(err&&err.message?err.message:"浏览器存储不可用"))}
+}
+async function removeLocalCollectionModel(id){
+  var r=records.find(function(x){return x.id===id&&x.kind==="collection"});
+  if(!r)return;
+  try{
+    await window.FPSCollectionModel.removeLocal(window.FPSCollectionModel.storageKey(activeWorkspace,id));
+    await renderCollectionModel(r);
+    showToast("本机 GLB 已移除");
+  }catch(err){showToast("移除本机模型失败："+(err&&err.message?err.message:"浏览器存储不可用"))}
+}
+async function renderCollectionModel(r){
+  var token=++collectionModelRenderToken,workspace=activeWorkspace,stage=$("collectionModelStage"),status=$("collectionModelStatus");
+  if(!stage||!status)return;
+  if(collectionModelObjectURL){window.FPSCollectionModel.revokeObjectURL(collectionModelObjectURL);collectionModelObjectURL=""}
+  stage.innerHTML="";
+  status.textContent="正在检查模型资源…";
+  var local=null,storageError=false;
+  try{local=await window.FPSCollectionModel.getLocal(window.FPSCollectionModel.storageKey(workspace,r.id))}
+  catch(err){storageError=true}
+  if(token!==collectionModelRenderToken||activeWorkspace!==workspace||collectionSelectedId!==r.id)return;
+  var src="";
+  if(local&&local.blob){
+    try{src=window.FPSCollectionModel.createObjectURL(local.blob);collectionModelObjectURL=src}
+    catch(err){storageError=true}
+  }
+  if(!src)src=window.FPSCollectionModel.normalizeURL(r.model_url||"");
+  if(!src){
+    stage.innerHTML='<p class="muted" style="padding:20px;text-align:center">收藏目录目前只有物品图片，没有可旋转的 3D 网格。请绑定 HTTPS GLB / GLTF 直链，或导入一个本机 GLB。</p>';
+    status.textContent=storageError?"本机模型存储不可用；可尝试使用 HTTPS 模型链接。":"暂无 3D 模型资源。";
+    return;
+  }
+  status.textContent=local?"正在载入本机模型…":"正在载入网络模型…";
+  try{
+    await window.FPSCollectionModel.mountViewer(stage,src,r.name,function(message){
+      if(token===collectionModelRenderToken&&activeWorkspace===workspace&&collectionSelectedId===r.id)status.textContent=message;
+    });
+    if(token!==collectionModelRenderToken||activeWorkspace!==workspace||collectionSelectedId!==r.id)return;
+    if(local)status.textContent="本机模型："+(local.name||"GLB")+" · 文件不会同步到其他设备";
+    else status.textContent="网络模型已连接；若无法加载，请检查链接权限和跨域设置。";
+  }catch(err){
+    if(token!==collectionModelRenderToken)return;
+    stage.innerHTML='<p class="muted" style="padding:20px;text-align:center">3D 查看器加载失败；请联网后重试。</p>';
+    status.textContent="3D 查看器暂时不可用。";
+  }
+}
+
 function collectionGuideHTML(r){
   var d=window.FPSCatalog.acquisitionDetails(r),guide=d.guide;
   function chips(values){return '<div class="guide-chips">'+values.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'}
@@ -1709,7 +1798,8 @@ $("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function
   renderCollectionDetail();
 }
 function renderCollectionDetail(){
-  var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"}),panel=$("collectionDetail"),slot=document.getElementById("collectionDetailSlot");if(!r||!slot){panel.hidden=true;$("collectionDetailParking").appendChild(panel);return}slot.appendChild(panel);panel.hidden=false;
+  var r=records.find(function(x){return x.id===collectionSelectedId&&x.kind==="collection"}),panel=$("collectionDetail"),slot=document.getElementById("collectionDetailSlot");if(!r||!slot){panel.hidden=true;$("collectionDetailParking").appendChild(panel);collectionModelRenderToken++;if(collectionModelObjectURL){window.FPSCollectionModel.revokeObjectURL(collectionModelObjectURL);collectionModelObjectURL=""}var modelPanel=$("collectionModelPanel");if(modelPanel)modelPanel.dataset.itemId="";return}slot.appendChild(panel);panel.hidden=false;
+  var modelPanel=$("collectionModelPanel");if(modelPanel.dataset.itemId!==r.id){modelPanel.dataset.itemId=r.id;modelPanel.innerHTML=collectionModelHTML(r);bindCollectionModelPanel(r);renderCollectionModel(r)}else{var modelInput=$("collectionModelUrlInput");if(modelInput&&document.activeElement!==modelInput)modelInput.value=r.model_url||""}
   $("collectionDetailGuide").innerHTML=collectionGuideHTML(r)+(r.note?'<p class="muted">备注：'+esc(r.note)+'</p>':'');$("collectionDetailTitle").textContent=r.name+" · 获取与库存历史";$("collectionDetailSummary").textContent="当前库存 "+collectionQuantity(r)+" / 目标 "+r.target+" · 已填写花费合计 "+r.acquisitions.reduce(function(n,a){return n+num(a.cost)},0).toFixed(2)+"（按本游戏记账单位）";
   $("acquisitionList").innerHTML=(r.starting_quantity!=null&&(r.import_source==="screenshot"||r.import_source==="warehouse")?'<div class="collection-log"><div><b>初始数量快照 · '+num(r.starting_quantity)+'</b><p class="muted">'+esc(r.snapshot_date||'')+' 导入确认 · 不代表历史获取时间、来源或花费</p></div></div>':'')+r.acquisitions.slice().reverse().map(function(a){return '<div class="collection-log"><div><b>'+esc(a.date||'日期未填写')+' · +'+a.quantity+'</b><p class="muted">'+esc(a.source||"来源未填写")+' · '+(a.cost==null?'花费未填写':'花费 '+num(a.cost).toFixed(2))+'</p>'+(a.note?'<p>'+esc(a.note)+'</p>':'')+'</div><div class="actions"><button class="btn" data-acquisition-edit="'+esc(a.id)+'">补充 / 编辑</button><button class="btn danger" data-acquisition-delete="'+esc(a.id)+'">删除获取</button></div></div>'}).join("")||'<div class="empty">尚未获得。每次获取都可单独记录。</div>';
   renderInventoryHistory(r);

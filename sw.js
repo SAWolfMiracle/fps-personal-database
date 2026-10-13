@@ -1,5 +1,6 @@
-const CACHE="fps-db-v6-41-1";
-const CORE=["./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./inventory.js","./home-dashboard.js","./collection-duplicates.js","./collection-guides.js","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
+const CACHE="fps-db-v6-42-1";
+const CORE=["./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./inventory.js","./home-dashboard.js","./collection-duplicates.js","./collection-model.js","./collection-guides.js","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
+const MODEL_VIEWER_URL="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
@@ -18,9 +19,19 @@ self.addEventListener("fetch",event=>{
   const req=event.request;
   if(req.method!=="GET") return;
   const url=new URL(req.url);
+  if(url.href===MODEL_VIEWER_URL){
+    event.respondWith(caches.open(CACHE).then(async cache=>{
+      const hit=await cache.match(req);
+      if(hit)return hit;
+      const response=await fetch(req);
+      if(response.ok)await cache.put(req,response.clone());
+      return response;
+    }));
+    return;
+  }
   if(url.origin!==self.location.origin) return;
 
-  if(req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js") || url.pathname.endsWith("/warehouse-import.js") || url.pathname.endsWith("/warehouse-templates.json") || url.pathname.endsWith("/inventory.js") || url.pathname.endsWith("/home-dashboard.js") || url.pathname.endsWith("/collection-duplicates.js") || url.pathname.endsWith("/ocr-import.js") || url.pathname.endsWith("/collection-guides.js") || url.pathname.endsWith("/collection-catalog.js") || url.pathname.endsWith("/collection-catalog.json")){
+  if(req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js") || url.pathname.endsWith("/warehouse-import.js") || url.pathname.endsWith("/warehouse-templates.json") || url.pathname.endsWith("/inventory.js") || url.pathname.endsWith("/home-dashboard.js") || url.pathname.endsWith("/collection-duplicates.js") || url.pathname.endsWith("/ocr-import.js") || url.pathname.endsWith("/collection-guides.js") || url.pathname.endsWith("/collection-model.js") || url.pathname.endsWith("/collection-catalog.js") || url.pathname.endsWith("/collection-catalog.json")){
     event.respondWith(
       fetch(req).then(resp=>{
         const copy=resp.clone();
