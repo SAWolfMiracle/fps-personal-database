@@ -1652,7 +1652,7 @@ function importCollectionCatalog(){
 function collectionGuideHTML(r){
   var d=window.FPSCatalog.acquisitionDetails(r),guide=d.guide;
   function chips(values){return '<div class="guide-chips">'+values.map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'}
-  var mapHeading=d.mapEvidenceType==='container-inferred'?'容器候选地图（容器分布推定）':'地图线索',maps=d.maps.length?chips(d.maps):'<p class="muted">当前具体产出地图待核实</p>';
+  var mapHeading=d.mapEvidenceType==='container-inferred'?'出现地图（容器分布推定候选）':'出现地图',maps=d.maps.length?chips(d.maps):'<p class="muted">当前具体产出地图待核实</p>';
   var historicalMaps=d.historicalMaps&&d.historicalMaps.length?'<h4>历史活动地图（活动已结束）</h4>'+chips(d.historicalMaps)+(d.historicalMapNote?'<p class="muted">'+esc(d.historicalMapNote)+'</p>':''):'';
   var directDifficulty=d.difficultyContextsDirect&&d.difficultyContextsDirect.length?chips(d.difficultyContextsDirect):'<p class="muted">未找到单品级行动难度资料</p>';
   var inferredDifficulty=d.difficultyContextsInferred&&d.difficultyContextsInferred.length?'<h4>容器分布对应模式（候选）</h4>'+chips(d.difficultyContextsInferred)+(d.difficultyInferenceNote?'<p class="muted">'+esc(d.difficultyInferenceNote)+'</p>':''):'';
