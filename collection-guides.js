@@ -1,86 +1,155 @@
 /* Acquisition reference snapshot; never creates ownership or inventory. */
 (function(root,factory){var data=factory();if(typeof module==='object'&&module.exports)module.exports=data;else root.FPSObtainGuides=data})(typeof window==='object'?window:this,function(){return {
- "checked": "2026-10-12",
+ "checked": "2026-10-14",
  "entries": {
   "orzice:p1630": {
-    "name": "德小兰·灰鲭鲨模型",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "极星守望 · 组合藏品",
-     "text": "Steam官方公告说明德小兰与灰鲭鲨模型分别可由德穆兰嘉奖箱概率获得，击败玩家德穆兰后其夹层也可能掉落；两件集齐后组合为德小兰·灰鲭鲨模型。玩法地图为机密航天基地/AZ-3、绝密航天基地，计划开放时间2026-10-16至2027-01-21。",
-     "source": "https://steamcommunity.com/app/2507950/?l=schinese",
-     "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
-     "status": "官方公告 · 即将开放",
-     "checked": "2026-10-12"
-    }
-   },
-  "orzice:p1629": {
-    "name": "灰鲭鲨模型",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "极星守望 · 灰鲭鲨模型",
-     "text": "Steam官方公告：德穆兰嘉奖箱有几率开出灰鲭鲨模型；击败玩家扮演的德穆兰也可能从其夹层获得。限时玩法计划于2026-10-16 00:00至2027-01-21 02:00开放。记录地图为玩法地图/奖励路线，不表示各地图都有相同掉率。",
-     "source": "https://steamcommunity.com/app/2507950/?l=schinese",
-     "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
-     "status": "官方公告 · 即将开放",
-     "checked": "2026-10-12"
-    }
-   },
-  "orzice:p1628": {
-    "name": "德小兰",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "极星守望 · 德小兰",
-     "text": "Steam官方公告：德穆兰嘉奖箱有几率开出德小兰；击败玩家扮演的德穆兰也可能从其夹层获得。限时玩法计划于2026-10-16 00:00至2027-01-21 02:00开放。记录地图为玩法地图/奖励路线，不表示各地图都有相同掉率。",
-     "source": "https://steamcommunity.com/app/2507950/?l=schinese",
-     "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
-     "status": "官方公告 · 即将开放",
-     "checked": "2026-10-12"
-    }
-   },
-  "orzice:p1627": {
-   "name": "炫彩花小蝶",
+   "name": "德小兰·灰鲭鲨模型",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "极星守望 · 组合藏品",
+    "text": "Steam官方公告说明德小兰与灰鲭鲨模型分别可由德穆兰嘉奖箱概率获得，击败玩家德穆兰后其夹层也可能掉落；两件集齐后组合为德小兰·灰鲭鲨模型。玩法地图为机密航天基地/AZ-3、绝密航天基地，计划开放时间2026-10-16至2027-01-21。",
+    "source": "https://steamcommunity.com/app/2507950/?l=schinese",
+    "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
+    "status": "官方公告 · 即将开放",
+    "checked": "2026-10-12"
+   }
+  },
+  "orzice:p1629": {
+   "name": "灰鲭鲨模型",
+   "containers": [],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "极星守望 · 灰鲭鲨模型",
+    "text": "Steam官方公告：德穆兰嘉奖箱有几率开出灰鲭鲨模型；击败玩家扮演的德穆兰也可能从其夹层获得。限时玩法计划于2026-10-16 00:00至2027-01-21 02:00开放。记录地图为玩法地图/奖励路线，不表示各地图都有相同掉率。",
+    "source": "https://steamcommunity.com/app/2507950/?l=schinese",
+    "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
+    "status": "官方公告 · 即将开放",
+    "checked": "2026-10-12"
+   }
+  },
+  "orzice:p1628": {
+   "name": "德小兰",
+   "containers": [],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "极星守望 · 德小兰",
+    "text": "Steam官方公告：德穆兰嘉奖箱有几率开出德小兰；击败玩家扮演的德穆兰也可能从其夹层获得。限时玩法计划于2026-10-16 00:00至2027-01-21 02:00开放。记录地图为玩法地图/奖励路线，不表示各地图都有相同掉率。",
+    "source": "https://steamcommunity.com/app/2507950/?l=schinese",
+    "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
+    "status": "官方公告 · 即将开放",
+    "checked": "2026-10-12"
+   }
+  },
+  "orzice:p1627": {
+   "name": "炫彩花小蝶",
+   "containers": [
+    "地图容器（具体类型未标注）"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "所有地图（活动期间）"
+   ],
+   "map_note": "Steam 官方公告限定于烽火地带，活动时间为2026-09-04至2026-11-04；公告只说明全地图容器低概率掉落，未列具体容器或行动难度。核对于2026-10-14，活动仍在进行。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "S11 限时 · 全地图容器低概率掉落",
+    "text": "Steam 官方2026-09-02群星赛季公告：烽火地带活动期间（2026-09-04 00:00至2026-11-04 24:00），全地图容器低概率掉落隐藏款炫彩花小蝶；公告称群星赛季后短期内不再产出。容器类型、具体行动难度与该藏品单品掉率未公布。核对日期2026-10-14，活动仍在进行。",
+    "source": "https://steamcommunity.com/app/2507950/announcements/?l=schinese",
+    "sourceLabel": "Steam 官方 S11 群星更新公告 · 2026-09-02",
+    "status": "官方公告 · 当前活动中",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1626": {
    "name": "得吃鸡缸杯",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "巴克什"
+   ],
+   "difficulty_contexts": [
+    "巴克什：机密 / 绝密（8号藏宝图路线；非单品保底）"
+   ],
+   "map_note": "2026-08-19至08-29的宝藏月活动窗口，得吃鸡缸杯对应巴克什藏宝图寻宝路线；活动已结束。社区攻略仅支持8号藏宝图机密/绝密宝箱的高品质路线，不能当作该藏品必出或单品概率保证；返场未核实。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "宝藏月历史活动 · 巴克什藏宝堆",
+    "text": "18183 2026-08-19攻略记录：得吃鸡缸杯对应巴克什，地图窗口为2026-08-19至08-29。联动藏品通过携带对应藏宝图挖藏宝堆并成功撤离取得；攻略称8号藏宝图的机密/绝密宝箱有大红概率，但不保证单件得吃鸡缸杯。活动已结束，返场未核实。",
+    "source": "https://www.18183.com/gonglue/202608/merh1lf8.html",
+    "sourceLabel": "18183 宝藏月获取攻略 · 2026-08-19",
+    "status": "历史活动 · 已结束，返场待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1625": {
    "name": "岁岁鸭",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "零号大坝"
+   ],
+   "difficulty_contexts": [
+    "零号大坝：机密 / 绝密（8号藏宝图路线；非单品保底）"
+   ],
+   "map_note": "2026-08-08至08-18的宝藏月活动窗口，岁岁鸭对应零号大坝藏宝图寻宝路线；活动已结束。社区攻略仅支持8号藏宝图机密/绝密宝箱的高品质路线，不能当作该藏品必出或单品概率保证；返场未核实。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "宝藏月历史活动 · 零号大坝藏宝堆",
+    "text": "18183 2026-08-19攻略记录：岁岁鸭对应零号大坝，地图窗口为2026-08-08至08-18。联动藏品通过携带对应藏宝图挖藏宝堆并成功撤离取得；攻略称8号藏宝图的机密/绝密宝箱有大红概率，但不保证单件岁岁鸭。活动已结束，返场未核实。",
+    "source": "https://www.18183.com/gonglue/202608/merh1lf8.html",
+    "sourceLabel": "18183 宝藏月获取攻略 · 2026-08-19",
+    "status": "历史活动 · 已结束，返场待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1624": {
    "name": "白里出红瓶",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "长弓溪谷"
+   ],
+   "difficulty_contexts": [
+    "长弓溪谷：机密 / 绝密（8号藏宝图路线；非单品保底）"
+   ],
+   "map_note": "2026-08-19至08-29的宝藏月活动窗口，白里出红瓶对应长弓溪谷藏宝图寻宝路线；活动已结束。社区攻略仅支持8号藏宝图机密/绝密宝箱的高品质路线，不能当作该藏品必出或单品概率保证；返场未核实。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "宝藏月历史活动 · 长弓溪谷藏宝堆",
+    "text": "18183 2026-08-19攻略记录：白里出红瓶对应长弓溪谷，地图窗口为2026-08-19至08-29。联动藏品通过携带对应藏宝图挖藏宝堆并成功撤离取得；攻略称8号藏宝图的机密/绝密宝箱有大红概率，但不保证单件白里出红瓶。活动已结束，返场未核实。",
+    "source": "https://www.18183.com/gonglue/202608/merh1lf8.html",
+    "sourceLabel": "18183 宝藏月获取攻略 · 2026-08-19",
+    "status": "历史活动 · 已结束，返场待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:1353": {
    "name": "鱼月徽权杖首",
@@ -88,7 +157,20 @@
    "tradeable": true,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "长弓溪谷"
+   ],
+   "map_note": "S11 2026-09-10社区攻略记录鱼月徽权杖首在长弓溪谷露天随机刷新，一局随机出现一处；稿件列出8个已确认点位，第9、10点位发布时尚未在测试服确认。具体模式和行动难度未说明，当前点位未实机复核。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "S11 长弓溪谷 · 露天随机刷新",
+    "text": "游侠网2026-09-10攻略记录鱼月徽权杖首在长弓溪谷露天点位随机刷新，一局随机出现一处；稿件列出8个已确认点位，第9、10点位发布时尚未在测试服确认。此物不是容器搜刮；具体模式、行动难度及当前刷新状态未实机核实。",
+    "source": "https://3g.ali213.net/gl/html/1807565.html",
+    "sourceLabel": "游侠网攻略 · 2026-09-10",
+    "status": "社区攻略参考 · 点位与难度待复核",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1622": {
    "name": "经典咖啡机",
@@ -203,19 +285,22 @@
   },
   "orzice:p1516": {
    "name": "炫彩露小娜",
-   "containers": [],
+   "containers": [
+    "地图容器（具体类型未标注）"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "S10 限时 · 容器低概率掉落",
     "text": "历史活动规则：2026-06-26 至 09-03，全地图容器低概率产出炫彩露小娜；公告转载注明裂变赛季后短期内不再产出。不能据此认为现在仍可刷取。",
     "source": "https://www.youxiabc.com/p/54636.html",
     "sourceLabel": "ABC 转载 2026-06-26 更新公告",
     "status": "历史活动途径 · 非当前可用",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1515": {
    "name": "浓缩铀样本",
@@ -240,36 +325,39 @@
    "checked": "2026-10-11"
   },
   "orzice:p1497": {
-    "name": "契约之钥",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "古墓丽影联动 · 六钥合成",
-     "text": "历史联动攻略记载：烽火地带各地图藏宝堆有概率获得六种牛角钥匙；集齐赤诚、勇毅、牺牲、希望、仁悯、智慧六把钥匙后，在活动界面合成契约之钥。地图字段只覆盖六钥收集路线；契约之钥是合成结果，不是地图直接掉落。活动已结束。",
-     "source": "https://m.ali213.net/news/gl2605/1771473.html",
-     "sourceLabel": "游侠手游 古墓丽影联动 · 契约之钥获取",
-     "status": "历史活动 · 已结束",
-     "checked": "2026-10-12"
-    }
-   },
-  "orzice:p1496": {
-   "name": "“六”级弹",
+   "name": "契约之钥",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "古墓丽影联动 · 六钥合成",
+    "text": "历史联动攻略记载：烽火地带各地图藏宝堆有概率获得六种牛角钥匙；集齐赤诚、勇毅、牺牲、希望、仁悯、智慧六把钥匙后，在活动界面合成契约之钥。地图字段只覆盖六钥收集路线；契约之钥是合成结果，不是地图直接掉落。活动已结束。",
+    "source": "https://m.ali213.net/news/gl2605/1771473.html",
+    "sourceLabel": "游侠手游 古墓丽影联动 · 契约之钥获取",
+    "status": "历史活动 · 已结束",
+    "checked": "2026-10-12"
+   }
+  },
+  "orzice:p1496": {
+   "name": "“六”级弹",
+   "containers": [
+    "藏宝堆"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
    "guide": {
     "summary": "猛攻节 · 藏宝堆",
     "text": "2026 年猛攻节收藏品盘点记载：“六”级弹从该赛季新增的藏宝堆获得。这是收藏品，不是六级穿透弹药；当前是否产出及概率未核实。",
     "source": "https://news.17173.com/content/05112026/100520196.shtml",
     "sourceLabel": "17173 收藏品盘点 · 2026-05-11",
     "status": "历史资料 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1495": {
    "name": "G.T.I.勇气勋章",
@@ -369,19 +457,23 @@
   },
   "orzice:p1489": {
    "name": "肯小桶",
-   "containers": [],
+   "containers": [
+    "鸟窝",
+    "旅行包"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "肯德基联动 · 鸟窝 / 旅行包",
     "text": "2026 年 5 月社区攻略记载：联动期间搜索鸟窝、旅行包有机会获得肯小桶；也记载大厅威龙语音助手的肯德基彩蛋可能经邮件发放。当前彩蛋、活动和奖励未实机核实，不保证指定话术必得。",
     "source": "https://m.ali213.net/news/gl2605/1770563.html",
     "sourceLabel": "游侠 肯小桶获取攻略 · 2026-05-08",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1488": {
    "name": "手办：劳拉（崛起）",
@@ -401,35 +493,41 @@
   },
   "orzice:p1457": {
    "name": "炫彩足球",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "S9 活动 · 藏宝堆",
     "text": "S9 历史获取攻略记载：活动期间搜索地图藏宝堆，有概率获得炫彩足球。该途径不是当前必定开放的承诺；本页未核实后续足球互动活动、返场及掉落概率。",
     "source": "https://m.ali213.net/news/gl2604/1765955.html",
     "sourceLabel": "游侠 S9 收藏品攻略 · 2026-04-21",
     "status": "历史资料 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1456": {
    "name": "炫彩乌小蛋",
-   "containers": [],
+   "containers": [
+    "地图容器（具体类型未标注）"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "S9 限时容器搜刮",
     "text": "S9 历史攻略记载：烽火地带地图容器低概率获得炫彩乌小蛋。当前返场情况与掉落概率未核实；不采纳攻略中的永久绝版、提高爆率或保底推测。",
     "source": "https://m.ali213.net/news/gl2606/1780165.html",
     "sourceLabel": "游侠 S9 获取攻略 · 2026-06-08",
     "status": "历史资料 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1455": {
    "name": "测距仪",
@@ -526,52 +624,58 @@
    "checked": "2026-10-11"
   },
   "orzice:p1350": {
-    "name": "手弩赤小枭",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "赤枭巡猎 · 赤枭夹层 / 补给包",
-     "text": "S8更新公告记载：在赤枭巡猎中进入有玩家赤枭的对局，可搜寻赤枭专属收藏品；击败玩家赤枭后，额外掉落的赤枭夹层有几率开出手弩赤小枭，赤枭专属补给包也可能开出。可选机密地图为零号大坝、巴克什、航天基地；绝密为巴克什、航天基地。该模式是历史玩法，当前规则及掉率未核实。",
-     "source": "https://gl.ali213.net/html/2026-1/1742611.html",
-     "sourceLabel": "游侠转载 S8 更新公告 · 模式地图、难度与收藏品",
-     "status": "历史玩法 · 当前规则待核实",
-     "checked": "2026-10-12"
-    }
-   },
-  "orzice:p1349": {
-   "name": "炫彩威小龙",
+   "name": "手弩赤小枭",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "赤枭巡猎 · 赤枭夹层 / 补给包",
+    "text": "S8更新公告记载：在赤枭巡猎中进入有玩家赤枭的对局，可搜寻赤枭专属收藏品；击败玩家赤枭后，额外掉落的赤枭夹层有几率开出手弩赤小枭，赤枭专属补给包也可能开出。可选机密地图为零号大坝、巴克什、航天基地；绝密为巴克什、航天基地。该模式是历史玩法，当前规则及掉率未核实。",
+    "source": "https://gl.ali213.net/html/2026-1/1742611.html",
+    "sourceLabel": "游侠转载 S8 更新公告 · 模式地图、难度与收藏品",
+    "status": "历史玩法 · 当前规则待核实",
+    "checked": "2026-10-12"
+   }
+  },
+  "orzice:p1349": {
+   "name": "炫彩威小龙",
+   "containers": [
+    "地图容器（具体类型未标注）"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
    "guide": {
     "summary": "历史限时搜刮 / 赤枭巡猎",
     "text": "S8 历史攻略记载：2026-01-29 至 04-16，全地图容器低概率获得；赤枭巡猎中击败赛伊德也有概率产出。当前是否返场、掉落概率尚未核实。",
     "source": "https://gl.ali213.net/html/2026-2/1743131.html",
     "sourceLabel": "游侠 2026-02-02 S8 攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1348": {
    "name": "马上转运",
-   "containers": [],
+   "containers": [
+    "地图容器（具体类型未标注）"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "S8 容器搜刮 / 联动福贝",
     "text": "2026 年春节攻略记载：S8 期间（1 月 29 日至 4 月 16 日），地图容器或春节联动水域的联动福贝有概率获得马上转运。当前返场及概率未核实，不等同于任务必得的马上起飞。",
     "source": "https://shouyou.3dmgame.com/gl/611407.html",
     "sourceLabel": "3DM 春节攻略 · 2026-02-10",
     "status": "历史攻略 · 当前规则待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1347": {
    "name": "勇者之证",
@@ -611,7 +715,15 @@
    "tradeable": true,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "交易行可获取 · 地图搜刮路线待核实",
+    "text": "2026-06-15的玩家问答收录相互冲突的说法：有人称从老赛包或巴克什容器获得，也有人称其为航天基地特产，并提到露天点位或飞升返回舱。问答未提供一致的实测结论。保留现有航天基地候选线索，不确认唯一地图、具体容器类型或行动难度；目录资料标记为可交易，交易行的实际供货以游戏内为准。",
+    "source": "https://www.233leyuan.com/post-detail/2066415612149846016",
+    "sourceLabel": "233乐园玩家问答 · 2026-06-15",
+    "status": "社区说法冲突 · 搜刮路线未核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:1255": {
    "name": "恒星敏感器",
@@ -634,19 +746,22 @@
   },
   "orzice:p1337": {
    "name": "巨兽机甲",
-   "containers": [],
+   "containers": [
+    "旅行包"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "逆战联动 · 旅行包",
     "text": "2026 年 1 月联动公告转载：1 月 13 日至 2 月 12 日，所有地图旅行包有概率产出巨兽机甲。历史活动已过；不推断其他容器或当前返场情况。",
     "source": "https://news.17173.com/content/01132026/151821668.shtml",
     "sourceLabel": "17173 三角洲行动公众号转载 · 2026-01-13",
     "status": "历史资料 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1323": {
    "name": "渡鸦的录音数据-1",
@@ -690,35 +805,41 @@
   },
   "orzice:p1295": {
    "name": "炫彩拉小宅",
-   "containers": [],
+   "containers": [
+    "手提箱"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "历史搜刮攻略 · 手提箱",
     "text": "2025 年 11 月社区攻略记载：手提箱有机会获得炫彩拉小宅，来源附零号大坝和长弓溪谷点位。没有据此认定仅手提箱产出；当前赛季、返场及概率尚未核实。",
     "source": "https://www.taptap.cn/moment/740640830699603021",
     "sourceLabel": "TapTap 八宝粥特勤处 · 2025-11-20",
     "status": "历史资料 · 当前规则待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1294": {
    "name": "比利狼",
-   "containers": [],
+   "containers": [
+    "收纳盒"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "电锯惊魂联动 · 收纳盒",
     "text": "2025 年 10 月联动攻略记载：搜索地图收纳盒有机会获得比利狼，来源附零号大坝收纳盒点位图。点位数量、当前活动是否返场以及概率未实机核实。",
     "source": "https://shouyou.3dmgame.com/gl/597814.html",
     "sourceLabel": "3DM 比利狼攻略 · 2025-10-29",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:1227": {
    "name": "黄金鳄鱼头雕像",
@@ -756,10 +877,12 @@
    "checked": "2026-10-11"
   },
   "orzice:1225": {
-   "map_contexts": ["航天基地", "零号大坝"],
+   "map_contexts": [
+    "航天基地",
+    "零号大坝"
+   ],
    "map_note": "2025-11-19 攻略列出的产出地图示例，并注明并非地图专属；当前赛季各图、难度和概率未实机核实。",
    "map_checked": "2026-10-12",
-
    "name": "超声波切割刀",
    "containers": [
     "工具柜",
@@ -971,35 +1094,41 @@
   },
   "orzice:p1120": {
    "name": "至纯源石",
-   "containers": [],
+   "containers": [
+    "罗德岛特殊补给箱"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "明日方舟联动 · 罗德岛补给箱",
     "text": "2025 年 10 月联动攻略记载：罗德岛特殊补给箱有机会产出阿米娅手办、近卫阿米娅手办、至纯源石和明日方舟 OST-1；来源附大坝、长弓、巴克什、航天、监狱点位。当前活动、返场及概率未核实；不把联动任务奖励或其他来源排除。",
     "source": "https://news.17173.com/content/10252025/171652254.shtml",
     "sourceLabel": "17173 阿米娅位置攻略 · 2025-10-25",
     "status": "历史资料 · 当前规则待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1119": {
    "name": "手办-阿米娅（近卫）",
-   "containers": [],
+   "containers": [
+    "罗德岛特殊补给箱"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "明日方舟联动 · 罗德岛补给箱",
     "text": "2025 年 10 月联动攻略记载：罗德岛特殊补给箱有机会产出阿米娅手办、近卫阿米娅手办、至纯源石和明日方舟 OST-1；来源附大坝、长弓、巴克什、航天、监狱点位。当前活动、返场及概率未核实；不把联动任务奖励或其他来源排除。",
     "source": "https://news.17173.com/content/10252025/171652254.shtml",
     "sourceLabel": "17173 阿米娅位置攻略 · 2025-10-25",
     "status": "历史资料 · 当前规则待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1089": {
    "name": "炫彩克小圈",
@@ -1023,7 +1152,16 @@
    "tradeable": true,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_note": "S5历史收藏品攻略记载Alpha脑机实验数据-渡鸦来自潮汐监狱“黑潮行动”最后阶段的电脑交互；任务是否开放与当前掉落待核实，行动难度未说明。",
+   "guide": {
+    "summary": "S5 历史任务 · 黑潮行动电脑交互",
+    "text": "S5收藏品攻略记载：在潮汐监狱特殊任务“黑潮行动”最后阶段开启电脑，有较高概率获得Alpha脑机实验数据-渡鸦。资料未给出该物品固定行动难度；S5历史玩法，当前任务是否开放及掉落未核实。本条是任务交互终端路线，不是容器搜刮。",
+    "source": "https://m.18183.com/gonglue/202507/8pv42vu7.html",
+    "sourceLabel": "18183 S5 收藏品攻略 · 2025-07",
+    "status": "历史任务 · 当前开放状态待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:1061": {
    "name": "潮汐监狱地图-4",
@@ -1964,43 +2102,50 @@
    "checked": "2026-10-11"
   },
   "orzice:p1694": {
-    "name": "安全总监工卡",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [
-     {
-      "unlock": "0级解锁",
-      "ingredients": [
-       "哈夫币 * 250000"
-      ]
-     }
-    ],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "极星守望 · 安全总监入场工卡",
-     "text": "官方公告：选择安全总监德穆兰身份入局需扣除此工卡。卡的地图字段表示可使用它进入的玩法行动，不表示工卡在地图内掉落。官方计划开放时间为2026-10-16 00:00至2027-01-21 02:00；截至2026-10-12尚未开放。",
-     "source": "https://steamcommunity.com/app/2507950/?l=schinese",
-     "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
-     "status": "官方公告 · 即将开放",
-     "checked": "2026-10-12"
-    }
-   },
-  "orzice:p1693": {
-   "name": "花小蝶",
+   "name": "安全总监工卡",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
-   "exchange": [],
-   "checked": "2026-10-11",
+   "exchange": [
+    {
+     "unlock": "0级解锁",
+     "ingredients": [
+      "哈夫币 * 250000"
+     ]
+    }
+   ],
+   "checked": "2026-10-12",
    "guide": {
-    "summary": "限时鸟窝搜刮 · 花小蝶",
-    "text": "2026 年 9 月官方攻略转载：活动期间所有地图鸟窝概率掉落花小蝶，来源附 AZ-3 鸟窝点位。文中活动期为 9 月 4 日至 16 日；当前已过该窗口，是否返场待核实。普通花小蝶途径不自动套用于炫彩版本。",
-    "source": "https://news.17173.com/content/09102026/221735771.shtml",
-    "sourceLabel": "17173 官方攻略 / 三角洲行动 · 2026-09-10",
-    "status": "历史资料 · 当前规则待核实",
-    "checked": "2026-10-11"
+    "summary": "极星守望 · 安全总监入场工卡",
+    "text": "官方公告：选择安全总监德穆兰身份入局需扣除此工卡。卡的地图字段表示可使用它进入的玩法行动，不表示工卡在地图内掉落。官方计划开放时间为2026-10-16 00:00至2027-01-21 02:00；截至2026-10-12尚未开放。",
+    "source": "https://steamcommunity.com/app/2507950/?l=schinese",
+    "sourceLabel": "Steam 官方 2026-10-09 极星守望公告",
+    "status": "官方公告 · 即将开放",
+    "checked": "2026-10-12"
    }
+  },
+  "orzice:p1693": {
+   "name": "花小蝶",
+   "containers": [
+    "鸟窝"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "S11 限时活动 · 全地图鸟窝",
+    "text": "17173 2026-09-10攻略转载群星赛季官方活动规则：2026-09-04至09-16活动期间，所有地图鸟窝概率掉落普通花小蝶；攻略附有AZ-3鸟窝点位。活动窗口已结束，是否返场待核实。普通花小蝶路线不套用于炫彩版本。",
+    "source": "https://news.17173.com/content/09102026/221735771.shtml",
+    "sourceLabel": "17173 官方攻略转载 · 2026-09-10",
+    "status": "历史活动 · 已结束，返场待核实",
+    "checked": "2026-10-14"
+   },
+   "map_contexts": [
+    "所有地图（历史资料）"
+   ],
+   "map_note": "2026-09-04至09-16群星活动期间全地图鸟窝概率产出普通花小蝶；窗口已结束，当前返场与掉落未核实。",
+   "map_checked": "2026-10-14"
   },
   "orzice:p1632": {
    "name": "阿娜伊斯·德穆兰的身份牌",
@@ -2055,36 +2200,39 @@
   },
   "orzice:p1523": {
    "name": "露小娜",
-   "containers": [],
+   "containers": [
+    "工具柜"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "S10 限时 · 工具柜掉落",
     "text": "裂变赛季历史规则：全地图工具柜概率产出露小娜；公告转载注明裂变赛季后短期内不再产出。当前是否返场未核实。",
     "source": "https://www.youxiabc.com/p/54636.html",
     "sourceLabel": "ABC 转载 2026-06-26 更新公告",
     "status": "历史活动途径 · 非当前可用",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:1321": {
-    "name": "哈夫克特工信息装备",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "AZ-3 · H1000 推测掉落线索",
-     "text": "2026-06-17的3DM物品页推测该装备可能由AZ-3首领H1000掉落，也可能从电子物品容器获得。来源措辞为猜测，因此仅记为候选地图；未确认掉落，行动难度未知，也不作首领专属结论。",
-     "source": "https://ol.3dmgame.com/gl/344144.html",
-     "sourceLabel": "3DM 2026-06-17 · 推测性物品线索",
-     "status": "推测线索 · 待游戏内核实",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "哈夫克特工信息装备",
+   "containers": [],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "AZ-3 · H1000 推测掉落线索",
+    "text": "2026-06-17的3DM物品页推测该装备可能由AZ-3首领H1000掉落，也可能从电子物品容器获得。来源措辞为猜测，因此仅记为候选地图；未确认掉落，行动难度未知，也不作首领专属结论。",
+    "source": "https://ol.3dmgame.com/gl/344144.html",
+    "sourceLabel": "3DM 2026-06-17 · 推测性物品线索",
+    "status": "推测线索 · 待游戏内核实",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:1320": {
    "name": "军事通行证",
    "containers": [
@@ -2143,51 +2291,60 @@
   },
   "orzice:p1501": {
    "name": "牺牲之钥",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "古墓丽影联动 · 挖藏宝堆",
     "text": "历史活动攻略记录：活动开放时，挖掘藏宝堆有机会获得六种牛角钥匙之一。三金三紫用于雕像兑换或凑齐后兑换契约之钥；并非当前常驻掉落的保证。",
     "source": "https://ol.3dmgame.com/gl/339577.html",
     "sourceLabel": "3DM 2026-05-06 古墓丽影联动攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1500": {
    "name": "勇毅之钥",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "古墓丽影联动 · 挖藏宝堆",
     "text": "历史活动攻略记录：活动开放时，挖掘藏宝堆有机会获得六种牛角钥匙之一。三金三紫用于雕像兑换或凑齐后兑换契约之钥；并非当前常驻掉落的保证。",
     "source": "https://ol.3dmgame.com/gl/339577.html",
     "sourceLabel": "3DM 2026-05-06 古墓丽影联动攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1499": {
    "name": "赤诚之钥",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "古墓丽影联动 · 挖藏宝堆",
     "text": "历史活动攻略记录：活动开放时，挖掘藏宝堆有机会获得六种牛角钥匙之一。三金三紫用于雕像兑换或凑齐后兑换契约之钥；并非当前常驻掉落的保证。",
     "source": "https://ol.3dmgame.com/gl/339577.html",
     "sourceLabel": "3DM 2026-05-06 古墓丽影联动攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1498": {
    "name": "手办：劳拉",
@@ -2207,35 +2364,41 @@
   },
   "orzice:p1461": {
    "name": "黄金足球",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-12",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "S9 限时活动 · 藏宝堆",
     "text": "S9 历史活动攻略将黄金足球列为藏宝堆可获得的特殊收藏品，并列出当时零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱五张地图的藏宝堆点位。活动是否返场及当前掉落状态未核实。",
     "source": "https://www.youxiabc.com/p/28712.html",
     "sourceLabel": "ABC游戏网 2026-04-27 藏宝堆全图路线",
     "status": "历史活动 · 当前状态待核实",
-    "checked": "2026-10-12"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1460": {
    "name": "乌小蛋",
-   "containers": [],
+   "containers": [
+    "收纳盒"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-12",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "S9 限时活动 · 全地图收纳盒",
     "text": "S9 历史活动说明记载：活动期间在所有地图的收纳盒中搜索，有概率获得收藏品“乌小蛋”。该范围只对应当时活动规则，不代表当前仍可获取或新增地图的掉落范围。",
     "source": "https://community-cn.honor.com/cngm/game/topicdetail/topicid-3725222035554305",
     "sourceLabel": "S9 活动说明",
     "status": "历史活动 · 当前状态待核实",
-    "checked": "2026-10-12"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:1285": {
    "name": "检眼镜",
@@ -2297,19 +2460,23 @@
   },
   "orzice:p1392": {
    "name": "好运爆红烟花",
-   "containers": [],
+   "containers": [
+    "野外物资箱",
+    "弹药箱"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-12",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "2026 春节限时活动 · 搜刮与护送",
     "text": "2026年2月限时活动资料记载：活动期间在全地图搜索野外物资箱或弹药箱，有概率额外获得好运爆红烟花；大坝、长弓、巴克什另有护送烟花鼠鼠的获取路线。活动已结束，当前刷新与返场未核实。",
     "source": "https://news.17173.com/content/02132026/180327501.shtml",
     "sourceLabel": "17173 2026-02-13 春节烟花攻略",
     "status": "历史活动 · 当前状态待核实",
-    "checked": "2026-10-12"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1361": {
    "name": "赤小枭",
@@ -2329,19 +2496,23 @@
   },
   "orzice:p1360": {
    "name": "威小龙",
-   "containers": [],
+   "containers": [
+    "快递箱",
+    "旅行袋"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "历史限时搜刮 · 威小龙",
     "text": "S8 历史攻略记载：2026-01-29 至 02-12，在各地图快递箱、旅行袋等容器概率获得，需成功撤离。当前是否返场、交易规则均以游戏内为准。",
     "source": "https://gl.ali213.net/html/2026-2/1743131.html",
     "sourceLabel": "游侠 2026-02-02 S8 攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1359": {
    "name": "金玫瑰",
@@ -2349,55 +2520,82 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "金玫瑰之约历史活动 · 背包掉落",
+    "text": "17173转载的公众号攻略记载：金玫瑰之约活动于2026-02-13至2026-02-26开放，烽火地带模式中首领和特殊兵种背包有概率获得金玫瑰。来源没有说明具体地图、行动难度、单品保底或后续返场；本条不把背包写成可搜索容器，活动已结束，当前掉落与返场状态待核实。",
+    "source": "https://news.17173.com/content/02132026/003427671.shtml",
+    "sourceLabel": "17173公众号攻略转载 · 2026-02-13",
+    "status": "历史活动已结束 · 当前掉落与返场待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1358": {
    "name": "好粥道-椰奶燕麦粥",
-   "containers": [],
+   "containers": [
+    "一箱好粥道（联动活动容器）"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_note": "2026-01-16至01-28银鹭联动历史路线；社区攻略列出五张地图的“一箱好粥道”容器点位，并称容器产出联动收藏品。活动已结束，具体口味单品概率、返场与行动难度未核实。",
+   "map_contexts": [
+    "零号大坝",
+    "长弓溪谷",
+    "巴克什",
+    "航天基地",
+    "潮汐监狱"
+   ],
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "银鹭联动历史活动 · 一箱好粥道",
+    "text": "2026-01-16至01-28银鹭联动活动期间，各地图指定位置刷新活动容器“一箱好粥道”。TapTap社区攻略列出零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱点位，并称容器产出联动收藏品；本条按好粥道-椰奶燕麦粥所属联动系列记录。活动已结束，攻略未提供该口味单品概率、返场状态或行动难度。",
+    "source": "https://www.taptap.cn/moment/761071251958531171",
+    "sourceLabel": "TapTap 社区攻略 · 2026-01-16",
+    "status": "历史联动活动 · 单品规则待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1357": {
-    "name": "赤枭档案",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [
-     {
-      "unlock": "0级解锁",
-      "ingredients": [
-       "哈夫币 * 0"
-      ]
-     }
-    ],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "赤枭巡猎 · 入场档案",
-     "text": "S8官方更新公告记载：选择赤枭身份时每局扣除一张赤枭档案；可选机密行动为零号大坝、巴克什、航天基地，绝密行动为巴克什、航天基地。这里记录档案的使用地图，不表示档案在局内掉落；属于S8历史玩法资料。",
-     "source": "https://gl.ali213.net/html/2026-1/1742611.html",
-     "sourceLabel": "游侠转载 S8 更新公告 · 2026-01-31",
-     "status": "历史玩法 · 入场用途",
-     "checked": "2026-10-12"
+   "name": "赤枭档案",
+   "containers": [],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [
+    {
+     "unlock": "0级解锁",
+     "ingredients": [
+      "哈夫币 * 0"
+     ]
     }
-   },
+   ],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "赤枭巡猎 · 入场档案",
+    "text": "S8官方更新公告记载：选择赤枭身份时每局扣除一张赤枭档案；可选机密行动为零号大坝、巴克什、航天基地，绝密行动为巴克什、航天基地。这里记录档案的使用地图，不表示档案在局内掉落；属于S8历史玩法资料。",
+    "source": "https://gl.ali213.net/html/2026-1/1742611.html",
+    "sourceLabel": "游侠转载 S8 更新公告 · 2026-01-31",
+    "status": "历史玩法 · 入场用途",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:1262": {
-    "name": "哮喘吸入器",
-    "containers": [],
-    "tradeable": true,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "航天基地 · 哈德森首领信物",
-     "text": "S8收藏品资料记载哮喘吸入器可由航天基地哈德森概率掉落。2026-03季中调整提高了绝密难度下哈德森掉落红色战利品及该信物的概率；这表示绝密概率上调，不表示物品只在绝密出现。地图与掉率均为历史资料，当前概率未核实。另见 S8 收藏品资料：https://news.17173.com/content/01182026/233010766.shtml",
-     "source": "https://news.17173.com/content/03162026/181416169.shtml",
-     "sourceLabel": "17173 S8 季中调整 · 2026-03-16",
-     "status": "历史资料 · 当前概率待核实",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "哮喘吸入器",
+   "containers": [],
+   "tradeable": true,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "航天基地 · 哈德森首领信物",
+    "text": "S8收藏品资料记载哮喘吸入器可由航天基地哈德森概率掉落。2026-03季中调整提高了绝密难度下哈德森掉落红色战利品及该信物的概率；这表示绝密概率上调，不表示物品只在绝密出现。地图与掉率均为历史资料，当前概率未核实。另见 S8 收藏品资料：https://news.17173.com/content/01182026/233010766.shtml",
+    "source": "https://news.17173.com/content/03162026/181416169.shtml",
+    "sourceLabel": "17173 S8 季中调整 · 2026-03-16",
+    "status": "历史资料 · 当前概率待核实",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:1261": {
    "name": "便携氧气筒",
    "containers": [
@@ -2496,60 +2694,86 @@
   },
   "orzice:p1338": {
    "name": "幸运圆蛋",
-   "containers": [],
+   "containers": [
+    "鸟窝"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_note": "2026年元旦活动资料记载全地图鸟窝固定刷新幸运圆蛋；资料窗口截至2026-01-08，活动已结束，返场未核实。",
+   "guide": {
+    "summary": "元旦限时活动 · 全地图鸟窝",
+    "text": "2026年元旦限时活动攻略记载：幸运圆蛋可在全地图鸟窝固定刷新，资料所列活动截至2026-01-08 24:00；该窗口已结束，当前返场与刷新未核实。此处指对局内鸟窝路线，不是大厅幸运鸟窝抽奖活动。",
+    "source": "https://www.gc.com.cn/game/sjzxingyunyuandan.htm",
+    "sourceLabel": "红手指云手机攻略 · 2026-01",
+    "status": "历史活动 · 已结束，返场待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1328": {
-    "name": "渡鸦的录音数据-4",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "渡鸦录音数据系列 · 全地图历史线索",
-     "text": "S7收藏品攻略把渡鸦录音数据作为系列介绍：使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可能在夹层中获取；拾取后置地再次扫描可触发录音。资料称系列至少五种、全地图可产出，但未分别列出数据4的独立概率或难度。",
-     "source": "https://ol.3dmgame.com/gl/323336.html",
-     "sourceLabel": "3DM S7 收藏品资料 · 渡鸦录音数据",
-     "status": "历史赛季资料 · 当前掉落待核实",
-     "checked": "2026-10-12"
-    }
+   "name": "渡鸦的录音数据-4",
+   "containers": [
+    "航空箱",
+    "旅行箱",
+    "黄盒子"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "渡鸦录音数据系列 · 全地图历史线索",
+    "text": "S7收藏品攻略把渡鸦录音数据作为系列介绍：使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可能在夹层中获取；拾取后置地再次扫描可触发录音。资料称系列至少五种、全地图可产出，但未分别列出数据4的独立概率或难度。",
+    "source": "https://ol.3dmgame.com/gl/323336.html",
+    "sourceLabel": "3DM S7 收藏品资料 · 渡鸦录音数据",
+    "status": "历史赛季资料 · 当前掉落待核实",
+    "checked": "2026-10-14"
    },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
+  },
   "orzice:p1327": {
-    "name": "渡鸦的录音数据-3",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "渡鸦录音数据系列 · 全地图历史线索",
-     "text": "S7收藏品攻略把渡鸦录音数据作为系列介绍：使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可能在夹层中获取；拾取后置地再次扫描可触发录音。资料称系列至少五种、全地图可产出，但未分别列出数据3的独立概率或难度。",
-     "source": "https://ol.3dmgame.com/gl/323336.html",
-     "sourceLabel": "3DM S7 收藏品资料 · 渡鸦录音数据",
-     "status": "历史赛季资料 · 当前掉落待核实",
-     "checked": "2026-10-12"
-    }
+   "name": "渡鸦的录音数据-3",
+   "containers": [
+    "航空箱",
+    "旅行箱",
+    "黄盒子"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "渡鸦录音数据系列 · 全地图历史线索",
+    "text": "S7收藏品攻略把渡鸦录音数据作为系列介绍：使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可能在夹层中获取；拾取后置地再次扫描可触发录音。资料称系列至少五种、全地图可产出，但未分别列出数据3的独立概率或难度。",
+    "source": "https://ol.3dmgame.com/gl/323336.html",
+    "sourceLabel": "3DM S7 收藏品资料 · 渡鸦录音数据",
+    "status": "历史赛季资料 · 当前掉落待核实",
+    "checked": "2026-10-14"
    },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
+  },
   "orzice:p1326": {
-    "name": "渡鸦的录音数据-2",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "渡鸦录音数据系列 · 全地图历史线索",
-     "text": "S7收藏品攻略把渡鸦录音数据作为系列介绍：使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可能在夹层中获取；拾取后置地再次扫描可触发录音。资料称系列至少五种、全地图可产出，但未分别列出数据2的独立概率或难度。",
-     "source": "https://ol.3dmgame.com/gl/323336.html",
-     "sourceLabel": "3DM S7 收藏品资料 · 渡鸦录音数据",
-     "status": "历史赛季资料 · 当前掉落待核实",
-     "checked": "2026-10-12"
-    }
+   "name": "渡鸦的录音数据-2",
+   "containers": [
+    "航空箱",
+    "旅行箱",
+    "黄盒子"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "渡鸦录音数据系列 · 全地图历史线索",
+    "text": "S7收藏品攻略把渡鸦录音数据作为系列介绍：使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可能在夹层中获取；拾取后置地再次扫描可触发录音。资料称系列至少五种、全地图可产出，但未分别列出数据2的独立概率或难度。",
+    "source": "https://ol.3dmgame.com/gl/323336.html",
+    "sourceLabel": "3DM S7 收藏品资料 · 渡鸦录音数据",
+    "status": "历史赛季资料 · 当前掉落待核实",
+    "checked": "2026-10-14"
    },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
+  },
   "orzice:p1325": {
    "name": "阿萨拉优品平安果",
    "containers": [],
@@ -2567,30 +2791,41 @@
    }
   },
   "orzice:p1324": {
-    "name": "《逆战·未来》OST光碟",
-    "containers": [
-      "电脑机箱"
-    ],
-    "tradeable": null,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "《逆战：未来》联动 · 电脑机箱",
-      "text": "2025-11-21至12-04联动期间，资料称烽火地带所有地图的电脑机箱均有概率产出《逆战·未来》OST光碟；预约也可领取该收藏品。此处记录限时活动地图路线，活动已结束，未标注行动难度或当前掉落。",
-      "source": "https://news.17173.com/z/nzm2025/content/01022026/193448227.shtml",
-      "sourceLabel": "17173 2026-01-02 联动活动说明",
-      "status": "历史限时活动 · 活动已结束",
-      "checked": "2026-10-13"
-    }
+   "name": "《逆战·未来》OST光碟",
+   "containers": [
+    "电脑机箱"
+   ],
+   "tradeable": null,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "《逆战：未来》联动 · 电脑机箱",
+    "text": "2025-11-21至12-04联动期间，资料称烽火地带所有地图的电脑机箱均有概率产出《逆战·未来》OST光碟；预约也可领取该收藏品。此处记录限时活动地图路线，活动已结束，未标注行动难度或当前掉落。",
+    "source": "https://news.17173.com/z/nzm2025/content/01022026/193448227.shtml",
+    "sourceLabel": "17173 2026-01-02 联动活动说明",
+    "status": "历史限时活动 · 活动已结束",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:p1299": {
    "name": "拉小宅",
-   "containers": [],
+   "containers": [
+    "手提箱"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_note": "S7期间与2026-01-16至01-28限时返场资料均记载全地图手提箱路线；两个活动窗口已结束，当前是否仍产出未核实。",
+   "guide": {
+    "summary": "S7 历史活动返场 · 全地图手提箱",
+    "text": "S7活动及2026年1月返场攻略均记载普通拉小宅可从全地图手提箱概率获得；2026-01-16至01-28返场窗口已结束。这里记录历史容器路线，不保证当前仍可获取；勿与炫彩拉小宅混淆。",
+    "source": "https://news.17173.com/content/01162026/203838734.shtml",
+    "sourceLabel": "17173 社区攻略转载 · 2026-01-16",
+    "status": "历史活动 · 已结束，返场待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:1229": {
    "name": "飞行员眼镜",
@@ -2645,21 +2880,24 @@
    "checked": "2026-10-11"
   },
   "orzice:p1256": {
-    "name": "兰小登",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "S6 · 野外物资箱历史路线",
-     "text": "2025-09的S6攻略记载普通款兰小登可从烽火地带全地图的野外物资箱获取；普通款与炫彩款的掉落时段、概率不同。该来源为S6历史资料，不保证当前仍可获取。",
-     "source": "https://m.ali213.net/news/gl2509/1697559.html",
-     "sourceLabel": "游侠手游 S6 兰小登位置攻略 · 2025-09-22",
-     "status": "历史赛季资料 · 当前掉落待核实",
-     "checked": "2026-10-12"
-    }
+   "name": "兰小登",
+   "containers": [
+    "野外物资箱"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "S6 · 野外物资箱历史路线",
+    "text": "2025-09的S6攻略记载普通款兰小登可从烽火地带全地图的野外物资箱获取；普通款与炫彩款的掉落时段、概率不同。该来源为S6历史资料，不保证当前仍可获取。",
+    "source": "https://m.ali213.net/news/gl2509/1697559.html",
+    "sourceLabel": "游侠手游 S6 兰小登位置攻略 · 2025-09-22",
+    "status": "历史赛季资料 · 当前掉落待核实",
+    "checked": "2026-10-14"
    },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
+  },
   "orzice:1202": {
    "name": "陆军万用表",
    "containers": [
@@ -2758,59 +2996,77 @@
   },
   "orzice:p1122": {
    "name": "明日方舟OST-1",
-   "containers": [],
+   "containers": [
+    "罗德岛特殊补给箱"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "明日方舟联动 · 罗德岛补给箱",
     "text": "2025 年 10 月联动攻略记载：罗德岛特殊补给箱有机会产出阿米娅手办、近卫阿米娅手办、至纯源石和明日方舟 OST-1；来源附大坝、长弓、巴克什、航天、监狱点位。当前活动、返场及概率未核实；不把联动任务奖励或其他来源排除。",
     "source": "https://news.17173.com/content/10252025/171652254.shtml",
     "sourceLabel": "17173 阿米娅位置攻略 · 2025-10-25",
     "status": "历史资料 · 当前规则待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1121": {
    "name": "手办-阿米娅",
-   "containers": [],
+   "containers": [
+    "罗德岛特殊补给箱"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "明日方舟联动 · 罗德岛补给箱",
     "text": "2025 年 10 月联动攻略记载：罗德岛特殊补给箱有机会产出阿米娅手办、近卫阿米娅手办、至纯源石和明日方舟 OST-1；来源附大坝、长弓、巴克什、航天、监狱点位。当前活动、返场及概率未核实；不把联动任务奖励或其他来源排除。",
     "source": "https://news.17173.com/content/10252025/171652254.shtml",
     "sourceLabel": "17173 阿米娅位置攻略 · 2025-10-25",
     "status": "历史资料 · 当前规则待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1100": {
-    "name": "克小圈",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "S5 · 快递箱历史路线",
-     "text": "攻略针对普通款克小圈整理了零号大坝与长弓溪谷的快递箱点位。这里只记录该具体玩偶的历史搜寻路线，不套用炫彩克小圈资料，也不表示当前仍能获取。",
-     "source": "https://www.vgover.com/news/168393",
-     "sourceLabel": "电玩帮 · 克小圈快递箱路线",
-     "status": "历史路线 · 当前掉落待核实",
-     "checked": "2026-10-12"
-    }
+   "name": "克小圈",
+   "containers": [
+    "快递箱"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "S5 · 快递箱历史路线",
+    "text": "攻略针对普通款克小圈整理了零号大坝与长弓溪谷的快递箱点位。这里只记录该具体玩偶的历史搜寻路线，不套用炫彩克小圈资料，也不表示当前仍能获取。",
+    "source": "https://www.vgover.com/news/168393",
+    "sourceLabel": "电玩帮 · 克小圈快递箱路线",
+    "status": "历史路线 · 当前掉落待核实",
+    "checked": "2026-10-14"
    },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
+  },
   "orzice:955": {
    "name": "渡鸦项坠",
    "containers": [],
    "tradeable": true,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_note": "S5历史资料记载渡鸦项坠由潮汐监狱首领渡鸦概率掉落；当前掉落与行动难度未实机复核。",
+   "guide": {
+    "summary": "S5 历史首领掉落 · 潮汐监狱",
+    "text": "S5收藏品盘点攻略记载：渡鸦项坠可由潮汐监狱首领渡鸦概率掉落。该资料为赛季历史记录；当前首领掉落是否仍存在、具体行动难度与单品概率未核实。",
+    "source": "https://m.sohu.com/a/909106412_121212001/",
+    "sourceLabel": "搜狐 S5 收藏品盘点 · 2025-07",
+    "status": "历史攻略 · 当前掉落待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:900": {
    "name": "海鲜粥罐头",
@@ -2928,48 +3184,51 @@
    "checked": "2026-10-11"
   },
   "orzice:962": {
-    "name": "发条八音盒",
-    "containers": [
-     "小保险箱",
-     "沙色保险箱",
-     "手提箱",
-     "实验服",
-     "井盖",
-     "登山包",
-     "大保险箱",
-     "鸟窝",
-     "垃圾箱",
-     "抽屉柜"
-    ],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "二周年鸟窝彩蛋 · 谜题使用物",
-     "text": "长弓溪谷二周年鸟窝谜题需使用发条八音盒×2。谜题使用地点与该物品既有S5产出地图资料分开记录；难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
-     "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
-     "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
-     "status": "谜题使用点 · 难度来源冲突",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "发条八音盒",
+   "containers": [
+    "小保险箱",
+    "沙色保险箱",
+    "手提箱",
+    "实验服",
+    "井盖",
+    "登山包",
+    "大保险箱",
+    "鸟窝",
+    "垃圾箱",
+    "抽屉柜"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "二周年鸟窝彩蛋 · 谜题使用物",
+    "text": "长弓溪谷二周年鸟窝谜题需使用发条八音盒×2。谜题使用地点与该物品既有S5产出地图资料分开记录；难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
+    "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
+    "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
+    "status": "谜题使用点 · 难度来源冲突",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:p235": {
-    "name": "麦小蛋",
-    "containers": [],
-    "tradeable": false,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "2025年6月返场 · 鸟窝",
-     "text": "17173资料记载2025-06-20至07-02期间，烽火地带所有地图的鸟窝有概率产出麦小蛋。属于限时返场路线，不能据此判断当前掉落。",
-     "source": "https://news.17173.com/content/06242025/224808260.shtml",
-     "sourceLabel": "17173 官方攻略 · 麦小蛋返场 · 2025-06-24",
-     "status": "历史限时活动 · 已结束",
-     "checked": "2026-10-12"
-    }
+   "name": "麦小蛋",
+   "containers": [
+    "鸟窝"
+   ],
+   "tradeable": false,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "2025年6月返场 · 鸟窝",
+    "text": "17173资料记载2025-06-20至07-02期间，烽火地带所有地图的鸟窝有概率产出麦小蛋。属于限时返场路线，不能据此判断当前掉落。",
+    "source": "https://news.17173.com/content/06242025/224808260.shtml",
+    "sourceLabel": "17173 官方攻略 · 麦小蛋返场 · 2025-06-24",
+    "status": "历史限时活动 · 已结束",
+    "checked": "2026-10-14"
    },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
+  },
   "orzice:954": {
    "name": "心灵感应.魔方",
    "containers": [],
@@ -2979,21 +3238,21 @@
    "checked": "2026-10-11"
   },
   "orzice:1057": {
-    "name": "脑机relink医疗报告",
-    "containers": [],
-    "tradeable": true,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "S9任务 · 首领信物带出条件",
-     "text": "S9“擒贼擒王”任务攻略将脑机relink医疗报告列入首领信物清单，并要求在机密或绝密行动带出信物。这是任务难度/撤离路线，不是对该物品掉落地图或专属难度的证明；地图继续待核实。",
-     "source": "https://app.ali213.net/gl/1766799.html",
-     "sourceLabel": "游侠手游 S9 首领信物任务攻略",
-     "status": "历史任务路线 · 地图待核实",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "脑机relink医疗报告",
+   "containers": [],
+   "tradeable": true,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "S9任务 · 首领信物带出条件",
+    "text": "S9“擒贼擒王”任务攻略将脑机relink医疗报告列入首领信物清单，并要求在机密或绝密行动带出信物。这是任务难度/撤离路线，不是对该物品掉落地图或专属难度的证明；地图继续待核实。",
+    "source": "https://app.ali213.net/gl/1766799.html",
+    "sourceLabel": "游侠手游 S9 首领信物任务攻略",
+    "status": "历史任务路线 · 地图待核实",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:p232": {
    "name": "机械工蜂模型",
    "containers": [],
@@ -3176,21 +3435,21 @@
    "checked": "2026-10-11"
   },
   "orzice:795": {
-    "name": "脑机控制端子",
-    "containers": [],
-    "tradeable": true,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "航天基地 · 德穆兰首领信物",
-     "text": "攻略资料记载德穆兰在航天基地花园或发射区出现，击败后有概率获得脑机控制端子。S9“擒贼擒王”任务把该物品列入可带出的首领信物，任务可在任意机密/绝密行动完成；任务难度不代表物品专属掉率。",
-     "source": "https://www.youxiabc.com/p/54171.html",
-     "sourceLabel": "ABC游戏 · 德穆兰首领与脑机控制端子",
-     "status": "历史首领路线 · 掉率待核实",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "脑机控制端子",
+   "containers": [],
+   "tradeable": true,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "航天基地 · 德穆兰首领信物",
+    "text": "攻略资料记载德穆兰在航天基地花园或发射区出现，击败后有概率获得脑机控制端子。S9“擒贼擒王”任务把该物品列入可带出的首领信物，任务可在任意机密/绝密行动完成；任务难度不代表物品专属掉率。",
+    "source": "https://www.youxiabc.com/p/54171.html",
+    "sourceLabel": "ABC游戏 · 德穆兰首领与脑机控制端子",
+    "status": "历史首领路线 · 掉率待核实",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:961": {
    "name": "赛伊德的手弩",
    "containers": [],
@@ -3208,21 +3467,21 @@
    "checked": "2026-10-11"
   },
   "orzice:953": {
-    "name": "卫队金扳指",
-    "containers": [],
-    "tradeable": true,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "二周年鸟窝彩蛋 · 谜题使用物",
-     "text": "长弓溪谷二周年鸟窝谜题需使用卫队金扳指×2。此处是谜题使用地点，不是该物品掉落地图。难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
-     "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
-     "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
-     "status": "谜题使用点 · 难度来源冲突",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "卫队金扳指",
+   "containers": [],
+   "tradeable": true,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "二周年鸟窝彩蛋 · 谜题使用物",
+    "text": "长弓溪谷二周年鸟窝谜题需使用卫队金扳指×2。此处是谜题使用地点，不是该物品掉落地图。难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
+    "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
+    "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
+    "status": "谜题使用点 · 难度来源冲突",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:802": {
    "name": "高速固态硬盘",
    "containers": [
@@ -3918,67 +4177,76 @@
   },
   "orzice:p1504": {
    "name": "智慧之钥",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "古墓丽影联动 · 挖藏宝堆",
     "text": "历史活动攻略记录：活动开放时，挖掘藏宝堆有机会获得六种牛角钥匙之一。三金三紫用于雕像兑换或凑齐后兑换契约之钥；并非当前常驻掉落的保证。",
     "source": "https://ol.3dmgame.com/gl/339577.html",
     "sourceLabel": "3DM 2026-05-06 古墓丽影联动攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1503": {
    "name": "仁悯之钥",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "古墓丽影联动 · 挖藏宝堆",
     "text": "历史活动攻略记录：活动开放时，挖掘藏宝堆有机会获得六种牛角钥匙之一。三金三紫用于雕像兑换或凑齐后兑换契约之钥；并非当前常驻掉落的保证。",
     "source": "https://ol.3dmgame.com/gl/339577.html",
     "sourceLabel": "3DM 2026-05-06 古墓丽影联动攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1502": {
    "name": "希望之钥",
-   "containers": [],
+   "containers": [
+    "藏宝堆"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "古墓丽影联动 · 挖藏宝堆",
     "text": "历史活动攻略记录：活动开放时，挖掘藏宝堆有机会获得六种牛角钥匙之一。三金三紫用于雕像兑换或凑齐后兑换契约之钥；并非当前常驻掉落的保证。",
     "source": "https://ol.3dmgame.com/gl/339577.html",
     "sourceLabel": "3DM 2026-05-06 古墓丽影联动攻略",
     "status": "历史攻略 · 当前开放状态待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:p1467": {
-    "name": "足球",
-    "containers": [],
-    "tradeable": null,
-    "explicit_source": "难度效率建议：https://m.ali213.net/news/gl2606/1780899.html",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "S9绿茵盛会 · 黑白足球交互道具",
-      "text": "S9限时绿茵活动资料称黑色足球在当时烽火地带各地图出现，球门全图可见；足球鼠鼠仅在零号大坝、长弓溪谷、巴克什。另一篇攻略建议普通难度零号大坝以提升跑图效率；这是玩法效率建议，不证明难度会改变足球刷新或奖励概率。活动已结束。",
-      "source": "https://shouyou.3dmgame.com/gl/625158.html",
-      "sourceLabel": "3DM/游侠手游 2026-06 S9足球活动地图与路线",
-      "status": "历史限时活动地图 / 效率建议",
-      "checked": "2026-10-13"
-    }
+   "name": "足球",
+   "containers": [],
+   "tradeable": null,
+   "explicit_source": "难度效率建议：https://m.ali213.net/news/gl2606/1780899.html",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "S9绿茵盛会 · 黑白足球交互道具",
+    "text": "S9限时绿茵活动资料称黑色足球在当时烽火地带各地图出现，球门全图可见；足球鼠鼠仅在零号大坝、长弓溪谷、巴克什。另一篇攻略建议普通难度零号大坝以提升跑图效率；这是玩法效率建议，不证明难度会改变足球刷新或奖励概率。活动已结束。",
+    "source": "https://shouyou.3dmgame.com/gl/625158.html",
+    "sourceLabel": "3DM/游侠手游 2026-06 S9足球活动地图与路线",
+    "status": "历史限时活动地图 / 效率建议",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:1290": {
    "name": "爽身粉",
@@ -4088,28 +4356,47 @@
    "checked": "2026-10-11"
   },
   "orzice:p1449": {
-    "name": "大肥鲤",
-    "containers": [],
-    "tradeable": null,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "2026元宵锦鲤活动 · 大肥鲤",
-      "text": "2026-02-27至03-12限时锦鲤活动在零号大坝与长弓溪谷部分水域开放；活动资料列大肥鲤为紫色品质。来源笼统称行动地图难度越高，高品质锦鲤概率越高，但未给具体难度档位或大肥鲤单品掉率。活动已结束。",
-      "source": "https://news.17173.com/content/03032026/223339463.shtml",
-      "sourceLabel": "17173/公众号 2026-03-03 元宵锦鲤活动指南",
-      "status": "历史限时活动路线 · 难度概率未细分",
-      "checked": "2026-10-13"
-    }
+   "name": "大肥鲤",
+   "containers": [],
+   "tradeable": null,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "2026元宵锦鲤活动 · 大肥鲤",
+    "text": "2026-02-27至03-12限时锦鲤活动在零号大坝与长弓溪谷部分水域开放；活动资料列大肥鲤为紫色品质。来源笼统称行动地图难度越高，高品质锦鲤概率越高，但未给具体难度档位或大肥鲤单品掉率。活动已结束。",
+    "source": "https://news.17173.com/content/03032026/223339463.shtml",
+    "sourceLabel": "17173/公众号 2026-03-03 元宵锦鲤活动指南",
+    "status": "历史限时活动路线 · 难度概率未细分",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:p1366": {
    "name": "好粥道-黑米粥",
-   "containers": [],
+   "containers": [
+    "一箱好粥道（联动活动容器）"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_note": "2026-01-16至01-28银鹭联动历史路线；社区攻略列出五张地图的“一箱好粥道”容器点位，并称容器产出联动收藏品。活动已结束，具体口味单品概率、返场与行动难度未核实。",
+   "map_contexts": [
+    "零号大坝",
+    "长弓溪谷",
+    "巴克什",
+    "航天基地",
+    "潮汐监狱"
+   ],
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "银鹭联动历史活动 · 一箱好粥道",
+    "text": "2026-01-16至01-28银鹭联动活动期间，各地图指定位置刷新活动容器“一箱好粥道”。TapTap社区攻略列出零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱点位，并称容器产出联动收藏品；本条按好粥道-黑米粥所属联动系列记录。活动已结束，攻略未提供该口味单品概率、返场状态或行动难度。",
+    "source": "https://www.taptap.cn/moment/761071251958531171",
+    "sourceLabel": "TapTap 社区攻略 · 2026-01-16",
+    "status": "历史联动活动 · 单品规则待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1365": {
    "name": "划伤的B级工卡",
@@ -4168,40 +4455,43 @@
    "checked": "2026-10-11"
   },
   "orzice:p1330": {
-    "name": "渡鸦的录音数据-5",
-    "containers": [
-      "航空箱",
-      "旅行箱",
-      "黄盒子"
-    ],
-    "tradeable": null,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "渡鸦录音数据系列 · 全地图历史线索",
-      "text": "S7攻略称使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可在夹层概率获得渡鸦录音数据；系列至少有五种、所有地图均可产出，因此将明确存在的第5种记入全地图历史线索。来源没有第5种独立概率或当前掉落状态，未推断第6种。",
-      "source": "https://ol.3dmgame.com/gl/323336.html",
-      "sourceLabel": "3DM S7 渡鸦录音数据系列攻略",
-      "status": "系列级历史地图线索 · 单件概率未核实",
-      "checked": "2026-10-13"
-    }
+   "name": "渡鸦的录音数据-5",
+   "containers": [
+    "航空箱",
+    "旅行箱",
+    "黄盒子"
+   ],
+   "tradeable": null,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "渡鸦录音数据系列 · 全地图历史线索",
+    "text": "S7攻略称使用神秘脑机I型扫描航空箱、旅行箱、黄盒子，可在夹层概率获得渡鸦录音数据；系列至少有五种、所有地图均可产出，因此将明确存在的第5种记入全地图历史线索。来源没有第5种独立概率或当前掉落状态，未推断第6种。",
+    "source": "https://ol.3dmgame.com/gl/323336.html",
+    "sourceLabel": "3DM S7 渡鸦录音数据系列攻略",
+    "status": "系列级历史地图线索 · 单件概率未核实",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:p1329": {
    "name": "阿萨拉平安果",
-   "containers": [],
+   "containers": [
+    "工具柜"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11",
+   "checked": "2026-10-14",
    "guide": {
     "summary": "暖冬活动 · 工具柜",
     "text": "2025 年 12 月社区攻略记载：活动期间各地图工具柜可搜到平安果，来源附大坝点位。本说明对应普通阿萨拉平安果；不推断优品或极品也使用相同途径。当前活动是否返场未核实。",
     "source": "https://www.taptap.cn/moment/751148942485358513",
     "sourceLabel": "TapTap 八宝粥特勤处 · 2025-12-19",
     "status": "历史资料 · 当前规则待核实",
-    "checked": "2026-10-11"
-   }
+    "checked": "2026-10-14"
+   },
+   "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
   "orzice:1231": {
    "name": "小糖人姜饼人",
@@ -4263,23 +4553,23 @@
    "checked": "2026-10-11"
   },
   "orzice:p1288": {
-    "name": "奇怪的蛋",
-    "containers": [
-      "鸟窝",
-      "火箭鼠鼠夹层"
-    ],
-    "tradeable": null,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "洲年庆限时活动 · 奇怪的蛋",
-      "text": "2025年洲年庆活动攻略记载，奇怪的蛋可从火箭鼠鼠夹层和鸟窝路线获取；鸟窝点位覆盖当时的零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱。活动为历史路线，当前是否返场及行动难度未核实。",
-      "source": "https://www.taptap.cn/moment/721097371034848209",
-      "sourceLabel": "TapTap 2025-09-27 洲年庆五图鸟窝点位",
-      "status": "历史活动地图路线 · 当前状态未核实",
-      "checked": "2026-10-13"
-    }
+   "name": "奇怪的蛋",
+   "containers": [
+    "鸟窝",
+    "火箭鼠鼠夹层"
+   ],
+   "tradeable": null,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "洲年庆限时活动 · 奇怪的蛋",
+    "text": "2025年洲年庆活动攻略记载，奇怪的蛋可从火箭鼠鼠夹层和鸟窝路线获取；鸟窝点位覆盖当时的零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱。活动为历史路线，当前是否返场及行动难度未核实。",
+    "source": "https://www.taptap.cn/moment/721097371034848209",
+    "sourceLabel": "TapTap 2025-09-27 洲年庆五图鸟窝点位",
+    "status": "历史活动地图路线 · 当前状态未核实",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:1208": {
    "name": "袖珍录像带",
@@ -4300,40 +4590,40 @@
    "checked": "2026-10-11"
   },
   "orzice:p1123": {
-    "name": "高级情报凭证",
-    "containers": [
-      "罗德岛特殊补给箱"
-    ],
-    "tradeable": null,
-    "explicit_source": "物品名单转载摘要：https://post.m.smzdm.com/zz/p/apr3e4p2/；官方活动公告：https://www.ali213.net/news/html/2025-6/943057.html",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "明日方舟联动 · 罗德岛特殊补给箱",
-      "text": "2025年S5明日方舟联动的地图攻略列出罗德岛特殊补给箱在零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱的点位；转载视频摘要将高级情报凭证列为箱内物品。活动为历史路线，当前状态未核实；物品名单依据转载摘要记录。",
-      "source": "https://www.taptap.cn/moment/700045268720028880",
-      "sourceLabel": "TapTap 2025-07-31 五图点位；箱内物品对照转载摘要",
-      "status": "历史联动箱路线 · 物品名单为转载资料",
-      "checked": "2026-10-13"
-    }
+   "name": "高级情报凭证",
+   "containers": [
+    "罗德岛特殊补给箱"
+   ],
+   "tradeable": null,
+   "explicit_source": "物品名单转载摘要：https://post.m.smzdm.com/zz/p/apr3e4p2/；官方活动公告：https://www.ali213.net/news/html/2025-6/943057.html",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "明日方舟联动 · 罗德岛特殊补给箱",
+    "text": "2025年S5明日方舟联动的地图攻略列出罗德岛特殊补给箱在零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱的点位；转载视频摘要将高级情报凭证列为箱内物品。活动为历史路线，当前状态未核实；物品名单依据转载摘要记录。",
+    "source": "https://www.taptap.cn/moment/700045268720028880",
+    "sourceLabel": "TapTap 2025-07-31 五图点位；箱内物品对照转载摘要",
+    "status": "历史联动箱路线 · 物品名单为转载资料",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:p1102": {
-    "name": "鳄鱼血样",
-    "containers": [
-      "鳄鱼巢穴"
-    ],
-    "tradeable": null,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "鳄鱼入侵历史活动 · 鳄鱼巢穴",
-      "text": "2025年鳄鱼入侵资料明确记载，零号大坝与长弓溪谷鳄鱼巢穴可概率掉落紫色医疗收集品（含鳄鱼血样）。该活动仅白天，常规与机密行动刷新巢穴；资料未证实绝密或黑夜路线，当前活动状态未核实。",
-      "source": "https://gl.ali213.net/html/2025-5/1655289.html",
-      "sourceLabel": "游侠网 2025-05 鳄鱼入侵点位与玩法条件",
-      "status": "历史活动地图 / 行动条件 · 当前状态未核实",
-      "checked": "2026-10-13"
-    }
+   "name": "鳄鱼血样",
+   "containers": [
+    "鳄鱼巢穴"
+   ],
+   "tradeable": null,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "鳄鱼入侵历史活动 · 鳄鱼巢穴",
+    "text": "2025年鳄鱼入侵资料明确记载，零号大坝与长弓溪谷鳄鱼巢穴可概率掉落紫色医疗收集品（含鳄鱼血样）。该活动仅白天，常规与机密行动刷新巢穴；资料未证实绝密或黑夜路线，当前活动状态未核实。",
+    "source": "https://gl.ali213.net/html/2025-5/1655289.html",
+    "sourceLabel": "游侠网 2025-05 鳄鱼入侵点位与玩法条件",
+    "status": "历史活动地图 / 行动条件 · 当前状态未核实",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:978": {
    "name": "图腾箭矢",
@@ -4594,32 +4884,32 @@
    "checked": "2026-10-11"
   },
   "orzice:1008": {
-    "name": "信号棒",
-    "containers": [
-     "工业金属储物箱",
-     "野外物资堆",
-     "快递箱",
-     "井盖",
-     "登山包",
-     "高级储物箱",
-     "垃圾箱",
-     "鸟窝",
-     "大工具盒",
-     "工具柜"
-    ],
-    "tradeable": true,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "二周年鸟窝彩蛋 · 谜题使用物",
-     "text": "长弓溪谷二周年鸟窝谜题需使用信号棒×4。此处是谜题使用地点，不是该物品掉落地图。难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
-     "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
-     "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
-     "status": "谜题使用点 · 难度来源冲突",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "信号棒",
+   "containers": [
+    "工业金属储物箱",
+    "野外物资堆",
+    "快递箱",
+    "井盖",
+    "登山包",
+    "高级储物箱",
+    "垃圾箱",
+    "鸟窝",
+    "大工具盒",
+    "工具柜"
+   ],
+   "tradeable": true,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "二周年鸟窝彩蛋 · 谜题使用物",
+    "text": "长弓溪谷二周年鸟窝谜题需使用信号棒×4。此处是谜题使用地点，不是该物品掉落地图。难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
+    "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
+    "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
+    "status": "谜题使用点 · 难度来源冲突",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:810": {
    "name": "便携音响",
    "containers": [
@@ -5676,20 +5966,20 @@
    "checked": "2026-10-11"
   },
   "orzice:p1450": {
-    "name": "小河鲤",
-    "containers": [],
-    "tradeable": null,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "2026元宵锦鲤活动 · 小河鲤",
-      "text": "2026-02-27至03-12限时锦鲤活动在零号大坝与长弓溪谷部分水域开放；活动资料列小河鲤为蓝色品质。来源笼统称行动地图难度越高，高品质锦鲤概率越高，但未给具体难度档位或小河鲤单品掉率。活动已结束。",
-      "source": "https://news.17173.com/content/03032026/223339463.shtml",
-      "sourceLabel": "17173/公众号 2026-03-03 元宵锦鲤活动指南",
-      "status": "历史限时活动路线 · 难度概率未细分",
-      "checked": "2026-10-13"
-    }
+   "name": "小河鲤",
+   "containers": [],
+   "tradeable": null,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "2026元宵锦鲤活动 · 小河鲤",
+    "text": "2026-02-27至03-12限时锦鲤活动在零号大坝与长弓溪谷部分水域开放；活动资料列小河鲤为蓝色品质。来源笼统称行动地图难度越高，高品质锦鲤概率越高，但未给具体难度档位或小河鲤单品掉率。活动已结束。",
+    "source": "https://news.17173.com/content/03032026/223339463.shtml",
+    "sourceLabel": "17173/公众号 2026-03-03 元宵锦鲤活动指南",
+    "status": "历史限时活动路线 · 难度概率未细分",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:p1369": {
    "name": "好粥道-紫薯紫米粥",
@@ -5697,7 +5987,15 @@
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "待核实",
+    "text": "已核对2026年1月银鹭联动资料：活动品名清单写“紫薯玉米粥”，本目录条目为“紫薯紫米粥”，名称不一致。未将联动容器或活动路线绑定到此条目；当前获取方式待核实。",
+    "source": "https://www.taptap.cn/moment/761071251958531171",
+    "sourceLabel": "TapTap 社区攻略 · 2026-01",
+    "status": "待核实 · 来源品名不一致",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:1264": {
    "name": "腕带",
@@ -5738,22 +6036,22 @@
    "checked": "2026-10-11"
   },
   "orzice:p1124": {
-    "name": "源石碎片",
-    "containers": [
-      "罗德岛特殊补给箱"
-    ],
-    "tradeable": null,
-    "explicit_source": "物品名单转载摘要：https://post.m.smzdm.com/zz/p/apr3e4p2/；官方活动公告：https://www.ali213.net/news/html/2025-6/943057.html",
-    "exchange": [],
-    "checked": "2026-10-13",
-    "guide": {
-      "summary": "明日方舟联动 · 罗德岛特殊补给箱",
-      "text": "2025年S5明日方舟联动的地图攻略列出罗德岛特殊补给箱在零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱的点位；转载视频摘要将源石碎片列为箱内物品。活动为历史路线，当前状态未核实；物品名单依据转载摘要记录。",
-      "source": "https://www.taptap.cn/moment/700045268720028880",
-      "sourceLabel": "TapTap 2025-07-31 五图点位；箱内物品对照转载摘要",
-      "status": "历史联动箱路线 · 物品名单为转载资料",
-      "checked": "2026-10-13"
-    }
+   "name": "源石碎片",
+   "containers": [
+    "罗德岛特殊补给箱"
+   ],
+   "tradeable": null,
+   "explicit_source": "物品名单转载摘要：https://post.m.smzdm.com/zz/p/apr3e4p2/；官方活动公告：https://www.ali213.net/news/html/2025-6/943057.html",
+   "exchange": [],
+   "checked": "2026-10-13",
+   "guide": {
+    "summary": "明日方舟联动 · 罗德岛特殊补给箱",
+    "text": "2025年S5明日方舟联动的地图攻略列出罗德岛特殊补给箱在零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱的点位；转载视频摘要将源石碎片列为箱内物品。活动为历史路线，当前状态未核实；物品名单依据转载摘要记录。",
+    "source": "https://www.taptap.cn/moment/700045268720028880",
+    "sourceLabel": "TapTap 2025-07-31 五图点位；箱内物品对照转载摘要",
+    "status": "历史联动箱路线 · 物品名单为转载资料",
+    "checked": "2026-10-13"
+   }
   },
   "orzice:834": {
    "name": "医疗无人机",
@@ -5877,35 +6175,35 @@
    "checked": "2026-10-11"
   },
   "orzice:907": {
-    "name": "糖三角",
-    "containers": [
-     "旅行袋",
-     "放射性储物箱",
-     "工业金属储物箱",
-     "高级旅行箱",
-     "快递箱",
-     "实验服",
-     "井盖",
-     "登山包",
-     "鸟窝",
-     "航空箱",
-     "高级储物箱",
-     "垃圾箱",
-     "抽屉柜"
-    ],
-    "tradeable": true,
-    "explicit_source": "",
-    "exchange": [],
-    "checked": "2026-10-12",
-    "guide": {
-     "summary": "二周年鸟窝彩蛋 · 谜题使用物",
-     "text": "长弓溪谷二周年鸟窝谜题需使用糖三角×8。此处是谜题使用地点，不是该物品掉落地图。难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
-     "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
-     "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
-     "status": "谜题使用点 · 难度来源冲突",
-     "checked": "2026-10-12"
-    }
-   },
+   "name": "糖三角",
+   "containers": [
+    "旅行袋",
+    "放射性储物箱",
+    "工业金属储物箱",
+    "高级旅行箱",
+    "快递箱",
+    "实验服",
+    "井盖",
+    "登山包",
+    "鸟窝",
+    "航空箱",
+    "高级储物箱",
+    "垃圾箱",
+    "抽屉柜"
+   ],
+   "tradeable": true,
+   "explicit_source": "",
+   "exchange": [],
+   "checked": "2026-10-12",
+   "guide": {
+    "summary": "二周年鸟窝彩蛋 · 谜题使用物",
+    "text": "长弓溪谷二周年鸟窝谜题需使用糖三角×8。此处是谜题使用地点，不是该物品掉落地图。难度资料有冲突：GamerSky称普通/机密均可，游侠称仅普通模式有效：https://gl.ali213.net/html/2026-9/1813197.html",
+    "source": "https://www.gamersky.com/handbook/202609/2216974.shtml",
+    "sourceLabel": "GamerSky 二周年彩蛋攻略 · 难度与游侠攻略有冲突",
+    "status": "谜题使用点 · 难度来源冲突",
+    "checked": "2026-10-12"
+   }
+  },
   "orzice:899": {
    "name": "木雕烟斗",
    "containers": [
@@ -7385,11 +7683,30 @@
   },
   "orzice:p1371": {
    "name": "好粥道-薏米红豆粥",
-   "containers": [],
+   "containers": [
+    "一箱好粥道（联动活动容器）"
+   ],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_note": "2026-01-16至01-28银鹭联动历史路线；社区攻略列出五张地图的“一箱好粥道”容器点位，并称容器产出联动收藏品。活动已结束，具体口味单品概率、返场与行动难度未核实。",
+   "map_contexts": [
+    "零号大坝",
+    "长弓溪谷",
+    "巴克什",
+    "航天基地",
+    "潮汐监狱"
+   ],
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "银鹭联动历史活动 · 一箱好粥道",
+    "text": "2026-01-16至01-28银鹭联动活动期间，各地图指定位置刷新活动容器“一箱好粥道”。TapTap社区攻略列出零号大坝、长弓溪谷、巴克什、航天基地、潮汐监狱点位，并称容器产出联动收藏品；本条按好粥道-薏米红豆粥所属联动系列记录。活动已结束，攻略未提供该口味单品概率、返场状态或行动难度。",
+    "source": "https://www.taptap.cn/moment/761071251958531171",
+    "sourceLabel": "TapTap 社区攻略 · 2026-01-16",
+    "status": "历史联动活动 · 单品规则待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:989": {
    "name": "个人信笺",
