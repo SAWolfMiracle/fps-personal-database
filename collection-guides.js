@@ -763,13 +763,21 @@
    },
    "map_note": "历史资料仅支持当时活动/赛季的容器路线；当前地图范围、掉率与具体行动难度均待核实。"
   },
-  "orzice:p1323": {
+    "orzice:p1323": {
    "name": "渡鸦的录音数据-1",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "待核实",
+    "text": "游侠网红品图鉴把渡鸦的录音数据-1描述为疑似渡鸦遗留，并提出“也许可以使用神秘脑机扫描看看”；原文没有给出实测扫描地点、操作步骤或实际获取条件。这条猜测不作为已确认路线；目录现有的S7全图范围仍只标作历史地图线索。",
+    "source": "https://3g.ali213.net/gl/html/1726225.html",
+    "sourceLabel": "游侠网红色物品图鉴 · S7历史资料",
+    "status": "历史图鉴提示 · 实际获取操作未证",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1322": {
    "name": "阿萨拉极品平安果",
@@ -1163,13 +1171,26 @@
     "checked": "2026-10-14"
    }
   },
-  "orzice:1061": {
+    "orzice:1061": {
    "name": "潮汐监狱地图-4",
    "containers": [],
    "tradeable": true,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "潮汐监狱"
+   ],
+   "map_note": "S5历史图鉴记载潮汐监狱地图-4仅在潮汐监狱产出；未标具体容器和行动难度，当前赛季未实机复核。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "S5历史地图资料 · 潮汐监狱",
+    "text": "游侠手游2025-06-27的S5新收藏品汇总记载潮汐监狱地图-4仅在潮汐监狱产出。原文没有指出具体容器或行动难度；这是历史地图线索，当前赛季的刷新状态未实机复核。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "历史地图资料 · 容器与难度未标注",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1086": {
    "name": "浮力补偿设备",
@@ -1245,13 +1266,21 @@
     "checked": "2026-10-11"
    }
   },
-  "orzice:p186": {
+    "orzice:p186": {
    "name": "乙巳玄武",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "阿萨拉年货节历史活动 · 收藏品奖池",
+    "text": "游侠网2026-02-13活动攻略记载，2026-02-13至2026-02-26完成任务取得阿萨拉糖果，售卖换拜年币后抽取收藏品奖池，可获得限时返场收藏品乙巳玄武。活动已结束；来源未提供地图、局内容器或行动难度，当前返场状态待核实。",
+    "source": "https://gl.ali213.net/html/2026-2/1746675.html",
+    "sourceLabel": "游侠网阿萨拉年货节攻略 · 2026-02-13",
+    "status": "历史活动已结束 · 返场状态待核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:1035": {
    "name": "“钻石”鱼子酱",
@@ -2147,37 +2176,61 @@
    "map_note": "2026-09-04至09-16群星活动期间全地图鸟窝概率产出普通花小蝶；窗口已结束，当前返场与掉落未核实。",
    "map_checked": "2026-10-14"
   },
-  "orzice:p1632": {
+    "orzice:p1632": {
    "name": "阿娜伊斯·德穆兰的身份牌",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
-  "orzice:1354": {
+    "orzice:1354": {
    "name": "跳舞的女郎挂饰",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "幸运鸟窝历史活动 · 挂饰购买资格",
+    "text": "18183记录2026-08-08至2026-08-21的幸运鸟窝活动：每日免费搜寻，随机刷新外观；奖池列有“跳舞的女郎”挂饰，翻牌只解锁购买资格，再用三角券或三角币购买。活动已结束；当前返场未核实。这是活动页面搜寻，不是局内容器搜刮。",
+    "source": "https://www.18183.com/gonglue/202608/tu8kg52a.html",
+    "sourceLabel": "18183 幸运鸟窝活动攻略 · 2026-08-04",
+    "status": "历史活动已结束 · 当前返场待核实",
+    "checked": "2026-10-14"
+   }
   },
-  "orzice:p1618": {
+    "orzice:p1618": {
    "name": "Relink2.0脑机实验数据-阿明长老",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "待核实",
+    "text": "游侠手游2025-06-27的S5收藏品汇总将Relink2.0脑机实验数据-阿明长老列在不可交易脑机实验数据系列中，但没有提供该单品的地图、容器或任务获取路线。仅确认系列归类；具体获取方式与行动难度待核实。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "系列资料 · 单品获取路线未提供",
+    "checked": "2026-10-14"
+   }
   },
-  "orzice:p1613": {
+    "orzice:p1613": {
    "name": "Relink2.0脑机实验数据-准神",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "待核实",
+    "text": "游侠手游2025-06-27的S5收藏品汇总将Relink2.0脑机实验数据-准神列在不可交易脑机实验数据系列中，但没有提供该单品的地图、容器或任务获取路线。仅确认系列归类；具体获取方式与行动难度待核实。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "系列资料 · 单品获取路线未提供",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1524": {
    "name": "阿萨拉牌-小王",
@@ -3112,29 +3165,68 @@
    "exchange": [],
    "checked": "2026-10-11"
   },
-  "orzice:1062": {
+    "orzice:1062": {
    "name": "潮汐监狱地图-3",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "潮汐监狱"
+   ],
+   "map_note": "S5历史图鉴记载潮汐监狱地图-3仅在潮汐监狱产出；未标具体容器和行动难度，当前赛季未实机复核。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "S5历史地图资料 · 潮汐监狱",
+    "text": "游侠手游2025-06-27的S5新收藏品汇总记载潮汐监狱地图-3仅在潮汐监狱产出。原文没有指出具体容器或行动难度；这是历史地图线索，当前赛季的刷新状态未实机复核。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "历史地图资料 · 容器与难度未标注",
+    "checked": "2026-10-14"
+   }
   },
-  "orzice:1056": {
+    "orzice:1056": {
    "name": "潮汐监狱地图-2",
    "containers": [],
    "tradeable": true,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "潮汐监狱"
+   ],
+   "map_note": "S5历史图鉴记载潮汐监狱地图-2仅在潮汐监狱产出；未标具体容器和行动难度，当前赛季未实机复核。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "S5历史地图资料 · 潮汐监狱",
+    "text": "游侠手游2025-06-27的S5新收藏品汇总记载潮汐监狱地图-2仅在潮汐监狱产出。原文没有指出具体容器或行动难度；这是历史地图线索，当前赛季的刷新状态未实机复核。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "历史地图资料 · 容器与难度未标注",
+    "checked": "2026-10-14"
+   }
   },
-  "orzice:1054": {
+    "orzice:1054": {
    "name": "潮汐监狱地图-1",
    "containers": [],
    "tradeable": true,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "潮汐监狱"
+   ],
+   "map_note": "S5历史图鉴记载潮汐监狱地图-1仅在潮汐监狱产出；未标具体容器和行动难度，当前赛季未实机复核。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "S5历史地图资料 · 潮汐监狱",
+    "text": "游侠手游2025-06-27的S5新收藏品汇总记载潮汐监狱地图-1仅在潮汐监狱产出。原文没有指出具体容器或行动难度；这是历史地图线索，当前赛季的刷新状态未实机复核。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "历史地图资料 · 容器与难度未标注",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:964": {
    "name": "三角蚌小珍珠",
@@ -3450,13 +3542,26 @@
     "checked": "2026-10-12"
    }
   },
-  "orzice:961": {
+    "orzice:961": {
    "name": "赛伊德的手弩",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "map_contexts": [
+    "零号大坝"
+   ],
+   "map_note": "2025-11-18攻略将手弩列为零号大坝赛伊德首领专属掉落；不是容器路线。该来源未将该物品掉落绑定到具体行动难度，掉率与当前刷新未实机复核。",
+   "map_checked": "2026-10-14",
+   "guide": {
+    "summary": "零号大坝 · 赛伊德首领专属信物",
+    "text": "18183的2025-11-18攻略记录：击败零号大坝行政东楼大厅、楼梯附近的赛伊德首领，有概率从其掉落物拾取赛伊德的手弩。此为首领掉落，不是容器搜刮；来源未给出具体行动难度，掉率及当前实战路线未复核。",
+    "source": "https://m.18183.com/gonglue/202511/r3f58iv8.html",
+    "sourceLabel": "18183 赛伊德手弩攻略 · 2025-11-18",
+    "status": "历史攻略参考 · 行动难度与当前掉率未核实",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:958": {
    "name": "优秀雇员奖杯",
@@ -4056,37 +4161,61 @@
    "exchange": [],
    "checked": "2026-10-11"
   },
-  "orzice:p1621": {
+    "orzice:p1621": {
    "name": "Relink脑机实验数据-锤哥",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "待核实",
+    "text": "游侠手游2025-06-27的S5收藏品汇总将Relink脑机实验数据-锤哥列在不可交易脑机实验数据系列中，但没有提供该单品的地图、容器或任务获取路线。仅确认系列归类；具体获取方式与行动难度待核实。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "系列资料 · 单品获取路线未提供",
+    "checked": "2026-10-14"
+   }
   },
-  "orzice:p1620": {
+    "orzice:p1620": {
    "name": "Relink脑机实验数据-安迪",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "待核实",
+    "text": "游侠手游2025-06-27的S5收藏品汇总将Relink脑机实验数据-安迪列在不可交易脑机实验数据系列中，但没有提供该单品的地图、容器或任务获取路线。仅确认系列归类；具体获取方式与行动难度待核实。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "系列资料 · 单品获取路线未提供",
+    "checked": "2026-10-14"
+   }
   },
-  "orzice:p1619": {
+    "orzice:p1619": {
    "name": "Relink脑机实验数据-呐喊先生",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
-  "orzice:p1616": {
+    "orzice:p1616": {
    "name": "Relink脑机实验数据-加文",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14",
+   "guide": {
+    "summary": "待核实",
+    "text": "游侠手游2025-06-27的S5收藏品汇总将Relink脑机实验数据-加文列在不可交易脑机实验数据系列中，但没有提供该单品的地图、容器或任务获取路线。仅确认系列归类；具体获取方式与行动难度待核实。",
+    "source": "https://app.ali213.net/gl/1672195.html",
+    "sourceLabel": "游侠手游 S5 新收藏品汇总 · 2025-06-27",
+    "status": "系列资料 · 单品获取路线未提供",
+    "checked": "2026-10-14"
+   }
   },
   "orzice:p1529": {
    "name": "阿萨拉牌-方片A",
@@ -4398,37 +4527,37 @@
     "checked": "2026-10-14"
    }
   },
-  "orzice:p1365": {
+    "orzice:p1365": {
    "name": "划伤的B级工卡",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
-  "orzice:p1364": {
+    "orzice:p1364": {
    "name": "磨损的B级工卡",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
-  "orzice:p1363": {
+    "orzice:p1363": {
    "name": "断裂的A级工卡",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
-  "orzice:p1362": {
+    "orzice:p1362": {
    "name": "磁化的A级工卡",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
   "orzice:p1332": {
    "name": "渡鸦的密信",
@@ -4446,13 +4575,13 @@
     "checked": "2026-10-11"
    }
   },
-  "orzice:p1331": {
+    "orzice:p1331": {
    "name": "渡鸦的录音数据-6",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
   "orzice:p1330": {
    "name": "渡鸦的录音数据-5",
@@ -4929,13 +5058,13 @@
    "exchange": [],
    "checked": "2026-10-11"
   },
-  "orzice:p272": {
+    "orzice:p272": {
    "name": "三角洲特种部队：黑鹰坠落（盒装版）",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
   "orzice:903": {
    "name": "胶囊咖啡机套组",
@@ -5645,13 +5774,13 @@
    "exchange": [],
    "checked": "2026-10-11"
   },
-  "orzice:p1698": {
+    "orzice:p1698": {
    "name": "阿托斯·利尔的身份牌",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
   "orzice:1357": {
    "name": "证物光碟",
@@ -5661,21 +5790,21 @@
    "exchange": [],
    "checked": "2026-10-11"
   },
-  "orzice:1356": {
+    "orzice:1356": {
    "name": "无名氏诗集",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
-  "orzice:1355": {
+    "orzice:1355": {
    "name": "医用吻合器",
    "containers": [],
    "tradeable": false,
    "explicit_source": "",
    "exchange": [],
-   "checked": "2026-10-11"
+   "checked": "2026-10-14"
   },
   "orzice:p1617": {
    "name": "Relink脑机实验数据-白老头",
