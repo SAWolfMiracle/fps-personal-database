@@ -7,12 +7,12 @@ const data=require('../collection-guides.js');
 const api=require('../collection-catalog.js');
 test('acquisition snapshot and verified coverage match source-backed routes',()=>{
  assert.equal(Object.keys(data.entries).length,catalog.items.length);
- const rechecked=new Set(['orzice:p1322','orzice:p1325','orzice:p1461','orzice:p1460','orzice:p1448','orzice:p1392','orzice:p1520','orzice:1319','orzice:p1694','orzice:p1628','orzice:p1629','orzice:p1630','orzice:p1497','orzice:p1357','orzice:1262','orzice:1321','orzice:795','orzice:953','orzice:1008','orzice:907','orzice:962','orzice:p1256','orzice:p1100','orzice:p235','orzice:1057','orzice:p1350','orzice:p1326','orzice:p1327','orzice:p1328','orzice:p1288','orzice:p1102','orzice:p1449','orzice:p1450','orzice:p1324','orzice:p1330','orzice:p1467','orzice:p1123','orzice:p1124']);
- for(const item of catalog.items){const fact=data.entries[item.item_id];const recheckedToday=new Set(['orzice:p1288','orzice:p1102','orzice:p1449','orzice:p1450','orzice:p1324','orzice:p1330','orzice:p1467','orzice:p1123','orzice:p1124']);const expectedChecked=recheckedToday.has(item.item_id)?'2026-10-13':rechecked.has(item.item_id)?'2026-10-12':'2026-10-11';assert.equal(fact.name,item.name);assert.equal(fact.source,undefined);assert.equal(item.source_item,undefined);assert.equal(fact.checked,expectedChecked);assert.equal(fact.error,undefined);const guide=api.acquisitionGuide({game:catalog.game,name:'renamed',catalog_item_id:item.item_id});assert.ok(guide.text);assert.doesNotMatch(guide.source||'',/orzice/);assert.equal(guide.checked,expectedChecked);}
+ const rechecked=new Set(['orzice:p1322','orzice:p1325','orzice:p1461','orzice:p1460','orzice:p1448','orzice:p1392','orzice:p1520','orzice:1319','orzice:p1694','orzice:p1628','orzice:p1629','orzice:p1630','orzice:p1497','orzice:p1357','orzice:1262','orzice:1321','orzice:795','orzice:953','orzice:1008','orzice:907','orzice:962','orzice:p1256','orzice:p1100','orzice:p235','orzice:1057','orzice:p1350','orzice:p1326','orzice:p1327','orzice:p1328','orzice:p1288','orzice:p1102','orzice:p1449','orzice:p1450','orzice:p1324','orzice:p1330','orzice:p1467','orzice:p1123','orzice:p1124','orzice:p1496','orzice:p1489','orzice:p1457','orzice:p1456','orzice:p1516','orzice:p1349','orzice:p1348','orzice:p1337','orzice:p1295','orzice:p1294','orzice:p1120','orzice:p1119','orzice:p1122','orzice:p1121','orzice:p1523','orzice:p1501','orzice:p1500','orzice:p1499','orzice:p1504','orzice:p1503','orzice:p1502','orzice:p1360','orzice:p1329','orzice:p1358','orzice:p1366','orzice:p1369','orzice:p1371','orzice:p1299','orzice:p1338','orzice:p1627','orzice:p1625','orzice:p1626','orzice:p1624','orzice:1353','orzice:p1693','orzice:1065','orzice:955']);
+ for(const item of catalog.items){const fact=data.entries[item.item_id];const recheckedToday=new Set(['orzice:p1288','orzice:p1102','orzice:p1449','orzice:p1450','orzice:p1324','orzice:p1330','orzice:p1467','orzice:p1123','orzice:p1124']);const recheckedThisPass=new Set(['orzice:p1496','orzice:p1489','orzice:p1457','orzice:p1456','orzice:p1516','orzice:p1349','orzice:p1348','orzice:p1337','orzice:p1326','orzice:p1327','orzice:p1328','orzice:p1295','orzice:p1294','orzice:p1120','orzice:p1119','orzice:p1122','orzice:p1121','orzice:p1523','orzice:p1501','orzice:p1500','orzice:p1499','orzice:p1504','orzice:p1503','orzice:p1502','orzice:p1461','orzice:p1460','orzice:p1392','orzice:p1360','orzice:p1256','orzice:p1100','orzice:p235','orzice:p1329','orzice:p1358','orzice:p1366','orzice:p1369','orzice:p1371','orzice:p1299','orzice:p1338','orzice:p1627','orzice:p1625','orzice:p1626','orzice:p1624','orzice:1353','orzice:p1693','orzice:1065','orzice:955','orzice:p1359','orzice:1256']);const expectedChecked=recheckedThisPass.has(item.item_id)?'2026-10-14':recheckedToday.has(item.item_id)?'2026-10-13':rechecked.has(item.item_id)?'2026-10-12':'2026-10-11';assert.equal(fact.name,item.name);assert.equal(fact.source,undefined);assert.equal(item.source_item,undefined);assert.equal(fact.checked,expectedChecked);assert.equal(fact.error,undefined);const guide=api.acquisitionGuide({game:catalog.game,name:'renamed',catalog_item_id:item.item_id});assert.ok(guide.text);assert.doesNotMatch(guide.source||'',/orzice/);assert.equal(guide.checked,expectedChecked);}
  const coverage=api.guideCoverage();assert.equal(coverage.total,534);assert.equal(coverage.known+coverage.pending,coverage.total);
- assert.equal(coverage.known,502);assert.equal(coverage.pending,32);
+ assert.equal(coverage.known,512);assert.equal(coverage.pending,22);
  assert.equal(coverage.mapsKnown,289);assert.equal(coverage.mapsInferred,204);assert.equal(coverage.mapsPending,41);assert.equal(coverage.mapsHistorical,9);
- assert.equal(coverage.difficultiesKnown,26);assert.equal(coverage.difficultiesInferred,328);assert.equal(coverage.difficultiesPending,180);assert.equal(coverage.difficultiesWithAny,354);
+ assert.equal(coverage.difficultiesKnown,29);assert.equal(coverage.difficultiesInferred,328);assert.equal(coverage.difficultiesPending,177);assert.equal(coverage.difficultiesWithAny,357);
  const inferredBulk=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:1322'});assert.deepEqual(inferredBulk.maps,['零号大坝','航天基地','巴克什']);assert.equal(inferredBulk.mapEvidenceType,'container-inferred');assert.equal(inferredBulk.difficultyContextsInferred.length,3);assert.match(inferredBulk.mapNote,/不证明该物品/);
  const sandSafe=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:1230'});assert.ok(sandSafe.difficultyContextsInferred.some(x=>/巴克什：绝密.*沙色保险箱/.test(x)));
  const musselHistory=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:p1617'});assert.deepEqual(musselHistory.historicalMaps,['零号大坝','长弓溪谷','航天基地','潮汐监狱']);assert.match(musselHistory.historicalMapNote,/活动已结束/);
@@ -59,25 +59,25 @@ test('structured acquisition details keep map evidence separate from container e
  for(const id of ['orzice:p1361','orzice:p1350'])assert.deepEqual(api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id}).maps,['零号大坝','巴克什','航天基地']);
  for(const id of ['orzice:p1488','orzice:p1498'])assert.deepEqual(api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id}).maps,['零号大坝','长弓溪谷','巴克什','航天基地']);
  const mirror=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p189'});assert.deepEqual(mirror.maps,['零号大坝','长弓溪谷','巴克什','航天基地','AZ-3']);assert.match(mirror.mapNote,/不含潮汐监狱/);assert.equal(mirror.mapChecked,'2026-10-12');
- for(const id of ['orzice:1061','orzice:1054','orzice:1056','orzice:1062','orzice:955','orzice:964','orzice:1199','orzice:1200','orzice:1205','orzice:p1086','orzice:1065']){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,['潮汐监狱'],id);assert.equal(detail.mapChecked,'2026-10-12',id)}
+ for(const id of ['orzice:1061','orzice:1054','orzice:1056','orzice:1062','orzice:955','orzice:964','orzice:1199','orzice:1200','orzice:1205','orzice:p1086','orzice:1065']){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,['潮汐监狱'],id);assert.equal(detail.mapChecked,['orzice:955','orzice:1065'].includes(id)?'2026-10-14':'2026-10-12',id)}
  for(const [id,maps] of Object.entries({'orzice:962':['航天基地','长弓溪谷'],'orzice:1064':['航天基地','零号大坝'],'orzice:978':['航天基地','长弓溪谷'],'orzice:1284':['零号大坝','航天基地'],'orzice:1257':['航天基地','零号大坝'],'orzice:1218':['航天基地','长弓溪谷'],'orzice:1207':['航天基地','零号大坝'],'orzice:1203':['航天基地','长弓溪谷'],'orzice:1202':['航天基地','零号大坝'],'orzice:1206':['航天基地','长弓溪谷'],'orzice:1209':['航天基地','零号大坝'],'orzice:1208':['航天基地','零号大坝'],'orzice:900':['航天基地','长弓溪谷'],'orzice:902':['航天基地','长弓溪谷'],'orzice:952':['航天基地','长弓溪谷']})){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id)}
  for(const id of ['orzice:1217','orzice:1201']){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,['所有地图（历史资料）'],id);assert.equal(detail.mapChecked,'2026-10-12',id)}
  for(const id of ['orzice:1204','orzice:p1455']){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.equal(detail.maps.length,1,id);assert.equal(detail.mapChecked,'2026-10-12',id)}
- for(const id of ['orzice:1283','orzice:p1338']){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,legacyFive,id);assert.equal(detail.mapChecked,'2026-10-12',id)}
+ for(const id of ['orzice:1283','orzice:p1338']){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,legacyFive,id);assert.equal(detail.mapChecked,id==='orzice:p1338'?'2026-10-14':'2026-10-12',id)}
  assert.deepEqual(api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1497'}).maps,['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱']);for(const id of ['orzice:p1495','orzice:p1494','orzice:p1493','orzice:p1492','orzice:p1491','orzice:p1490'])assert.deepEqual(api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id}).maps,[],id);
  const treasureRoutes={'orzice:p1625':['零号大坝'],'orzice:p1626':['巴克什'],'orzice:p1624':['长弓溪谷']};
- for(const [id,maps] of Object.entries(treasureRoutes)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id);assert.match(detail.mapNote,/S10 宝藏月/);}
+ for(const [id,maps] of Object.entries(treasureRoutes)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-14',id);assert.deepEqual(detail.containers,['藏宝堆'],id);assert.match(detail.mapNote,/S10 宝藏月/);}
  const cardRoutes={'orzice:p1517':['零号大坝'],'orzice:p1524':['所有地图（S10历史资料）']};
  for(const [id,name] of Object.entries({"orzice:p1518":"阿萨拉牌-牌盒","orzice:p1517":"阿萨拉牌-大王","orzice:p1524":"阿萨拉牌-小王","orzice:p1529":"阿萨拉牌-方片A","orzice:p1528":"阿萨拉牌-梅花A","orzice:p1527":"阿萨拉牌-红桃A","orzice:p1526":"阿萨拉牌-黑桃A","orzice:p1547":"阿萨拉牌-方片K","orzice:p1546":"阿萨拉牌-梅花K","orzice:p1545":"阿萨拉牌-红桃K","orzice:p1544":"阿萨拉牌-黑桃K","orzice:p1543":"阿萨拉牌-方片Q","orzice:p1542":"阿萨拉牌-梅花Q","orzice:p1541":"阿萨拉牌-红桃Q","orzice:p1540":"阿萨拉牌-黑桃Q","orzice:p1539":"阿萨拉牌-方片J","orzice:p1538":"阿萨拉牌-梅花J","orzice:p1537":"阿萨拉牌-红桃J","orzice:p1536":"阿萨拉牌-黑桃J","orzice:p1579":"阿萨拉牌-方片9","orzice:p1578":"阿萨拉牌-梅花9","orzice:p1577":"阿萨拉牌-红桃9","orzice:p1576":"阿萨拉牌-黑桃9","orzice:p1575":"阿萨拉牌-方片8","orzice:p1574":"阿萨拉牌-梅花8","orzice:p1573":"阿萨拉牌-红桃8","orzice:p1572":"阿萨拉牌-黑桃8","orzice:p1571":"阿萨拉牌-方片7","orzice:p1570":"阿萨拉牌-梅花7","orzice:p1569":"阿萨拉牌-红桃7","orzice:p1568":"阿萨拉牌-黑桃7","orzice:p1567":"阿萨拉牌-方片6","orzice:p1566":"阿萨拉牌-梅花6","orzice:p1565":"阿萨拉牌-红桃6","orzice:p1564":"阿萨拉牌-黑桃6","orzice:p1563":"阿萨拉牌-方片5","orzice:p1562":"阿萨拉牌-梅花5","orzice:p1561":"阿萨拉牌-红桃5","orzice:p1560":"阿萨拉牌-黑桃5","orzice:p1559":"阿萨拉牌-方片4","orzice:p1558":"阿萨拉牌-梅花4","orzice:p1557":"阿萨拉牌-红桃4","orzice:p1556":"阿萨拉牌-黑桃4","orzice:p1555":"阿萨拉牌-方片3","orzice:p1554":"阿萨拉牌-梅花3","orzice:p1553":"阿萨拉牌-红桃3","orzice:p1552":"阿萨拉牌-黑桃3","orzice:p1551":"阿萨拉牌-方片2","orzice:p1550":"阿萨拉牌-梅花2","orzice:p1549":"阿萨拉牌-红桃2","orzice:p1548":"阿萨拉牌-黑桃2","orzice:p1535":"阿萨拉牌-方片10","orzice:p1534":"阿萨拉牌-梅花10","orzice:p1533":"阿萨拉牌-红桃10","orzice:p1532":"阿萨拉牌-黑桃10"})){if(name==='阿萨拉牌-牌盒')continue;let maps;if(name==='阿萨拉牌-大王')maps=['零号大坝'];else if(name==='阿萨拉牌-小王')maps=['所有地图（S10历史资料）'];else if(/A$/.test(name))maps=['长弓溪谷'];else if(/[JQK]$/.test(name))maps=['AZ-3'];else maps=['巴克什'];cardRoutes[id]=maps;}
  for(const [id,maps] of Object.entries(cardRoutes)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id);assert.match(detail.mapNote,/S10/);}
  const cardBox=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1518'});assert.deepEqual(cardBox.maps,['AZ-3']);assert.deepEqual(cardBox.difficultyContexts,['AZ-3：普通 / 机密（S10 攻略路线）']);assert.match(cardBox.mapNote,/S10/);
- const flowerButterfly=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1627'});assert.deepEqual(flowerButterfly.maps,['所有地图（群星赛季活动）']);assert.match(flowerButterfly.mapNote,/2026-09-08.*2026-11-09/);
- const lifeSupport=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1256'});assert.deepEqual(lifeSupport.maps,['航天基地']);assert.match(lifeSupport.mapNote,/存在冲突/);
+ const flowerButterfly=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1627'});assert.deepEqual(flowerButterfly.maps,['所有地图（S11限时活动）']);assert.match(flowerButterfly.mapNote,/2026-09-04.*2026-11-04/);assert.equal(flowerButterfly.mapChecked,'2026-10-14');
+ const lifeSupport=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1256'});assert.deepEqual(lifeSupport.maps,['航天基地']);assert.match(lifeSupport.mapNote,/存在冲突/);assert.equal(lifeSupport.mapChecked,'2026-10-14');
  const uraniumDifficulty=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1515'});assert.deepEqual(uraniumDifficulty.difficultyContexts,['AZ-3：机密推荐（普通模式刷新率较低）']);
  const fuelRod=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:1319'});assert.deepEqual(fuelRod.difficultyContexts,['AZ-3：机密稳定刷新；普通概率极低']);
  const trophy=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1296'});assert.deepEqual(trophy.difficultyContexts,['S7 攻略爆率排序：绝密 > 机密（水淹）> 普通']);
  const legacyMaps={'orzice:1258':['航天基地','长弓溪谷'],'orzice:1259':['航天基地','零号大坝'],'orzice:1260':['航天基地','零号大坝'],'orzice:1261':['航天基地','长弓溪谷'],'orzice:1285':['长弓溪谷','航天基地'],'orzice:p1299':['所有地图（S7历史活动）'],'orzice:p1295':['所有地图（S7历史活动）'],'orzice:p1294':['所有地图（S7历史活动）']};
- for(const [id,maps] of Object.entries(legacyMaps)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id);assert.match(detail.mapNote,/S7|S8|S9/);}
+ for(const [id,maps] of Object.entries(legacyMaps)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,id==='orzice:p1299'?'2026-10-14':'2026-10-12',id);assert.match(detail.mapNote,/S7|S8|S9/);}
  const directRoutes={'orzice:1024':['长弓溪谷','航天基地'],'orzice:p174':['长弓溪谷','航天基地'],'orzice:1229':['航天基地','长弓溪谷'],'orzice:p208':['航天基地','长弓溪谷','巴克什','潮汐监狱'],'orzice:1320':['AZ-3'],'orzice:1248':['航天基地','零号大坝']};
  for(const [id,maps] of Object.entries(directRoutes)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id);assert.match(detail.mapNote,/2025-12-14|S7|S10|2025-11|2026-07/);}
  const ammoParts=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p208'});assert.deepEqual(ammoParts.difficultyContexts,['2026-07 攻略：绝密稳定刷新；普通 / 机密几乎不刷新']);
@@ -91,8 +91,52 @@ test('structured acquisition details keep map evidence separate from container e
  for(const [id,maps] of Object.entries(dvgFollowup)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id);assert.match(detail.mapNote,/2025-12-20/);assert.deepEqual(detail.difficultyContexts,[],id);}
  const porridgeRoutes={'orzice:p1358':['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱'],'orzice:p1366':['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱'],'orzice:p1371':['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱']};
  for(const [id,maps] of Object.entries(porridgeRoutes)){const detail=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:id});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id);assert.match(detail.mapNote,/2026-01-16.*01-28/);assert.deepEqual(detail.difficultyContexts,[],id);}
- const porridgeNameMismatch=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1369'});assert.deepEqual(porridgeNameMismatch.maps,[]);assert.equal(coverage.mapsKnown,289);assert.equal(coverage.difficultiesKnown,26);
+ const porridgeNameMismatch=api.acquisitionDetails({game:'三角洲行动',catalog_item_id:'orzice:p1369'});assert.deepEqual(porridgeNameMismatch.maps,[]);assert.deepEqual(porridgeNameMismatch.containers,[]);assert.equal(coverage.mapsKnown,289);assert.equal(coverage.difficultiesKnown,29);
  const expectedMaps={"orzice:1021":["航天基地","长弓溪谷"],"orzice:1035":["航天基地","长弓溪谷"],"orzice:1026":["航天基地","长弓溪谷"],"orzice:1033":["航天基地","长弓溪谷"],"orzice:946":["航天基地","长弓溪谷"],"orzice:957":["航天基地","长弓溪谷"],"orzice:799":["航天基地","长弓溪谷"],"orzice:841":["航天基地","长弓溪谷"],"orzice:895":["航天基地","长弓溪谷"],"orzice:976":["航天基地","长弓溪谷"],"orzice:1040":["巴克什"],"orzice:1047":["巴克什"],"orzice:1048":["巴克什"],"orzice:1255":["航天基地"],"orzice:p1391":["零号大坝","长弓溪谷","航天基地","巴克什","潮汐监狱"],"orzice:p1389":["航天基地","AZ-3"],"orzice:1066":["零号大坝","巴克什"],"orzice:1067":["零号大坝","巴克什"],"orzice:1068":["零号大坝","巴克什"],"orzice:1353":["长弓溪谷"],"orzice:1227":["航天基地","长弓溪谷"],"orzice:1226":["航天基地","长弓溪谷"],"orzice:p1323":["零号大坝","长弓溪谷","航天基地","巴克什","潮汐监狱"],"orzice:p1457":["零号大坝","长弓溪谷","航天基地","巴克什","潮汐监狱"],"orzice:p1456":["零号大坝","长弓溪谷","航天基地","巴克什","潮汐监狱"],"orzice:p1461":["零号大坝","长弓溪谷","航天基地","巴克什","潮汐监狱"],"orzice:p1460":["零号大坝","长弓溪谷","航天基地","巴克什","潮汐监狱"],"orzice:p1448":["零号大坝","长弓溪谷"],"orzice:p1392":["零号大坝","长弓溪谷","航天基地","巴克什","潮汐监狱"],"orzice:p1520":["AZ-3"],"orzice:1319":["AZ-3"]};
- for(const [id,maps] of Object.entries(expectedMaps)){const item=catalog.items.find(x=>x.item_id===id);assert.ok(item,id+' exists in catalog');const detail=api.acquisitionDetails({game:catalog.game,catalog_item_id:id,name:item.name});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,'2026-10-12',id);assert.ok(detail.mapNote,id+' map note')}
+ for(const [id,maps] of Object.entries(expectedMaps)){const item=catalog.items.find(x=>x.item_id===id);assert.ok(item,id+' exists in catalog');const detail=api.acquisitionDetails({game:catalog.game,catalog_item_id:id,name:item.name});assert.deepEqual(detail.maps,maps,id);assert.equal(detail.mapChecked,id==='orzice:1353'?'2026-10-14':'2026-10-12',id);assert.ok(detail.mapNote,id+' map note')}
  for(const item of catalog.items){const detail=api.acquisitionDetails({game:catalog.game,catalog_item_id:item.item_id,name:item.name});if(detail.maps.length)assert.ok(detail.mapChecked,item.item_id+' map check date')}
+});
+
+test('source-backed S11, event, mission, and scavenging routes keep uncertainty explicit',()=>{
+ const flower=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:p1627'});
+ assert.deepEqual(flower.maps,['所有地图（S11限时活动）']);
+ assert.deepEqual(flower.containers,['地图容器（具体类型未标注）']);
+ assert.deepEqual(flower.difficultyContexts,[]);
+ assert.match(flower.guide.text,/2026-09-04 00:00至2026-11-04 24:00/);
+ assert.equal(flower.mapChecked,'2026-10-14');
+ const ordinaryFlower=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:p1693'});
+ assert.deepEqual(ordinaryFlower.maps,['所有地图（历史资料）','AZ-3']);
+ assert.deepEqual(ordinaryFlower.containers,['鸟窝']);
+ assert.match(ordinaryFlower.guide.status,/已结束/);
+ const cup=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:p1626'});
+ assert.deepEqual(cup.maps,['巴克什']);
+ assert.deepEqual(cup.containers,['藏宝堆']);
+ assert.ok(cup.difficultyContexts.some(x=>/机密 \/ 绝密/.test(x)));
+ assert.match(cup.guide.status,/已结束/);
+ const fish=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:1353'});
+ assert.deepEqual(fish.maps,['长弓溪谷']);
+ assert.deepEqual(fish.containers,[]);
+ assert.deepEqual(fish.difficultyContexts,[]);
+ assert.match(fish.guide.text,/第9、10点位.*未在测试服确认/);
+ const porridge=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:p1358'});
+ assert.deepEqual(porridge.containers,['一箱好粥道（联动活动容器）']);
+ assert.deepEqual(porridge.maps,['零号大坝','长弓溪谷','航天基地','巴克什','潮汐监狱']);
+ assert.deepEqual(porridge.difficultyContexts,[]);
+ const mismatch=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:p1369'});
+ assert.deepEqual(mismatch.maps,[]);
+ assert.deepEqual(mismatch.containers,[]);
+ assert.match(mismatch.guide.text,/名称不一致/);
+ const brain=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:1065'});
+ assert.deepEqual(brain.maps,['潮汐监狱']);
+ assert.deepEqual(brain.containers,[]);
+ assert.match(brain.guide.text,/黑潮行动/);
+ const rose=api.acquisitionDetails({game:catalog.game,catalog_item_id:'orzice:p1359'});
+ assert.deepEqual(rose.maps,[]);
+ assert.deepEqual(rose.containers,[]);
+ assert.deepEqual(rose.difficultyContexts,[]);
+ assert.match(rose.guide.text,/2026-02-13.*2026-02-26/);
+ assert.match(rose.guide.status,/已结束/);
+ const lifeSupportGuide=api.acquisitionGuide({game:catalog.game,catalog_item_id:'orzice:1256'});
+ assert.match(lifeSupportGuide.text,/相互冲突/);
+ assert.match(lifeSupportGuide.status,/未核实/);
 });
