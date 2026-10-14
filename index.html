@@ -1269,6 +1269,13 @@ function identityLabel(){
   return (cloudUser.is_anonymous?"匿名 · ":"账号 · ")+cloudUser.id.slice(0,8)+"…"
 }
 function formatSyncTime(v){if(!v)return "从未";try{return new Date(v).toLocaleString()}catch(e){return "从未"}}
+function cloudAuthError(err){
+  var message=err&&err.message?err.message:"未知错误",code=err&&err.code?err.code:"";
+  if(code==="email_address_not_authorized"||/email address not authorized/i.test(message))return "此邮箱未获邮件服务授权。项目若使用 Supabase 默认邮件服务，只能向项目团队成员发信；管理员需配置自定义 SMTP 才能供普通用户登录。";
+  if(code==="over_email_send_rate_limit"||code==="over_request_rate_limit"||err&&err.status===429)return "邮件发送频率已达服务端限制，请稍后重试。验证码和登录链接共用发送额度，切换按钮不会绕过限制。";
+  if(/failed to fetch|networkerror|load failed/i.test(message))return "无法连接认证服务，请检查网络后重试。";
+  return message+(code?"（"+code+"）":"");
+}
 function setCloudMessage(msg){if($("cloudMessage"))$("cloudMessage").textContent=msg}
 function setCloudBadge(text,cls){if(!$("cloudBadge"))return;$("cloudBadge").textContent=text;$("cloudBadge").className="cloud-badge "+cls}
 function guestRecords(){
@@ -1293,10 +1300,14 @@ function renderCloudPanel(){
   $("cloudAnonBtn").disabled=!cloudClient||!!cloudUser||cloudBusy||!cfg.anonymousAuth;
   $("cloudEmailBtn").textContent=cloudUser&&cloudUser.is_anonymous?"绑定邮箱":"发送登录链接";
   $("cloudEmailBtn").disabled=!cloudClient||cloudBusy||(cloudUser?(cloudUser.is_anonymous?!cfg.manualLinking:true):!cfg.emailMagicLink);
+  var emailUnavailable=!cloudClient?"认证服务尚未加载，请刷新页面并检查网络":cloudBusy?"正在处理云端请求，请等待完成":cloudUser&&!cloudUser.is_anonymous?"当前账号已登录，无需再次发送":cloudUser&&cloudUser.is_anonymous&&!cfg.manualLinking?"邮箱绑定尚未配置":!cloudUser&&!cfg.emailMagicLink?"邮箱登录尚未配置":"";
+  $("cloudEmailBtn").title=emailUnavailable||"通过邮件链接验证";
+  $("cloudOtpSendBtn").title=emailUnavailable||"发送邮件验证码";
   $("cloudOtpSendBtn").disabled=$("cloudEmailBtn").disabled;$("cloudOtpBox").hidden=!pendingEmailOtp;$("cloudOtpVerifyBtn").disabled=!cloudClient||cloudBusy||!pendingEmailOtp;$("cloudOtpVerifyBtn").textContent=pendingEmailOtp&&pendingEmailOtp.userId?"验证并绑定邮箱":"验证并登录";
   $("guestMergeBox").hidden=!mergeAvailable;
   if(mergeAvailable)$("guestMergeText").textContent="本机 guest workspace 有 "+guest.length+" 条记录；合并后仍保留 guest 副本，避免误删。";
   if(!cloudConfigured()){setCloudBadge("未配置","cloud-off");setCloudMessage("当前未配置 Supabase，数据只保存在当前 workspace。")}
+  else if(!cloudClient){setCloudBadge("认证服务未就绪","cloud-error");setCloudMessage("认证服务尚未加载，登录按钮暂不可用。请刷新页面并检查网络；本机数据保留。")}
   else if(cloudBusy){setCloudBadge("同步中"+(cloudSyncProgress?" · "+cloudSyncProgress:""),"cloud-busy")}
   else if(cloudUser){setCloudBadge(navigator.onLine?"云端已连接":"离线","cloud-ready");setCloudMessage("当前 workspace："+activeWorkspace.replace("user_","账号 · ").replace("guest","本机 guest")+"。原始记录只允许此身份访问。")}
   else if(!cfg.anonymousAuth&&!cfg.emailMagicLink){setCloudBadge("数据库已连接","cloud-ready");setCloudMessage("Supabase 数据库和 RLS 已就绪；认证仍未在 Dashboard 开启。")}
@@ -1342,22 +1353,22 @@ async function cloudAnonymousSignIn(){
   cloudBusy=false;renderCloudPanel();await cloudSync({silent:true})
 }
 async function cloudEmailSignIn(){
-  if(!cloudClient)return;
+  if(!cloudClient||cloudBusy)return;
   var email=$("cloudEmail").value.trim();if(!email){showToast("请先填写邮箱");$("cloudEmail").focus();return}
-  var cfg=cloudConfig();cloudBusy=true;renderCloudPanel();
+  var cfg=cloudConfig();cloudBusy=true;$("cloudOtpStatus").textContent="正在请求发送验证邮件…";renderCloudPanel();
   try{
     if(cloudUser&&cloudUser.is_anonymous){
       if(!cfg.manualLinking)throw Error("需先在 Supabase Auth 开启 Manual Linking");
       var link=await cloudClient.auth.updateUser({email:email},{emailRedirectTo:location.origin+location.pathname});if(link.error)throw link.error;
-      showToast("验证邮件已发送");setCloudMessage("点击验证邮件后会把邮箱绑定到当前匿名身份，保留同一个 user_id 和云数据。")
+      showToast("验证邮件已发送");$("cloudOtpStatus").textContent="验证邮件已发送。点击邮件链接可绑定当前匿名身份，保留原 user_id 和云数据。若在主屏幕应用中使用，请通过验证码在当前应用验证。"
     }else if(cloudUser){
       showToast("当前账号已经是可恢复账号")
     }else{
       if(!cfg.emailMagicLink)throw Error("邮箱登录尚未在 Supabase Auth 配置完成");
       var r=await cloudClient.auth.signInWithOtp({email:email,options:{emailRedirectTo:location.origin+location.pathname}});if(r.error)throw r.error;
-      showToast("登录链接已发送");setCloudMessage("已向 "+email+" 发送登录链接。")
+      showToast("登录链接已发送");$("cloudOtpStatus").textContent="已向 "+email+" 请求发送登录邮件。请检查收件箱和垃圾邮件；链接只登录打开它的浏览器，不会自动登录主屏幕应用。"
     }
-  }catch(err){setCloudBadge("发送失败","cloud-error");setCloudMessage("邮箱操作失败："+err.message)}
+  }catch(err){$("cloudOtpStatus").textContent="发送失败："+cloudAuthError(err);showToast("验证邮件发送失败，请查看登录区提示")}
   finally{cloudBusy=false;renderCloudPanel()}
 }
 async function cloudSendEmailOtp(){
@@ -1372,7 +1383,7 @@ async function cloudSendEmailOtp(){
     if(result.error)throw result.error;if(ticket!==workspaceEpoch||(cloudUser?cloudUser.id:null)!==userId)return;
     pendingEmailOtp={email:email,userId:userId,type:userId?"email_change":"email",sentAt:Date.now()};$("cloudOtpCode").value="";
     $("cloudOtpStatus").textContent="已向 "+email+" 发送邮件。请在当前应用输入验证码；验证码和链接只能使用一次。";
-  }catch(err){$("cloudOtpStatus").textContent="发送失败："+err.message}finally{cloudBusy=false;renderCloudPanel()}
+  }catch(err){$("cloudOtpStatus").textContent="发送失败："+cloudAuthError(err)}finally{cloudBusy=false;renderCloudPanel()}
 }
 async function cloudVerifyEmailOtp(){
   if(!cloudClient||cloudBusy||!pendingEmailOtp)return;var challenge=pendingEmailOtp,token=$("cloudOtpCode").value.replace(/\s/g,"");
