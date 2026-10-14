@@ -591,6 +591,7 @@ body{min-height:100vh;min-height:100svh}
     </div>
     <div class="actions"><button class="btn primary" id="cloudSyncBtn">立即同步</button></div><details class="inline-panel"><summary>登录与同步设置</summary><div class="cloud-auth">
       <div class="field cloud-email-field"><label for="cloudEmail">邮箱账号</label><input id="cloudEmail" type="email" autocomplete="email" placeholder="you@example.com"></div>
+      <p id="cloudAuthAvailability" class="muted" role="status" aria-live="polite"></p>
       <div class="actions cloud-actions">
         <button class="btn primary" id="cloudOtpSendBtn">发送验证码</button>
         <button class="btn" id="cloudAnonBtn" title="需先在 Supabase Auth 启用 Anonymous Sign-Ins">匿名云身份</button>
@@ -1300,7 +1301,10 @@ function renderCloudPanel(){
   $("cloudAnonBtn").disabled=!cloudClient||!!cloudUser||cloudBusy||!cfg.anonymousAuth;
   $("cloudEmailBtn").textContent=cloudUser&&cloudUser.is_anonymous?"绑定邮箱":"发送登录链接";
   $("cloudEmailBtn").disabled=!cloudClient||cloudBusy||(cloudUser?(cloudUser.is_anonymous?!cfg.manualLinking:true):!cfg.emailMagicLink);
-  var emailUnavailable=!cloudClient?"认证服务尚未加载，请刷新页面并检查网络":cloudBusy?"正在处理云端请求，请等待完成":cloudUser&&!cloudUser.is_anonymous?"当前账号已登录，无需再次发送":cloudUser&&cloudUser.is_anonymous&&!cfg.manualLinking?"邮箱绑定尚未配置":!cloudUser&&!cfg.emailMagicLink?"邮箱登录尚未配置":"";
+  var emailUnavailable=!cloudClient?"认证服务尚未加载，请刷新页面并检查网络":cloudBusy?"正在处理云端请求，请等待完成":cloudUser&&!cloudUser.is_anonymous?"当前已登录："+identityLabel()+"。如要换用 Gmail 账号，请先点击“退出云身份”，再填写邮箱发送验证码。当前账号的数据仍保留在原 workspace 中":cloudUser&&cloudUser.is_anonymous&&!cfg.manualLinking?"邮箱绑定尚未配置":!cloudUser&&!cfg.emailMagicLink?"邮箱登录尚未配置":"";
+  $("cloudAuthAvailability").textContent=emailUnavailable||(cloudUser&&cloudUser.is_anonymous?"当前为匿名云身份。填写 Gmail 邮箱后发送验证码，可绑定此身份并保留当前数据。":"填写 Gmail 邮箱后发送验证码；如果发送失败，原因会显示在下方。");
+  $("cloudOtpSendBtn").textContent=cloudUser&&!cloudUser.is_anonymous?"当前账号已登录":cloudUser&&cloudUser.is_anonymous?"发送绑定验证码":"发送验证码";
+  $("cloudEmailBtn").textContent=cloudUser&&!cloudUser.is_anonymous?"当前账号已登录":cloudUser&&cloudUser.is_anonymous?"发送邮箱绑定链接":"发送登录链接";
   $("cloudEmailBtn").title=emailUnavailable||"通过邮件链接验证";
   $("cloudOtpSendBtn").title=emailUnavailable||"发送邮件验证码";
   $("cloudOtpSendBtn").disabled=$("cloudEmailBtn").disabled;$("cloudOtpBox").hidden=!pendingEmailOtp;$("cloudOtpVerifyBtn").disabled=!cloudClient||cloudBusy||!pendingEmailOtp;$("cloudOtpVerifyBtn").textContent=pendingEmailOtp&&pendingEmailOtp.userId?"验证并绑定邮箱":"验证并登录";
