@@ -6,7 +6,7 @@ const vm=require('node:vm');
 function app(){
  let clock=Date.now();class TestDate extends Date{static now(){return clock}}
  const fields=new Map(),store=new Map();
- const element=id=>{if(!fields.has(id))fields.set(id,{id:id,value:'',innerHTML:'',textContent:'',hidden:false,reset(){},focus(){},scrollIntoView(options){this.scrollOptions=options;this.scrollCount=(this.scrollCount||0)+1},appendChild(child){this.child=child;child.parentNode=this},classList:{add(){},remove(){}}});return fields.get(id)};
+ const element=id=>{if(!fields.has(id))fields.set(id,{id:id,value:'',innerHTML:'',textContent:'',hidden:false,attributes:{},setAttribute(k,v){this.attributes[k]=String(v)},getAttribute(k){return this.attributes[k]},reset(){},focus(){},scrollIntoView(options){this.scrollOptions=options;this.scrollCount=(this.scrollCount||0)+1},appendChild(child){this.child=child;child.parentNode=this},classList:{add(){},remove(){}}});return fields.get(id)};
  const html=readFileSync(require('node:path').join(__dirname,'../index.html'),'utf8');
  let source=html.match(/<script>\n([\s\S]*?)<\/script>/)[1];
  source=source.slice(0,source.indexOf('$("deleteFilteredCollectionsBtn").addEventListener'));
@@ -268,4 +268,17 @@ test('empty catalog cleanup hides copies, uses tombstones, and can undo without 
 });
 test('cleanup confirmation rejects a duplicate that gained history after planning',()=>{
  const {api}=app();const base={kind:'collection',game:'三角洲行动',catalog_item_id:'orzice:p100',name:'物品',import_source:'catalog',target:1};api.setRecords(['a','b'].map(id=>api.migrateRecord({...base,id})));api.requestDuplicateCleanup();api.getRecords()[1].acquisitions.push({id:'new',quantity:1,date:'',source:'',cost:null,note:'',inventory_seq:1});api.confirmBulkDelete();assert.equal(api.getRecords().length,2);
+});
+
+// Exercise the new progress display against real workspace inventory semantics.
+test('dashboard ring reports zero, fractional progress and completed goals without changing records',()=>{
+ const {api,element}=app();api.setRecords([]);api.renderDashboard();assert.equal(element('homeRingPercent').textContent,'0%');assert.equal(element('homeSuccess').textContent,'—');
+ const rows=Array.from({length:534},(_,i)=>api.migrateRecord({id:'ring-'+i,kind:'collection',game:'三角洲行动',name:'收藏'+i,target:1,starting_quantity:i===0?1:0}));
+ api.setRecords(rows);const before=JSON.stringify(api.getRecords());api.renderDashboard();assert.equal(element('homeRingPercent').textContent,'0.2%');assert.equal(element('homeCollectionProgress').value,1);assert.match(element('homeCollectionRing').getAttribute('aria-label'),/1 \/ 534/);assert.ok(Math.abs(parseFloat(element('homeRingArc').getAttribute('stroke-dasharray'))-100/534)<1e-9);assert.equal(JSON.stringify(api.getRecords()),before);
+ api.setRecords([api.migrateRecord({kind:'collection',name:'达标物品',target:2,starting_quantity:2})]);api.renderDashboard();assert.equal(element('homeRingPercent').textContent,'100%');assert.equal(element('homeRingArc').getAttribute('stroke-dasharray'),'100 100');
+ api.setRecords([api.migrateRecord({kind:'collection',name:'未达标物品',target:2,starting_quantity:1})]);api.renderDashboard();assert.equal(element('homeCollected').textContent,1);assert.equal(element('homeRingPercent').textContent,'0%');
+});
+test('recent match list orders by timestamp, escapes text and preserves missing versus zero profit',()=>{
+ const {api,element}=app();api.setRecords([api.migrateRecord({id:'old',ts:100,game:'CS2',map:'旧记录',result:'失败',profit:0,kills:1,deaths:1}),api.migrateRecord({id:'new',ts:200,game:'三角洲行动',map:'<img src=x onerror=alert(1)>',result:'撤离',profit:null,kills:3,deaths:0})]);
+ const before=JSON.stringify(api.getRecords());api.renderDashboard();const html=element('recent').innerHTML;assert.ok(html.indexOf('&lt;img')<html.indexOf('旧记录'));assert.doesNotMatch(html,/<img/);assert.match(html,/class="goodtxt">0<\/b>/);assert.equal((html.match(/class="goodtxt"/g)||[]).length,1);assert.equal(element('homeSuccess').textContent,'50%');assert.equal(JSON.stringify(api.getRecords()),before);
 });

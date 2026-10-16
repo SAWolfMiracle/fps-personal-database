@@ -1,5 +1,5 @@
-const CACHE="fps-db-v6-42-3";
-const CORE=["./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./inventory.js","./home-dashboard.js","./collection-duplicates.js","./collection-model.js","./collection-guides.js","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
+const CACHE="fps-db-v6-42-fitness-1";
+const CORE=["./fitness.css","./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./inventory.js","./home-dashboard.js","./collection-duplicates.js","./collection-model.js","./collection-guides.js","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
 const MODEL_VIEWER_URL="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
 
 self.addEventListener("install",event=>{
@@ -31,7 +31,7 @@ self.addEventListener("fetch",event=>{
   }
   if(url.origin!==self.location.origin) return;
 
-  if(req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js") || url.pathname.endsWith("/warehouse-import.js") || url.pathname.endsWith("/warehouse-templates.json") || url.pathname.endsWith("/inventory.js") || url.pathname.endsWith("/home-dashboard.js") || url.pathname.endsWith("/collection-duplicates.js") || url.pathname.endsWith("/ocr-import.js") || url.pathname.endsWith("/collection-guides.js") || url.pathname.endsWith("/collection-model.js") || url.pathname.endsWith("/collection-catalog.js") || url.pathname.endsWith("/collection-catalog.json")){
+  if(url.pathname.endsWith("/fitness.css") || req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js") || url.pathname.endsWith("/warehouse-import.js") || url.pathname.endsWith("/warehouse-templates.json") || url.pathname.endsWith("/inventory.js") || url.pathname.endsWith("/home-dashboard.js") || url.pathname.endsWith("/collection-duplicates.js") || url.pathname.endsWith("/ocr-import.js") || url.pathname.endsWith("/collection-guides.js") || url.pathname.endsWith("/collection-model.js") || url.pathname.endsWith("/collection-catalog.js") || url.pathname.endsWith("/collection-catalog.json")){
     event.respondWith(
       fetch(req).then(resp=>{
         const copy=resp.clone();

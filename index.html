@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0f14">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="FPS 数据库">
@@ -322,30 +322,44 @@ body{min-height:100vh;min-height:100svh}
 .guide-sections{display:grid;gap:14px;margin-top:14px}.guide-sections section{border-top:1px solid var(--line);padding-top:12px}.guide-sections h4{font-size:14px;margin:0 0 10px;color:var(--text)}.guide-sections p{font-size:14px;line-height:1.65;margin:8px 0}.guide-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.guide-chips span{border:1px solid var(--line);background:var(--panel3);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.4}.guide-date{font-size:12px!important;line-height:1.6!important;border-top:1px solid var(--line);padding-top:12px}.guide-exchange{margin-bottom:12px}.collection-guide>summary{font-size:15px;line-height:1.6}
 #collectionDetailParking{display:none!important}#collectionDetail{margin:14px 0 0;padding:14px}.collection-detail-slot{min-width:0}
 </style>
+<link rel="stylesheet" href="./fitness.css">
 </head>
 <body>
 <div class="wrap">
 <header>
-  <h1>FPS 个人数据库 <span class="version">v0.6.40</span></h1>
+  <div class="header-eyebrow"><span id="todayLabel">FPS 个人数据库</span><span class="brand-label">FPS 个人数据库</span></div>
+  <div class="page-heading"><h1 id="pageTitle">总览</h1><details class="quick-add" id="quickAddMenu"><summary aria-label="新增对局或收藏记录"><span aria-hidden="true">＋</span> 记录</summary><div class="quick-add-options"><button class="btn" id="homeAddMatch">记录一局 <span aria-hidden="true">↗</span></button><button class="btn" id="homeAddCollection">记录获取 <span aria-hidden="true">↗</span></button></div></details></div>
   <div class="sub">对局复盘 · 收藏管理</div>
   <div class="desktop-tabs" id="desktopTabs"></div>
 </header>
 
 <section id="dashboard" class="section active">
-  <details class="card home-custom"><summary>自定义主页</summary><p class="muted">设置只保存在本机，账号与访客工作区分别保存。</p><div class="home-config-toggles"><label><input id="homeShowMatches" type="checkbox"> 显示对局模块</label><label><input id="homeShowCollections" type="checkbox"> 显示收藏摘要</label></div><div class="field"><label for="homePinGroup">置顶专项收集</label><select id="homePinGroup"></select></div><button class="btn" id="homePinAdd">添加到主页</button><p class="muted">自定义专项：在收藏物品的编辑页填写「专项收集」，然后在这里置顶。最多 12 项，可调整顺序。</p><div id="homePinManage"></div></details>
-  <div class="actions home-shortcuts"><button class="btn primary" id="homeAddMatch">记录一局</button><button class="btn" id="homeAddCollection">记录获取</button></div>
   <div class="home-summaries">
-    <div class="card home-summary" id="homeMatchSummary"><span class="muted">对局摘要</span><div class="home-value"><b id="stTotal">0</b><span>局</span></div><p class="muted" id="stTotalHint"></p><div class="home-summary-line"><span>总体 K/D</span><b id="stKD">—</b></div><small class="muted" id="stRecentKD"></small></div>
-    <div class="card home-summary" id="homeCollectionSummary"><span class="muted">收藏进度</span><div class="home-value"><b id="homeCollected">0</b><span>种已获得</span></div><p class="muted" id="homeCollectionHint"></p><progress id="homeCollectionProgress" max="1" value="0" aria-label="收藏集齐进度"></progress><button class="btn ghost" id="homeViewCollections">查看收藏</button></div>
+    <section class="home-block" id="homeMatchSummary">
+      <div class="section-title-row"><h2>对局表现</h2><span class="section-caption">全部记录</span></div>
+      <div class="card home-summary match-summary">
+        <div class="match-main"><span class="metric-label">总体 K/D</span><div class="home-value"><b id="stKD">—</b></div><small class="muted" id="stRecentKD"></small></div>
+        <div class="match-secondary"><div><span class="metric-label">记录对局</span><strong><b id="stTotal">0</b><small> 局</small></strong></div><div><span class="metric-label">成功率</span><strong id="homeSuccess">—</strong></div></div>
+        <p class="muted match-footnote" id="stTotalHint"></p>
+      </div>
+    </section>
+    <section class="home-block" id="homeCollectionSummary">
+      <div class="section-title-row"><h2>收藏进度</h2><button class="btn ghost" id="homeViewCollections">查看全部 <span aria-hidden="true">›</span></button></div>
+      <div class="card home-summary collection-summary">
+        <div class="collection-summary-copy"><span class="metric-label">已获得</span><div class="home-value"><b id="homeCollected">0</b><span>种</span></div><p class="muted" id="homeCollectionHint"></p><span class="collection-completion-note">圆环按目标集齐统计</span><progress class="sr-only" id="homeCollectionProgress" max="1" value="0" aria-label="收藏集齐进度"></progress></div>
+        <div class="completion-ring" id="homeCollectionRing" role="img" aria-label="收藏集齐进度 0%"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="49"/><circle class="ring-value" id="homeRingArc" cx="60" cy="60" r="49" pathLength="100" stroke-dasharray="0 100"/></svg><div class="ring-caption"><b id="homeRingPercent">0%</b><span>已集齐</span></div></div>
+      </div>
+    </section>
   </div>
-  <div id="homePinnedCollections"></div>
   <div class="card home-empty" id="homeMatchEmpty"><h3>还没有对局记录</h3><p class="muted">记录第一局，开始积累你的对局表现。</p><button class="btn primary" id="homeFirstMatch">记录第一局</button></div>
   <div id="homeMatchDetails" hidden>
     <div class="mini-stats home-match-stats"><div class="stat"><span>总击杀</span><b id="stKills">0</b></div><div class="stat"><span>场均击杀</span><b id="stAvgKills">0.00</b></div></div>
     <div class="home-insights"><h3>近期表现</h3><div id="insights" class="muted"></div></div>
-    <div class="card"><div class="section-title-row"><h3>最近对局</h3><button class="btn ghost" id="homeViewRecords">查看全部</button></div><div id="recent"></div></div>
-    <div class="card"><div class="section-title-row"><h3 style="margin:0">最近时段</h3><span class="muted" id="sessionCount"></span></div><div id="sessionOverview"></div></div>
+    <div class="home-block recent-block"><div class="section-title-row"><h2>最近对局</h2><button class="btn ghost" id="homeViewRecords">查看全部</button></div><div id="recent"></div></div>
+    <div class="home-block"><div class="section-title-row"><h2>最近时段</h2><span class="muted" id="sessionCount"></span></div><div id="sessionOverview"></div></div>
   </div>
+  <div id="homePinnedCollections"></div>
+  <details class="card home-custom"><summary>自定义主页<span class="custom-caption">模块与置顶</span></summary><p class="muted">设置只保存在本机，账号与访客工作区分别保存。</p><div class="home-config-toggles"><label><input id="homeShowMatches" type="checkbox"> 显示对局模块</label><label><input id="homeShowCollections" type="checkbox"> 显示收藏摘要</label></div><div class="field"><label for="homePinGroup">置顶专项收集</label><select id="homePinGroup"></select></div><button class="btn" id="homePinAdd">添加到主页</button><p class="muted">自定义专项：在收藏物品的编辑页填写「专项收集」，然后在这里置顶。最多 12 项，可调整顺序。</p><div id="homePinManage"></div></details>
 </section>
 
 <section id="add" class="section">
@@ -574,6 +588,7 @@ body{min-height:100vh;min-height:100svh}
 </section>
 
 <section id="data" class="section">
+  <p class="app-meta">FPS 个人数据库 <span class="version" id="appVersionLabel">v0.6.42</span></p>
   <div class="card cloud-card">
     <div class="section-title-row">
       <div><h2 style="margin:0 0 4px">云同步</h2><div class="muted" style="font-size:12px">Supabase · 本地优先 · RLS 用户隔离</div></div>
@@ -709,7 +724,7 @@ var MIGRATION_KEY="fps_workspace_migrated_v2";
 var GUEST_MERGED_PREFIX="fps_guest_merged_v1_";
 var CLOUD_AUTO_KEY="fps_cloud_auto_v1";
 var tabs=[
-  ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","database","收藏"],["data","database","数据"]
+  ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","collection","收藏"],["data","settings","数据"]
 ];
 var records=[];
 var screenshotImporter=null,warehouseImporter=null,collectionSelection=new Set(),pendingEmailOtp=null;
@@ -835,6 +850,8 @@ function iconSvg(name){
     chart:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20V10m6 10V4m6 16v-7m4 7V7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
     database:'<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><ellipse cx="12" cy="5.5" rx="8" ry="3" stroke="currentColor" stroke-width="1.8"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" stroke="currentColor" stroke-width="1.8"/></svg>'
   };
+  icons.collection='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/><path d="M8 2h8M8 9h8M8 13h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+  icons.settings='<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="6" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/><circle cx="15" cy="12" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="18" r="2" fill="var(--bg)" stroke="currentColor" stroke-width="1.8"/></svg>';
   return icons[name]||icons.database
 }
 function makeTabs(){
@@ -843,6 +860,8 @@ function makeTabs(){
   document.querySelectorAll("[data-tab]").forEach(function(b){b.addEventListener("click",function(){switchTab(b.dataset.tab)})});
 }
 function switchTab(id){
+  var selectedTab=tabs.find(function(t){return t[0]===id});if(selectedTab)$("pageTitle").textContent=selectedTab[2];
+  $("quickAddMenu").open=false;
   if(id==="collections")loadCollectionCatalog();
   document.querySelectorAll(".section").forEach(function(s){s.classList.toggle("active",s.id===id)});
   document.querySelectorAll("[data-tab]").forEach(function(b){b.classList.toggle("active",b.dataset.tab===id)});
@@ -1067,7 +1086,7 @@ function sessionGroups(){
   })
 }
 
-var homeDeckFilter="all",homeDeckSelected="";
+var homeDeckFilter="all",homeDeckSelected="",homeDeckExpanded=false;
 function deckState(){return window.FPSHome.deck(window.FPSCatalog.deckItems(),collectionRecords(),collectionQuantity,window.FPSCatalog.cardName,window.FPSCatalog.group)}
 function deckBookHTML(){
  var items=deckState(),cards=items.filter(function(x){return x.name!=="阿萨拉牌-牌盒"}),owned=cards.filter(function(x){return x.quantity>0}).length,selected=items.find(function(x){return x.id===homeDeckSelected});
@@ -1076,9 +1095,10 @@ function deckBookHTML(){
  var suits=['黑桃','红桃','梅花','方片'],ranks=['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
  var grid=ranks.map(function(rank){var row=suits.map(function(suit){return cards.find(function(x){return x.name==='阿萨拉牌-'+suit+rank})});if(!row.some(visible))return '';return row.map(function(x){return visible(x)?cell(x):'<span class="deck-spacer" aria-hidden="true"></span>'}).join('')}).join('');
  var extras=items.filter(function(x){return /阿萨拉牌-(大王|小王|牌盒)$/.test(x.name)&&visible(x)});
- return '<h3>阿萨拉牌册</h3><p class="home-pin-progress">已拥有 '+owned+' / 54 · 缺失 '+(54-owned)+'</p><div class="deck-tabs">'+[['all','全部'],['missing','缺失'],['owned','已拥有']].map(function(pair){return '<button class="btn '+(homeDeckFilter===pair[0]?'primary':'')+'" data-deck-filter="'+pair[0]+'" aria-pressed="'+(homeDeckFilter===pair[0])+'">'+pair[1]+'</button>'}).join('')+'</div><div class="deck-action" role="status">'+(selected?'<b>'+esc(selected.name.replace('阿萨拉牌-',''))+' · 当前 '+selected.quantity+' 件</b><div class="actions"><button class="btn primary" data-deck-add="'+selected.id+'">记录获取 +1</button><button class="btn ghost" data-deck-detail="'+selected.id+'">查看明细</button></div>':'<span class="muted">点选一张牌，再记录获取；无需填写时间和来源。</span>')+'</div><div class="deck-scroll"><div class="deck-suits"><span>♠ 黑桃</span><span>♥ 红桃</span><span>♣ 梅花</span><span>♦ 方片</span></div><div class="deck-grid">'+grid+'</div><div class="deck-extras">'+extras.map(cell).join('')+'</div>'+(!grid&&!extras.length?'<p class="muted">此筛选下暂无牌。</p>':'')+'</div><p class="muted">绿色为当前拥有；重复获取只增加数量。牌盒单独记录，不计入 54 种牌，也不代表游戏内已交付。</p>';
+ return '<div class="deck-overview"><div class="deck-art" aria-hidden="true">♠</div><div><h3>阿萨拉牌册</h3><p class="home-pin-progress" aria-label="已拥有 '+owned+' / 54"><strong>'+owned+'</strong><span> / 54 种</span></p><span class="muted">'+(owned===54?'已拥有全部牌种':'还缺 '+(54-owned)+' 种牌')+'</span></div></div><div class="collection-progress"><span style="width:'+owned/54*100+'%"></span></div><details id="homeDeckDisclosure" class="deck-disclosure"'+(homeDeckExpanded?' open':'')+'><summary><span>查看牌册与记录获取</span><span class="disclosure-chevron" aria-hidden="true">›</span></summary><div class="deck-tabs">'+[['all','全部'],['missing','缺失'],['owned','已拥有']].map(function(pair){return '<button class="btn '+(homeDeckFilter===pair[0]?'primary':'')+'" data-deck-filter="'+pair[0]+'" aria-pressed="'+(homeDeckFilter===pair[0])+'">'+pair[1]+'</button>'}).join('')+'</div><div class="deck-action" role="status">'+(selected?'<b>'+esc(selected.name.replace('阿萨拉牌-',''))+' · 当前 '+selected.quantity+' 件</b><div class="actions"><button class="btn primary" data-deck-add="'+selected.id+'">记录获取 +1</button><button class="btn ghost" data-deck-detail="'+selected.id+'">查看明细</button></div>':'<span class="muted">点选一张牌，再记录获取；无需填写时间和来源。</span>')+'</div><div class="deck-scroll"><div class="deck-suits"><span>♠ 黑桃</span><span>♥ 红桃</span><span>♣ 梅花</span><span>♦ 方片</span></div><div class="deck-grid">'+grid+'</div><div class="deck-extras">'+extras.map(cell).join('')+'</div>'+(!grid&&!extras.length?'<p class="muted">此筛选下暂无牌。</p>':'')+'</div><p class="muted">绿色为当前拥有；重复获取只增加数量。牌盒单独记录，不计入 54 种牌，也不代表游戏内已交付。</p></details>';
 }
 function bindDeckBook(){
+ var disclosure=$("homeDeckDisclosure");if(disclosure)disclosure.ontoggle=function(){homeDeckExpanded=disclosure.open};
  document.querySelectorAll('[data-deck-filter]').forEach(function(b){b.onclick=function(){homeDeckFilter=b.dataset.deckFilter;renderAll()}});
  document.querySelectorAll('[data-deck-select]').forEach(function(b){b.onclick=function(){homeDeckSelected=b.dataset.deckSelect;renderAll()}});
  document.querySelectorAll('[data-deck-add]').forEach(function(b){b.onclick=function(){quickDeckAcquire(b.dataset.deckAdd)}});
@@ -1097,22 +1117,30 @@ function renderHomePins(prefs,list){
   $("homeShowMatches").checked=prefs.matches;$("homeShowCollections").checked=prefs.collections;
   var groups=uniq(["阿萨拉牌"].concat(list.map(function(r){return window.FPSCatalog.group(r)})).filter(Boolean));populate("homePinGroup",groups,"选择专项收集");
   $("homePinManage").innerHTML=prefs.pins.map(function(g,i){return '<div class="home-pin-manage"><b>'+esc(g)+'</b><button class="btn ghost" data-home-up="'+i+'" '+(i===0?'disabled':'')+' aria-label="上移 '+esc(g)+'">上移</button><button class="btn ghost" data-home-down="'+i+'" '+(i===prefs.pins.length-1?'disabled':'')+' aria-label="下移 '+esc(g)+'">下移</button><button class="btn ghost" data-home-remove="'+i+'" aria-label="移除主页 '+esc(g)+'">移除</button></div>'}).join("");
-  $("homePinnedCollections").innerHTML=prefs.pins.map(function(g,i){if(g==="阿萨拉牌")return '<article class="card home-pin deck-book">'+deckBookHTML()+'</article>';var subset=list.filter(function(r){return window.FPSCatalog.group(r)===g}),deck=g==="阿萨拉牌",p=deck?window.FPSCatalog.deckProgress(list,collectionQuantity):window.FPSHome.progress(subset,collectionQuantity),done=deck?p.owned:p.complete,missing=p.missing||[];return '<article class="card home-pin"><div class="section-title-row"><h3>'+esc(g)+'</h3><button class="btn ghost" data-home-group="'+i+'">查看专项</button></div><p class="home-pin-progress">'+done+' / '+p.total+' 种'+(deck?' · 牌盒：'+(p.box?'已持有':'未持有'):'已集齐')+'</p><div class="collection-progress"><span style="width:'+pct(done,p.total)+'%"></span></div><p class="muted">'+(deck?'按当前持有牌种计数，不代表游戏内已交付。':'按已添加到该专项的物品目标统计。')+'</p>'+(missing.length?'<p>还缺 '+missing.length+' 种</p><div class="home-missing">'+missing.slice(0,6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div>'+(missing.length>6?'<details><summary>查看全部缺项（'+missing.length+'）</summary><div class="home-missing">'+missing.slice(6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div></details>':''):'<p class="muted">'+(p.total?'已集齐当前专项':'尚未添加物品；在收藏编辑中指定此专项')+'</p>')+'</article>'}).join("");
+  $("homePinnedCollections").innerHTML=(prefs.pins.length?'<div class="section-title-row"><h2>专项收集</h2><span class="section-caption">置顶收藏</span></div>':"")+prefs.pins.map(function(g,i){if(g==="阿萨拉牌")return '<article class="card home-pin deck-book">'+deckBookHTML()+'</article>';var subset=list.filter(function(r){return window.FPSCatalog.group(r)===g}),deck=g==="阿萨拉牌",p=deck?window.FPSCatalog.deckProgress(list,collectionQuantity):window.FPSHome.progress(subset,collectionQuantity),done=deck?p.owned:p.complete,missing=p.missing||[];return '<article class="card home-pin"><div class="section-title-row"><h3>'+esc(g)+'</h3><button class="btn ghost" data-home-group="'+i+'">查看专项</button></div><p class="home-pin-progress">'+done+' / '+p.total+' 种'+(deck?' · 牌盒：'+(p.box?'已持有':'未持有'):'已集齐')+'</p><div class="collection-progress"><span style="width:'+pct(done,p.total)+'%"></span></div><p class="muted">'+(deck?'按当前持有牌种计数，不代表游戏内已交付。':'按已添加到该专项的物品目标统计。')+'</p>'+(missing.length?'<p>还缺 '+missing.length+' 种</p><div class="home-missing">'+missing.slice(0,6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div>'+(missing.length>6?'<details><summary>查看全部缺项（'+missing.length+'）</summary><div class="home-missing">'+missing.slice(6).map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(deck?n.replace('阿萨拉牌-',''):n)+'</button>'}).join('')+'</div></details>':''):'<p class="muted">'+(p.total?'已集齐当前专项':'尚未添加物品；在收藏编辑中指定此专项')+'</p>')+'</article>'}).join("");
   ["up","down","remove"].forEach(function(action){document.querySelectorAll("[data-home-"+action+"]").forEach(function(b){b.onclick=function(){var next=homePreferences(),i=Number(b.getAttribute("data-home-"+action));if(action==="remove")next.pins.splice(i,1);else{var j=i+(action==="up"?-1:1);if(j<0||j>=next.pins.length)return;var tmp=next.pins[i];next.pins[i]=next.pins[j];next.pins[j]=tmp}saveHomePreferences(next)}})});
   document.querySelectorAll("[data-home-group]").forEach(function(b){b.onclick=function(){openHomeCollection(prefs.pins[Number(b.dataset.homeGroup)],"")}});
   bindDeckBook();
   document.querySelectorAll("[data-home-name]").forEach(function(b){b.onclick=function(){openHomeCollection(prefs.pins[Number(b.dataset.homeMissingGroup)],b.dataset.homeName)}});
 }
 function renderDashboard(){
-  var records=matchRecords();
+  var records=matchRecords().slice().sort(function(a,b){return num(b.ts)-num(a.ts)});
   var s=summary(records),tw=topEntry(counter("weapon")),tc=topEntry(counter("cause",records.filter(function(r){return r.cause&&r.cause!=="无 / 未死亡"})));
   $("stTotal").textContent=s.games;$("stKills").textContent=s.k;$("stKD").textContent=s.games?s.kd.toFixed(2):"—";$("stAvgKills").textContent=s.avgK.toFixed(2);
   $("stWeapon").textContent=tw?tw[0]:"暂无";$("stCause").textContent=tc?tc[0]:"暂无";
+  $("homeSuccess").textContent=s.games?s.success+"%":"—";
   $("stTotalHint").textContent=s.games?("已积累 "+s.games+" 局可查询样本"):"从第一局开始积累你的样本";
   var recentList=records.slice(0,Math.min(10,records.length)),recentSummary=summary(recentList);
   if(recentList.length>=3){var delta=recentSummary.kd-s.kd,arrow=delta>.005?"↑":delta<-.005?"↓":"→";$("stRecentKD").textContent="最近 "+recentList.length+" 局 "+recentSummary.kd.toFixed(2)+" · "+arrow+" "+Math.abs(delta).toFixed(2)+" vs 总体"}else{$("stRecentKD").textContent="积累至少 3 局后显示近期状态"}
   var collections=collectionRecords(),homeProgress=window.FPSHome.progress(collections,collectionQuantity),prefs=homePreferences();
   $("homeCollected").textContent=homeProgress.owned;$("homeCollectionHint").textContent=homeProgress.total?"已集齐 "+homeProgress.complete+" / "+homeProgress.total+" 种":"添加物品，开始你的收藏簿";$("homeCollectionProgress").max=homeProgress.total||1;$("homeCollectionProgress").value=homeProgress.complete;
+  var completion=homeProgress.total?homeProgress.complete/homeProgress.total*100:0;
+  var completionLabel=completion===0?"0%":completion<0.1?"<0.1%":completion<1?completion.toFixed(1)+"%":Math.floor(completion)+"%";
+  $("homeRingArc").setAttribute("stroke-dasharray",completion+" 100");
+  $("homeRingPercent").textContent=completionLabel;
+  $("homeCollectionRing").setAttribute("aria-label","收藏目标已集齐 "+homeProgress.complete+" / "+homeProgress.total+" 种，"+completionLabel);
+  $("todayLabel").textContent=new Date().toLocaleDateString("zh-CN",{month:"long",day:"numeric",weekday:"long"});
+  $("appVersionLabel").textContent="v"+APP_VERSION;
   $("homeMatchSummary").hidden=!prefs.matches;$("homeCollectionSummary").hidden=!prefs.collections;$("homeMatchEmpty").hidden=!prefs.matches||s.games>0;$("homeMatchDetails").hidden=!prefs.matches||s.games===0;
   renderHomePins(prefs,collections);
   var ins=[];
@@ -1127,7 +1155,8 @@ function renderDashboard(){
   }
   $("insights").innerHTML=ins.map(function(x){return "• "+x}).join("<br>")||"暂无可分析内容。";
   $("recent").innerHTML=records.slice(0,3).map(function(r){
-    return '<div style="display:grid;grid-template-columns:95px 1fr auto;gap:7px;padding:7px 0;border-bottom:1px solid var(--line)"><span class="muted">'+esc(r.time)+'</span><span>'+esc(r.game)+' · '+esc(r.weapon)+'</span><span class="result-pill '+resultTone(r.result)+'">'+esc(r.result)+'</span></div>'
+    var profit=r.profit==null?null:num(r.profit),tone=resultTone(r.result);
+    return '<div class="recent-row"><div class="recent-symbol '+tone+'" aria-hidden="true">'+iconSvg('chart')+'</div><div class="recent-copy"><b>'+esc(r.map||r.game||'未填写地图')+'</b><div class="recent-result '+tone+'">'+esc(r.result||'未填写结果')+'<span> · '+num(r.kills)+' 杀 / '+num(r.deaths)+' 死</span></div><small>'+esc([r.game,r.weapon].filter(Boolean).join(' · '))+'</small></div><div class="recent-right">'+(profit!==null?'<b class="'+(profit<0?'badtxt':'goodtxt')+'">'+(profit>0?'+':'')+esc(profit.toLocaleString('zh-CN'))+'</b>':'')+'<time>'+esc(r.time)+'</time></div></div>'
   }).join("")||'<div class="empty">暂无记录</div>';
   $("rankGame").innerHTML=rankHTML(counter("game"));$("rankWeapon").innerHTML=rankHTML(counter("weapon"));
   var sg=sessionGroups().slice(0,5);$("sessionCount").textContent=sg.length?"显示最近 "+sg.length+" 个":"";
