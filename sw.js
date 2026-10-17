@@ -1,6 +1,16 @@
-const CACHE="fps-db-v6-42-fitness-2";
-const CORE=["./fitness.css","./","./index.html","./manifest.webmanifest","./cloud-config.js","./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./inventory.js","./home-dashboard.js","./collection-duplicates.js","./collection-model.js","./collection-guides.js","./collection-catalog.js","./collection-catalog.json","./icon-192.png","./icon-512.png","./icon-180.png"];
+// Static shell is small; screenshots, recognition templates and JSON catalogs are loaded on demand.
+const CACHE="fps-db-v6-42-perf-1";
+const CORE=[
+  "./","./index.html","./fitness.css","./manifest.webmanifest","./cloud-config.js",
+  "./collection-model.js","./collection-guides.js","./collection-catalog.js",
+  "./inventory.js","./home-dashboard.js","./collection-duplicates.js",
+  "./icon-192.png","./icon-512.png","./icon-180.png"
+];
+const OPTIONAL=["./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./collection-catalog.json"];
 const MODEL_VIEWER_URL="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
+const pathname=path=>new URL(path,self.registration.scope).pathname;
+const CORE_PATHS=new Set(CORE.map(pathname));
+const OPTIONAL_PATHS=new Set(OPTIONAL.map(pathname));
 
 self.addEventListener("install",event=>{
   self.skipWaiting();
@@ -10,14 +20,14 @@ self.addEventListener("install",event=>{
 self.addEventListener("activate",event=>{
   event.waitUntil(
     caches.keys()
-      .then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
+      .then(keys=>Promise.all(keys.filter(key=>key.startsWith("fps-db-")&&key!==CACHE).map(key=>caches.delete(key))))
       .then(()=>self.clients.claim())
   );
 });
 
 self.addEventListener("fetch",event=>{
   const req=event.request;
-  if(req.method!=="GET") return;
+  if(req.method!=="GET")return;
   const url=new URL(req.url);
   if(url.href===MODEL_VIEWER_URL){
     event.respondWith(caches.open(CACHE).then(async cache=>{
@@ -29,27 +39,42 @@ self.addEventListener("fetch",event=>{
     }));
     return;
   }
-  if(url.origin!==self.location.origin) return;
-
-  if(url.pathname.endsWith("/fitness.css") || req.mode==="navigate" || url.pathname.endsWith("/index.html") || url.pathname.endsWith("/manifest.webmanifest") || url.pathname.endsWith("/cloud-config.js") || url.pathname.endsWith("/warehouse-import.js") || url.pathname.endsWith("/warehouse-templates.json") || url.pathname.endsWith("/inventory.js") || url.pathname.endsWith("/home-dashboard.js") || url.pathname.endsWith("/collection-duplicates.js") || url.pathname.endsWith("/ocr-import.js") || url.pathname.endsWith("/collection-guides.js") || url.pathname.endsWith("/collection-model.js") || url.pathname.endsWith("/collection-catalog.js") || url.pathname.endsWith("/collection-catalog.json")){
-    event.respondWith(
-      fetch(req).then(resp=>{
-        const copy=resp.clone();
-        caches.open(CACHE).then(cache=>cache.put(req,copy));
-        return resp;
-      }).catch(()=>caches.match(req).then(hit=>hit||caches.match("./index.html")))
-    );
+  if(url.origin!==self.location.origin)return;
+  
+  // Cache-first shell keeps repeat visits and offline launches responsive.
+  if(req.mode==="navigate"||CORE_PATHS.has(url.pathname)){
+    event.respondWith((async()=>{
+      const cached=await caches.match(req,req.mode==="navigate"?{ignoreSearch:true}:undefined);
+      if(cached)return cached;
+      try{
+        const response=await fetch(req);
+        if(response.ok){
+          const cache=await caches.open(CACHE);
+          await cache.put(req,response.clone());
+        }
+        return response;
+      }catch(err){
+        if(req.mode==="navigate"){
+          const offline=await caches.match("./index.html");
+          if(offline)return offline;
+        }
+        throw err;
+      }
+    })());
     return;
   }
 
-  event.respondWith(
-    caches.match(req).then(hit=>{
-      const fresh=fetch(req).then(resp=>{
-        const copy=resp.clone();
-        caches.open(CACHE).then(cache=>cache.put(req,copy));
-        return resp;
-      }).catch(()=>hit);
-      return hit||fresh;
-    })
-  );
+  // Optional tools/data are cached only after a user actually opens the feature.
+  if(OPTIONAL_PATHS.has(url.pathname)){
+    event.respondWith((async()=>{
+      const cached=await caches.match(req);
+      if(cached)return cached;
+      const response=await fetch(req);
+      if(response.ok){
+        const cache=await caches.open(CACHE);
+        await cache.put(req,response.clone());
+      }
+      return response;
+    })());
+  }
 });
