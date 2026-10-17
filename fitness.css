@@ -409,8 +409,6 @@ input[type=file]::file-selector-button{border:0;border-radius:7px;padding:7px 10
 .personal-launchers .btn{display:flex;align-items:center;justify-content:center;gap:10px;min-height:62px;white-space:normal}
 .personal-launchers span,.plan-icon{font-size:25px;color:var(--accent)}
 .personal-panel{margin-bottom:24px;scroll-margin-top:30px}
-.personal-panel>summary{font-size:18px;font-weight:600;cursor:pointer;line-height:1.5}
-.personal-panel[open]>summary{margin-bottom:20px}
 .personal-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:18px 0 22px}
 .personal-fields .field,.personal-toolbar .field{min-width:0;margin:0}
 .personal-fields label,.personal-toolbar label{display:block;margin-bottom:8px}
@@ -450,3 +448,6 @@ input[type=file]::file-selector-button{border:0;border-radius:7px;padding:7px 10
 }
 @media(max-width:360px){.personal-launchers{grid-template-columns:minmax(0,1fr)}}
 .personal-launchers svg,.plan-icon svg{display:block;width:26px;height:26px}
+
+.personal-panel[hidden]{display:none}
+.personal-launchers .btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}

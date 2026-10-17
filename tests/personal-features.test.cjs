@@ -22,7 +22,7 @@ test('screenshot compression revokes temporary URLs on success and read failure'
 });
 function mounted(){
  const fields=new Map();let rows=[],epoch=0,homeShown=false,toast='';
- function el(id){if(!fields.has(id))fields.set(id,{value:'',innerHTML:'',hidden:false,disabled:false,dataset:{},files:[],listeners:{},addEventListener(k,fn){this.listeners[k]=fn},removeAttribute(k){delete this[k]},focus(){},scrollIntoView(){},reset(){for(const [key,v] of fields)if(key.startsWith(id==='weaponPlanForm'?'weaponPlan':'showcase')&&key!==id)v.value=''}});return fields.get(id)}
+ function el(id){if(!fields.has(id))fields.set(id,{value:'',innerHTML:'',hidden:false,disabled:false,dataset:{},files:[],attributes:{},setAttribute(k,v){this.attributes[k]=v},listeners:{},addEventListener(k,fn){this.listeners[k]=fn},removeAttribute(k){delete this[k]},focus(){},scrollIntoView(){},reset(){for(const [key,v] of fields)if(key.startsWith(id==='weaponPlanForm'?'weaponPlan':'showcase')&&key!==id)v.value=''}});return fields.get(id)}
  const win={confirm:()=>true,navigator:{clipboard:{writeText:async()=>{}}},prompt(){}};const doc={getElementById:el,defaultView:win};let ids=0;
  const api=p.mount({document:doc,escape:s=>String(s==null?'':s).replaceAll('<','&lt;'),records:()=>rows,epoch:()=>epoch,quantity:r=>r.starting_quantity||0,uid:()=>String(++ids),commit:changes=>{for(const r of changes){const i=rows.findIndex(x=>x.id===r.id),value={...r,updated_at:'stamp'+ids};if(i<0)rows.push(value);else rows[i]=value}api.render();return true},remove:id=>{rows=rows.filter(r=>r.id!==id);api.render();return true},toast:msg=>toast=msg,openCollections(){},homeShown:()=>homeShown,showHome:()=>{homeShown=true;api.render()}});
  const submit=id=>el(id).onsubmit({preventDefault(){}});const click=dataset=>el('personalFeatures').listeners.click({target:{closest:()=>({dataset})}});
@@ -41,4 +41,12 @@ test('editing a plan rejects unseen remote changes rather than overwriting them'
 
 test('an image finishing after account switching cannot populate the new editor',async()=>{
  const f=mounted();let img;f.win.URL={createObjectURL:()=> 'blob:test',revokeObjectURL(){}};f.win.Image=class{constructor(){img=this;this.width=100;this.height=50}set src(v){}};f.win.document={createElement:()=>({getContext:()=>({drawImage(){}}),toDataURL:()=> 'data:image/jpeg;base64,YQ=='})};f.el('weaponPlanFile').files=[{type:'image/png',size:100}];const pending=f.el('weaponPlanFile').onchange();f.switchWorkspace();img.onload();await pending;assert.equal(f.el('weaponPlanPreview').hidden,true);assert.equal(f.el('saveWeaponPlan').disabled,false);assert.equal(f.el('weaponPlanStatus').textContent,'');
+});
+
+test('top launchers are the only disclosure controls and toggle one panel at a time without losing input',()=>{
+ const f=mounted();assert.equal(f.el('showcaseEditor').hidden,true);assert.equal(f.el('weaponFolder').hidden,true);assert.doesNotMatch(f.el('personalFeatures').innerHTML,/<summary>(个人收藏展柜|武器方案夹)<\/summary>/);
+ f.click({personalOpen:'showcaseEditor'});assert.equal(f.el('showcaseEditor').hidden,false);assert.equal(f.el('showcaseLauncher').attributes['aria-expanded'],'true');
+ f.el('showcaseCaption').value='未保存寄语';f.click({personalOpen:'showcaseEditor'});assert.equal(f.el('showcaseEditor').hidden,true);assert.equal(f.el('showcaseLauncher').attributes['aria-expanded'],'false');
+ f.click({personalOpen:'weaponFolder'});assert.equal(f.el('weaponFolder').hidden,false);f.click({personalOpen:'showcaseEditor'});assert.equal(f.el('weaponFolder').hidden,true);assert.equal(f.el('showcaseCaption').value,'未保存寄语');
+ f.switchWorkspace();assert.equal(f.el('showcaseEditor').hidden,true);assert.equal(f.el('weaponFolder').hidden,true);f.el('homeManageShowcase').onclick();assert.equal(f.el('showcaseEditor').hidden,false);
 });
