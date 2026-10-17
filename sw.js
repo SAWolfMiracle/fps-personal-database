@@ -1,5 +1,5 @@
 // Static shell is small; screenshots, recognition templates and JSON catalogs are loaded on demand.
-const CACHE="fps-db-v6-42-perf-1";
+const CACHE="fps-db-v6-42-home-collections-1";
 const CORE=[
   "./","./index.html","./fitness.css","./manifest.webmanifest","./cloud-config.js",
   "./collection-model.js","./collection-guides.js","./collection-catalog.js",
