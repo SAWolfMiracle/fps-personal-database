@@ -382,3 +382,9 @@ input[type=file]::file-selector-button{border:0;border-radius:7px;padding:7px 10
 .home-drag-ghost.home-pin-manage{background:var(--panel)}
 .home-drag-ghost.home-block{background:var(--bg)}
 @media(prefers-reduced-motion:reduce){.is-sorting,.home-drag-ghost{transition:none!important}}
+
+.app-update-controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:0 0 24px}
+.app-update-controls span{flex-basis:100%;color:var(--muted);font-size:13px}
+.app-update-notice{position:fixed;z-index:1500;top:calc(12px + env(safe-area-inset-top));left:16px;right:16px;max-width:520px;margin:auto;padding:14px 18px;background:#252527;border:1px solid #45454a;border-radius:16px;box-shadow:0 8px 30px #0009;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.app-update-notice[hidden]{display:none}
+.app-update-notice button{white-space:nowrap;color:var(--accent);background:var(--accent-soft);margin:0}

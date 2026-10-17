@@ -322,7 +322,7 @@ body{min-height:100vh;min-height:100svh}
 .guide-sections{display:grid;gap:14px;margin-top:14px}.guide-sections section{border-top:1px solid var(--line);padding-top:12px}.guide-sections h4{font-size:14px;margin:0 0 10px;color:var(--text)}.guide-sections p{font-size:14px;line-height:1.65;margin:8px 0}.guide-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.guide-chips span{border:1px solid var(--line);background:var(--panel3);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.4}.guide-date{font-size:12px!important;line-height:1.6!important;border-top:1px solid var(--line);padding-top:12px}.guide-exchange{margin-bottom:12px}.collection-guide>summary{font-size:15px;line-height:1.6}
 #collectionDetailParking{display:none!important}#collectionDetail{margin:14px 0 0;padding:14px}.collection-detail-slot{min-width:0}
 </style>
-<link rel="stylesheet" href="./fitness.css?rev=home-collections-3">
+<link rel="stylesheet" href="./fitness.css?rev=home-collections-4">
 </head>
 <body>
 <div class="wrap">
@@ -592,6 +592,7 @@ body{min-height:100vh;min-height:100svh}
 
 <section id="data" class="section">
   <p class="app-meta">FPS 个人数据库 <span class="version" id="appVersionLabel">v0.6.42</span></p>
+  <div class="app-update-controls"><button type="button" id="checkAppUpdate">检查更新</button><button type="button" id="reloadApp">重新载入</button><span id="appUpdateStatus" role="status"></span></div>
   <div class="card cloud-card">
     <div class="section-title-row">
       <div><h2 style="margin:0 0 4px">云同步</h2><div class="muted" style="font-size:12px">Supabase · 本地优先 · RLS 用户隔离</div></div>
@@ -707,9 +708,10 @@ body{min-height:100vh;min-height:100svh}
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
-<script src="./home-dashboard.js?rev=home-collections-3"></script>
+<script src="./home-dashboard.js?rev=home-collections-4"></script>
 <script src="./collection-duplicates.js"></script>
 <script src="./cloud-config.js"></script>
+<script src="./app-updates.js?rev=home-collections-4"></script>
 <script>
 (function(){
 "use strict";
@@ -2099,11 +2101,7 @@ lazyTool("ocrTool","./ocr-import.js","ocrStatus","ocrFile",function(){
 
 migrateLegacyWorkspace();loadWorkspace("guest");makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();restoreDraft();bootCloudSdk();
 
-if("serviceWorker" in navigator){
-  window.addEventListener("load",function(){
-    navigator.serviceWorker.register("./sw.js").then(function(reg){reg.update()}).catch(function(){});
-  })
-}
+window.FPSUpdates.start({build:"fps-db-v6-42-home-collections-4",beforeReload:saveDraftNow});
 })();
 </script>
 </body>

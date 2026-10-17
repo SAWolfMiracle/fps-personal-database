@@ -1,10 +1,10 @@
 // Static shell is small; screenshots, recognition templates and JSON catalogs are loaded on demand.
-const CACHE="fps-db-v6-42-home-collections-3";
+const CACHE="fps-db-v6-42-home-collections-4";
 const CORE=[
-  "./","./index.html","./fitness.css?rev=home-collections-3","./manifest.webmanifest","./cloud-config.js",
+  "./","./index.html","./fitness.css?rev=home-collections-4","./manifest.webmanifest","./cloud-config.js",
   "./collection-model.js","./collection-guides.js","./collection-catalog.js",
-  "./inventory.js","./home-dashboard.js?rev=home-collections-3","./collection-duplicates.js",
-  "./icon-192.png","./icon-512.png","./icon-180.png"
+  "./inventory.js","./home-dashboard.js?rev=home-collections-4","./collection-duplicates.js",
+  "./app-updates.js?rev=home-collections-4","./icon-192.png","./icon-512.png","./icon-180.png"
 ];
 const OPTIONAL=["./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./collection-catalog.json"];
 const MODEL_VIEWER_URL="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
@@ -77,4 +77,10 @@ self.addEventListener("fetch",event=>{
       return response;
     })());
   }
+});
+
+// Let a running page detect that its controller contains a newer interface.
+self.addEventListener("message",event=>{
+  if(event.data&&event.data.type==="GET_BUILD"&&event.ports&&event.ports[0])event.ports[0].postMessage({build:CACHE});
+  if(event.data&&event.data.type==="SKIP_WAITING")self.skipWaiting();
 });
