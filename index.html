@@ -322,7 +322,7 @@ body{min-height:100vh;min-height:100svh}
 .guide-sections{display:grid;gap:14px;margin-top:14px}.guide-sections section{border-top:1px solid var(--line);padding-top:12px}.guide-sections h4{font-size:14px;margin:0 0 10px;color:var(--text)}.guide-sections p{font-size:14px;line-height:1.65;margin:8px 0}.guide-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.guide-chips span{border:1px solid var(--line);background:var(--panel3);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.4}.guide-date{font-size:12px!important;line-height:1.6!important;border-top:1px solid var(--line);padding-top:12px}.guide-exchange{margin-bottom:12px}.collection-guide>summary{font-size:15px;line-height:1.6}
 #collectionDetailParking{display:none!important}#collectionDetail{margin:14px 0 0;padding:14px}.collection-detail-slot{min-width:0}
 </style>
-<link rel="stylesheet" href="./fitness.css?rev=home-collections-5">
+<link rel="stylesheet" href="./fitness.css?rev=personal-space-1">
 </head>
 <body>
 <div class="wrap">
@@ -358,9 +358,10 @@ body{min-height:100vh;min-height:100svh}
     <div class="home-block recent-block"><div class="section-title-row"><h2>最近对局</h2><button class="btn ghost" id="homeViewRecords">查看全部</button></div><div id="recent"></div></div>
     <div class="home-block"><div class="section-title-row"><h2>最近时段</h2><span class="muted" id="sessionCount"></span></div><div id="sessionOverview"></div></div>
   </div>
+  <section class="home-block" id="homeShowcase" data-home-module="showcase" hidden><div class="section-title-row"><h2>个人收藏展柜</h2><button class="btn ghost" id="homeManageShowcase">布置展柜</button><button class="home-drag-handle" data-home-drag="showcase" aria-label="长按拖动个人收藏展柜">⠿</button></div><div id="homeShowcaseList"></div></section>
   <div id="homePinnedCollections"></div>
   </div>
-  <details class="card home-custom"><summary>自定义主页</summary><p class="muted">长按 ⠿ 拖动排序，或使用上移、下移。</p><div class="home-config-toggles"><label><input id="homeShowMatches" type="checkbox"> 显示对局模块</label><label><input id="homeShowCollections" type="checkbox"> 显示收藏摘要</label></div><div class="home-add-set"><div class="field"><label for="homePinGroup">置顶专项收集</label><select id="homePinGroup"></select></div><button class="btn" id="homePinAdd">添加到主页</button></div><details class="home-help"><summary>合集与保存说明</summary><p class="muted">可在收藏物品编辑页填写「专项收集」来创建自定义合集。主题合集按内置目录统计，历史活动物品不代表目前仍可获取。最多置顶 12 项；布局按账号与访客分别保存在本机。</p></details><div id="homePinManage"></div></details>
+  <details class="card home-custom"><summary>自定义主页</summary><p class="muted">长按 ⠿ 拖动排序，或使用上移、下移。</p><div class="home-config-toggles"><label><input id="homeShowMatches" type="checkbox"> 显示对局模块</label><label><input id="homeShowCollections" type="checkbox"> 显示收藏摘要</label><label><input id="homeShowcaseToggle" type="checkbox"> 显示个人收藏展柜</label></div><div class="home-add-set"><div class="field"><label for="homePinGroup">置顶专项收集</label><select id="homePinGroup"></select></div><button class="btn" id="homePinAdd">添加到主页</button></div><details class="home-help"><summary>合集与保存说明</summary><p class="muted">可在收藏物品编辑页填写「专项收集」来创建自定义合集。主题合集按内置目录统计，历史活动物品不代表目前仍可获取。最多置顶 12 项；布局按账号与访客分别保存在本机。</p></details><div id="homePinManage"></div></details>
 </section>
 
 <section id="add" class="section">
@@ -515,6 +516,7 @@ body{min-height:100vh;min-height:100svh}
 
 <section id="collections" class="section">
   <div class="section-title-row"><div><h2 style="margin:0 0 6px">收藏簿</h2><div class="muted">收藏品、任务物品、皮肤与装备，都可以在这里记录。</div></div><button class="btn" id="newCollectionBtn">新增物品</button></div>
+  <div id="personalFeatures"></div>
   <div id="collectionStats" class="collection-stats"></div><p id="collectionDuplicateInfo" class="muted"></p>
   <div class="card">
     <div class="collection-fields">
@@ -708,10 +710,11 @@ body{min-height:100vh;min-height:100svh}
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
-<script src="./home-dashboard.js?rev=home-collections-5"></script>
-<script src="./collection-duplicates.js"></script>
+<script src="./home-dashboard.js?rev=personal-space-1"></script>
+<script src="./collection-duplicates.js?rev=personal-space-1"></script>
+<script src="./personal-features.js?rev=personal-space-1"></script>
 <script src="./cloud-config.js"></script>
-<script src="./app-updates.js?rev=home-collections-5"></script>
+<script src="./app-updates.js?rev=personal-space-1"></script>
 <script>
 (function(){
 "use strict";
@@ -728,7 +731,7 @@ var CLOUD_AUTO_KEY="fps_cloud_auto_v1";
 var tabs=[
   ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","collection","收藏"],["data","settings","数据"]
 ];
-var records=[];
+var records=[],personalFeatures=null;
 var screenshotImporter=null,warehouseImporter=null,collectionSelection=new Set(),pendingEmailOtp=null;
 var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null,inventoryEditingId=null;
 var collectionCatalog=null,collectionCatalogPromise=null,catalogLoading=false,collectionVisibleLimit=24;
@@ -762,7 +765,7 @@ function sessionLabel(){
   return y+"-"+m+"-"+day+" "+daypart();
 }
 
-function matchRecords(){return records.filter(function(r){return r.kind!=="collection"})}
+function matchRecords(){return records.filter(function(r){return r.kind!=="collection"&&r.kind!=="weapon_plan"})}
 function collectionRecords(){return records.filter(function(r){return r.kind==="collection"})}
 function collectionQuantity(r){return window.FPSInventory.quantity(r)}
 function collectionStatus(r){var n=collectionQuantity(r);return n===0?((r.starting_quantity||(r.acquisitions||[]).length||(r.inventory_events||[]).length)?"当前无库存":"未获得"):n>=r.target?"已集齐":"已获得"}
@@ -785,7 +788,8 @@ function migrateRecord(r){
   if(x.cloud_revision==null)x.cloud_revision=0;
   if(x.cloud_server_updated_at==null)x.cloud_server_updated_at="";
   if(x.local_dirty==null)x.local_dirty=x.cloud_revision?false:true;
-  x.kind=x.kind==="collection"?"collection":"match";
+  x.kind=x.kind==="collection"?"collection":x.kind==="weapon_plan"?"weapon_plan":"match";
+  if(x.kind==="weapon_plan"){Object.assign(x,window.FPSPersonal.normalizePlan(Object.assign({},x,{name:x.name||"未命名方案",weapon:x.weapon||"未填写武器",budget:x.budget!=null&&Number.isFinite(Number(x.budget))&&Number(x.budget)>=0&&Number(x.budget)<=1e12?x.budget:null})))}
   if(x.kind==="collection"){
     x.target=Math.max(1,Math.floor(num(x.target)||1));x.image=imageURL(x.image);
     x.starting_quantity=Number.isSafeInteger(Number(x.starting_quantity))&&Number(x.starting_quantity)>=0?Number(x.starting_quantity):0;
@@ -1128,7 +1132,7 @@ function quickDeckAcquireMany(ids,quantity){
 function homePreferences(){try{return window.FPSHome.settings(JSON.parse(localStorage.getItem("fps_home_"+activeWorkspace)||"null"))}catch(e){return window.FPSHome.settings(null)}}
 function saveHomePreferences(prefs){try{localStorage.setItem("fps_home_"+activeWorkspace,JSON.stringify(window.FPSHome.settings(prefs)));renderDashboard();return true}catch(e){showToast("主页设置保存失败，请检查本机存储");return false}}
 function openHomeCollection(group,name){switchTab("collections");["collectionFilterGame","collectionFilterCategory","collectionFilterGrade","collectionFilterStatus"].forEach(function(id){$(id).value=""});$("collectionFilterGroup").value=group;$("collectionSearch").value=name||"";renderCollections();$("collectionSearch").scrollIntoView({behavior:"smooth",block:"center"})}
-function homeModuleName(key){return {matches:'对局表现',collections:'收藏进度',recent:'对局详情'}[key]||key.slice(4)}
+function homeModuleName(key){return {matches:'对局表现',collections:'收藏进度',recent:'对局详情',showcase:'个人收藏展柜'}[key]||key.slice(4)}
 function homeDragHandle(key){return '<button class="home-drag-handle" data-home-drag="'+esc(key)+'" aria-label="长按拖动 '+esc(homeModuleName(key))+'">⠿</button>'}
 function applyHomeOrder(keys,motion){
  var nodes=Array.from(document.querySelectorAll('[data-home-module],[data-home-order-row]')),animate=motion&&motion.animate&&!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -1150,7 +1154,7 @@ function homeCollectionIcon(name){
  return '<div class="theme-art theme-art-'+icon[0]+'" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round">'+icon[1]+'</svg></div>';
 }
 function renderHomePins(prefs,list){
- $('homeShowMatches').checked=prefs.matches;$('homeShowCollections').checked=prefs.collections;
+ $('homeShowMatches').checked=prefs.matches;$('homeShowCollections').checked=prefs.collections;$('homeShowcaseToggle').checked=!!prefs.showcase;$('homeShowcase').hidden=!prefs.showcase;
  var groups=uniq(['阿萨拉牌'].concat(window.FPSHome.themes.map(function(t){return t.name}),list.map(function(r){return window.FPSCatalog.group(r)})).filter(Boolean));populate('homePinGroup',groups,'选择要展示的合集');
  var order=window.FPSHome.layout(prefs);
  $('homePinManage').innerHTML=order.map(function(key,i){return '<div class="home-pin-manage" data-home-order-row="'+esc(key)+'">'+homeDragHandle(key)+'<b>'+esc(homeModuleName(key))+'</b><button class="btn ghost" data-home-step="-1" data-home-key="'+esc(key)+'" '+(i===0?'disabled':'')+' aria-label="上移 '+esc(homeModuleName(key))+'">上移</button><button class="btn ghost" data-home-step="1" data-home-key="'+esc(key)+'" '+(i===order.length-1?'disabled':'')+' aria-label="下移 '+esc(homeModuleName(key))+'">下移</button>'+(key.indexOf('pin:')===0?'<button class="btn ghost" data-home-remove="'+esc(key.slice(4))+'" aria-label="移除 '+esc(homeModuleName(key))+'">移除</button>':'')+'</div>'}).join('');
@@ -1535,7 +1539,7 @@ function applyRemoteRow(row){
   var incoming=remoteToLocal(row);if(idx>=0)records[idx]=incoming;else records.push(incoming);removeTombstone(row.id)
 }
 async function pushRecordWithRevision(r,share){
-  var result=await cloudClient.rpc("sync_fps_record",{p_id:r.id,p_payload:cloudPayload(r),p_share_community:r.kind==="collection"?false:share,p_base_revision:num(r.cloud_revision),p_deleted:false});
+  var result=await cloudClient.rpc("sync_fps_record",{p_id:r.id,p_payload:cloudPayload(r),p_share_community:r.kind==="match"?share:false,p_base_revision:num(r.cloud_revision),p_deleted:false});
   if(result.error)throw result.error;return result.data&&result.data[0]?result.data[0]:null
 }
 async function pushDeleteWithRevision(t){
@@ -1571,7 +1575,7 @@ async function cloudSync(opts){
     var share=communityEnabled();
     records.forEach(function(rec){
       var row=remoteMap[rec.id];
-      if(row&&!!row.share_community!==(rec.kind==="collection"?false:share))rec.local_dirty=true
+      if(row&&!!row.share_community!==(rec.kind==="match"?share:false))rec.local_dirty=true
     });
     var dirty=records.filter(function(r){return r.local_dirty});
     for(var i=0;i<dirty.length;i++){
@@ -1678,7 +1682,7 @@ function requestBulkDelete(scope){
   if(!targets.length){showToast("没有可删除的记录");return}
   pendingBulkDelete={ids:targets.map(function(r){return r.id}),workspace:activeWorkspace,epoch:workspaceEpoch};
   $("deleteConfirmTitle").textContent=scope==="all"?"清空当前工作区":scope==="collections"?"删除全部收藏":scope==="selected"?"删除选中物品":"删除筛选结果";
-  $("deleteConfirmText").textContent="将删除 "+targets.length+" 条"+(scope==="all"?"对局及收藏记录。":"收藏记录（含物品的获取明细和库存变动）。")+(scope==="filtered"?"包括符合筛选条件但尚未加载显示的物品。":"")+"建议先导出 JSON 备份。";
+  $("deleteConfirmText").textContent="将删除 "+targets.length+" 条"+(scope==="all"?"对局、收藏及武器方案记录。":"收藏记录（含物品的获取明细和库存变动）。")+(scope==="filtered"?"包括符合筛选条件但尚未加载显示的物品。":"")+"建议先导出 JSON 备份。";
   $("deleteConfirm").hidden=false;$("deleteConfirmCancel").focus();
 }
 function confirmBulkDelete(){
@@ -1997,7 +2001,17 @@ function exportCollectionCSV(){
   download(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),"fps-collections.csv");
 }
 
-function renderAll(){renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel()}
+function commitPersonal(changes,removeId){
+  var previous=records,previousTombs=cloudTombstones,stamp=isoNow();
+  try{
+    var next=records.slice(),tombs=cloudTombstones.slice();
+    if(removeId){var removed=next.find(function(r){return r.id===removeId&&r.kind==="weapon_plan"});if(!removed)throw Error("方案已不存在");next=next.filter(function(r){return r.id!==removeId});tombs=tombs.filter(function(t){return t.id!==removeId});tombs.push({id:removeId,cloud_revision:num(removed.cloud_revision),local_dirty:true})}
+    changes.forEach(function(candidate){var i=next.findIndex(function(r){return r.id===candidate.id}),old=i<0?null:next[i];if(candidate.kind!=="weapon_plan"&&!(candidate.kind==="collection"&&old&&old.kind==="collection"))throw Error("不支持的记录类型");var x=migrateRecord(Object.assign({},candidate,{updated_at:stamp,local_dirty:true,cloud_revision:old?old.cloud_revision:0,cloud_server_updated_at:old?old.cloud_server_updated_at:""}));if(i<0)next.unshift(x);else next[i]=x});
+    records=next;cloudTombstones=tombs;persist();
+  }catch(err){records=previous;cloudTombstones=previousTombs;try{persist()}catch(ignore){}showToast("保存失败，未更改内容。请检查本机存储空间。");return false}
+  renderAll();scheduleCloudSync();return true;
+}
+function renderAll(){renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel();if(personalFeatures)personalFeatures.render()}
 
 $("deleteFilteredCollectionsBtn").addEventListener("click",function(){requestBulkDelete("filtered")});
 $("cleanupCollectionDuplicatesBtn").addEventListener("click",requestDuplicateCleanup);
@@ -2099,9 +2113,11 @@ lazyTool("ocrTool","./ocr-import.js","ocrStatus","ocrFile",function(){
 }});
 });
 
+personalFeatures=window.FPSPersonal.mount({escape:esc,records:function(){return records},epoch:function(){return workspaceEpoch},quantity:collectionQuantity,uid:uid,commit:function(rows){return commitPersonal(rows)},remove:function(id){return commitPersonal([],id)},toast:showToast,openCollections:function(){switchTab("collections")},homeShown:function(){return !!homePreferences().showcase},showHome:function(){var p=homePreferences();p.showcase=true;saveHomePreferences(p);personalFeatures.render()}});
+$("homeShowcaseToggle").onchange=function(){var p=homePreferences();p.showcase=this.checked;saveHomePreferences(p);personalFeatures.render()};
 migrateLegacyWorkspace();loadWorkspace("guest");makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();restoreDraft();bootCloudSdk();
 
-window.FPSUpdates.start({build:"fps-db-v6-42-home-collections-5",beforeReload:saveDraftNow});
+window.FPSUpdates.start({build:"fps-db-v6-42-personal-space-1",beforeReload:saveDraftNow});
 })();
 </script>
 </body>
