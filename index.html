@@ -702,8 +702,6 @@ body{min-height:100vh;min-height:100svh}
 <div id="deleteConfirm" class="delete-confirm" hidden><section class="card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle"><h2 id="deleteConfirmTitle">确认删除</h2><p id="deleteConfirmText"></p><p class="muted">仅影响当前工作区。删除后可在 10 秒内撤销；账号开启同步时，删除也会同步到云端。</p><div class="actions"><button class="btn" id="deleteConfirmCancel">取消删除</button><button class="btn danger" id="deleteConfirmAccept">确认删除</button></div></section></div>
 <div class="toast" id="toast"><span id="toastText"></span><button id="toastAction" hidden>撤销</button></div>
 
-<script src="./ocr-import.js"></script>
-<script src="./warehouse-import.js"></script>
 <script src="./collection-model.js"></script>
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
@@ -711,7 +709,6 @@ body{min-height:100vh;min-height:100svh}
 <script src="./home-dashboard.js"></script>
 <script src="./collection-duplicates.js"></script>
 <script src="./cloud-config.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2"></script>
 <script>
 (function(){
 "use strict";
@@ -1356,6 +1353,22 @@ function activateWorkspaceForUser(user){
   saveDraftNow();if(screenshotImporter)screenshotImporter.clear();if(warehouseImporter)warehouseImporter.clear();activeWorkspace=next;loadWorkspace(next);editingId=null;collectionSelectedId=null;deletedSnapshot=null;hideToast();resetCollectionForm();resetAcquisitionForm();resetInventoryForm();
   clearForm(false,false);renderAll();restoreDraft()
 }
+function bootCloudSdk(){
+  if(!cloudConfigured())return;
+  if(window.supabase&&typeof window.supabase.createClient==="function"){initCloud();return}
+  setCloudBadge("云服务加载中","cloud-off");
+  setCloudMessage("云同步组件正在后台加载；本地数据与页面操作不受影响。");
+  var script=document.createElement("script");
+  script.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2";
+  script.async=true;
+  script.onload=function(){initCloud()};
+  script.onerror=function(){
+    setCloudBadge("SDK 加载失败","cloud-error");
+    setCloudMessage("云同步组件下载失败；本地功能仍可使用，请检查网络后刷新重试。");
+  };
+  document.head.appendChild(script);
+}
+
 async function initCloud(){
   renderCloudPanel();if(!cloudConfigured())return;
   if(!window.supabase||typeof window.supabase.createClient!=="function"){setCloudBadge("SDK 加载失败","cloud-error");setCloudMessage("Supabase SDK 未能加载；本地数据库不受影响。");return}
@@ -2006,19 +2019,47 @@ $("communityOptIn").addEventListener("change",function(){
 window.addEventListener("online",function(){renderCloudPanel();scheduleCloudSync(300);refreshCommunityStats()});
 window.addEventListener("offline",renderCloudPanel);
 
-if(window.FPSWarehouse)warehouseImporter=window.FPSWarehouse.mount({onSave:function(catalog,review,hash){
+function lazyTool(panelId,source,statusId,fileId,onReady){
+  var panel=$(panelId),loading=false,loaded=false;
+  panel.addEventListener("toggle",function(){
+    if(!panel.open||loading||loaded)return;
+    loading=true;
+    var status=$(statusId),file=$(fileId);
+    file.disabled=true;
+    status.textContent="正在加载识别工具…";
+    var script=document.createElement("script");
+    script.async=true;
+    script.src=source;
+    script.onload=function(){
+      loading=false;
+      try{onReady();loaded=true;file.disabled=false}
+      catch(err){status.textContent="识别工具初始化失败，请收起后重试："+(err&&err.message||"未知错误")}
+    };
+    script.onerror=function(){
+      loading=false;
+      status.textContent="工具下载失败；请检查网络，收起后重新打开重试。";
+    };
+    document.head.appendChild(script);
+  });
+}
+
+lazyTool("warehouseTool","./warehouse-import.js","warehouseStatus","warehouseFile",function(){
+  warehouseImporter=window.FPSWarehouse.mount({onSave:function(catalog,review,hash){
   var plan=window.FPSWarehouse.plan(catalog,review,records,hash,uid,isoNow()),previous=records;
   var updates=new Map(plan.updated.map(function(r){return [r.id,r]}));records=plan.added.map(migrateRecord).concat(records.map(function(r){return updates.has(r.id)?migrateRecord(updates.get(r.id)):r}));
   try{localStorage.setItem(workspaceRecordsKey(),JSON.stringify(records))}catch(e){records=previous;throw Error("空间不足，未保存。请先导出备份并释放空间。")}
   renderAll();scheduleCloudSync();return "已新增 "+plan.added.length+" 件，更新未获得目录 "+plan.updated.length+" 件；合并跨图重复候选 "+plan.duplicates+" 个；跳过已有库存、获取历史或重复截图 "+plan.skipped.length+" 件"+(plan.skipped.length?"（"+plan.skipped.join("、")+"）":"");
 }});
+});
 
-if(window.FPSOCR)screenshotImporter=window.FPSOCR.mount({onSave:function(data){
+lazyTool("ocrTool","./ocr-import.js","ocrStatus","ocrFile",function(){
+  screenshotImporter=window.FPSOCR.mount({onSave:function(data){
   if(data.import_hash&&records.some(function(r){return r.import_hash===data.import_hash&&r.kind===data.kind&&(data.kind!=="collection"||r.name===data.name)})){showToast("此截图的这条记录已导入，未重复保存");return false}
   data.id=uid();data.ts=Date.now();data.time=nowLabel();records.unshift(migrateRecord(data));saveAndRender();showToast("截图识别记录已保存");return true;
 }});
+});
 
-migrateLegacyWorkspace();loadWorkspace("guest");makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();restoreDraft();initCloud();
+migrateLegacyWorkspace();loadWorkspace("guest");makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();restoreDraft();bootCloudSdk();
 
 if("serviceWorker" in navigator){
   window.addEventListener("load",function(){
