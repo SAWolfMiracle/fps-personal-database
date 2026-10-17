@@ -388,3 +388,18 @@ input[type=file]::file-selector-button{border:0;border-radius:7px;padding:7px 10
 .app-update-notice{position:fixed;z-index:1500;top:calc(12px + env(safe-area-inset-top));left:16px;right:16px;max-width:520px;margin:auto;padding:14px 18px;background:#252527;border:1px solid #45454a;border-radius:16px;box-shadow:0 8px 30px #0009;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .app-update-notice[hidden]{display:none}
 .app-update-notice button{white-space:nowrap;color:var(--accent);background:var(--accent-soft);margin:0}
+
+/* Account identifiers and timestamps must never size the grid tracks. */
+.cloud-card>.section-title-row{flex-wrap:wrap;align-items:flex-start;gap:12px 16px}
+.cloud-card>.section-title-row>div{flex:1 1 180px;min-width:0}
+.cloud-badge{flex:0 0 auto;max-width:100%;overflow-wrap:anywhere}
+.cloud-info{background:var(--panel2);border-color:var(--line)}
+.cloud-info b{line-height:1.5;font-variant-numeric:tabular-nums}
+.cloud-message{overflow-wrap:anywhere}
+@media(max-width:600px){
+ .cloud-grid{gap:12px}
+ .cloud-info{padding:14px}
+ .cloud-info:nth-child(-n+2){grid-column:1/-1}
+ .cloud-info span{font-size:11px}
+ .cloud-info b{font-size:14px}
+}

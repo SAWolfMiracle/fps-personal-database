@@ -240,9 +240,9 @@ tbody tr:hover td{background:#101821}
 .cloud-badge:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .cloud-off{color:#9aa7b7;background:#111821}.cloud-ready{color:var(--good);background:var(--good-soft);border-color:#2b5a45}
 .cloud-busy{color:var(--warn);background:var(--warn-soft);border-color:#5a4d29}.cloud-error{color:var(--bad);background:var(--bad-soft);border-color:#663940}
-.cloud-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
-.cloud-info{background:#0d141c;border:1px solid var(--line);border-radius:11px;padding:11px}
-.cloud-info span{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}.cloud-info b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cloud-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:16px}
+.cloud-info{min-width:0;background:#0d141c;border:1px solid var(--line);border-radius:11px;padding:11px}
+.cloud-info span{display:block;color:var(--muted);font-size:10px;margin-bottom:5px}.cloud-info b{display:block;min-width:0;font-size:13px;white-space:normal;overflow-wrap:anywhere}
 .cloud-auth{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}.cloud-email-field{max-width:440px}.cloud-actions{margin-top:9px}
 .cloud-toggles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
 .toggle-row{display:flex;gap:10px;align-items:flex-start;background:#0d141c;border:1px solid var(--line);border-radius:11px;padding:11px;cursor:pointer}
@@ -250,7 +250,7 @@ tbody tr:hover td{background:#101821}
 .toggle-row small{display:block;color:var(--muted);font-size:10px;line-height:1.45;margin-top:3px}.cloud-message{margin-top:12px;font-size:11px;line-height:1.55}
 .community-row{display:grid;grid-template-columns:minmax(120px,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
 .community-row:last-child{border-bottom:0}.community-row .muted{font-size:11px}
-@media(max-width:800px){.cloud-grid{grid-template-columns:1fr 1fr}.cloud-toggles{grid-template-columns:1fr}.cloud-actions{display:grid;grid-template-columns:1fr 1fr}.cloud-actions .btn{width:100%;min-width:0}}
+@media(max-width:800px){.cloud-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.cloud-toggles{grid-template-columns:1fr}.cloud-actions{display:grid;grid-template-columns:1fr 1fr}.cloud-actions .btn{width:100%;min-width:0}}
 @media(max-width:520px){.cloud-actions{grid-template-columns:1fr}}
 
 
@@ -322,7 +322,7 @@ body{min-height:100vh;min-height:100svh}
 .guide-sections{display:grid;gap:14px;margin-top:14px}.guide-sections section{border-top:1px solid var(--line);padding-top:12px}.guide-sections h4{font-size:14px;margin:0 0 10px;color:var(--text)}.guide-sections p{font-size:14px;line-height:1.65;margin:8px 0}.guide-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.guide-chips span{border:1px solid var(--line);background:var(--panel3);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.4}.guide-date{font-size:12px!important;line-height:1.6!important;border-top:1px solid var(--line);padding-top:12px}.guide-exchange{margin-bottom:12px}.collection-guide>summary{font-size:15px;line-height:1.6}
 #collectionDetailParking{display:none!important}#collectionDetail{margin:14px 0 0;padding:14px}.collection-detail-slot{min-width:0}
 </style>
-<link rel="stylesheet" href="./fitness.css?rev=home-collections-4">
+<link rel="stylesheet" href="./fitness.css?rev=home-collections-5">
 </head>
 <body>
 <div class="wrap">
@@ -708,10 +708,10 @@ body{min-height:100vh;min-height:100svh}
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
-<script src="./home-dashboard.js?rev=home-collections-4"></script>
+<script src="./home-dashboard.js?rev=home-collections-5"></script>
 <script src="./collection-duplicates.js"></script>
 <script src="./cloud-config.js"></script>
-<script src="./app-updates.js?rev=home-collections-4"></script>
+<script src="./app-updates.js?rev=home-collections-5"></script>
 <script>
 (function(){
 "use strict";
@@ -2101,7 +2101,7 @@ lazyTool("ocrTool","./ocr-import.js","ocrStatus","ocrFile",function(){
 
 migrateLegacyWorkspace();loadWorkspace("guest");makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();restoreDraft();bootCloudSdk();
 
-window.FPSUpdates.start({build:"fps-db-v6-42-home-collections-4",beforeReload:saveDraftNow});
+window.FPSUpdates.start({build:"fps-db-v6-42-home-collections-5",beforeReload:saveDraftNow});
 })();
 </script>
 </body>

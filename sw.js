@@ -1,10 +1,10 @@
 // Static shell is small; screenshots, recognition templates and JSON catalogs are loaded on demand.
-const CACHE="fps-db-v6-42-home-collections-4";
+const CACHE="fps-db-v6-42-home-collections-5";
 const CORE=[
-  "./","./index.html","./fitness.css?rev=home-collections-4","./manifest.webmanifest","./cloud-config.js",
+  "./","./index.html","./fitness.css?rev=home-collections-5","./manifest.webmanifest","./cloud-config.js",
   "./collection-model.js","./collection-guides.js","./collection-catalog.js",
-  "./inventory.js","./home-dashboard.js?rev=home-collections-4","./collection-duplicates.js",
-  "./app-updates.js?rev=home-collections-4","./icon-192.png","./icon-512.png","./icon-180.png"
+  "./inventory.js","./home-dashboard.js?rev=home-collections-5","./collection-duplicates.js",
+  "./app-updates.js?rev=home-collections-5","./icon-192.png","./icon-512.png","./icon-180.png"
 ];
 const OPTIONAL=["./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./collection-catalog.json"];
 const MODEL_VIEWER_URL="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
