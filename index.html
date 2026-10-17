@@ -322,7 +322,7 @@ body{min-height:100vh;min-height:100svh}
 .guide-sections{display:grid;gap:14px;margin-top:14px}.guide-sections section{border-top:1px solid var(--line);padding-top:12px}.guide-sections h4{font-size:14px;margin:0 0 10px;color:var(--text)}.guide-sections p{font-size:14px;line-height:1.65;margin:8px 0}.guide-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.guide-chips span{border:1px solid var(--line);background:var(--panel3);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.4}.guide-date{font-size:12px!important;line-height:1.6!important;border-top:1px solid var(--line);padding-top:12px}.guide-exchange{margin-bottom:12px}.collection-guide>summary{font-size:15px;line-height:1.6}
 #collectionDetailParking{display:none!important}#collectionDetail{margin:14px 0 0;padding:14px}.collection-detail-slot{min-width:0}
 </style>
-<link rel="stylesheet" href="./fitness.css?rev=home-collections-1">
+<link rel="stylesheet" href="./fitness.css?rev=home-collections-2">
 </head>
 <body>
 <div class="wrap">
@@ -361,7 +361,7 @@ body{min-height:100vh;min-height:100svh}
   </div>
   <div id="homePinnedCollections"></div>
   </div>
-  <details class="card home-custom"><summary>自定义主页<span class="custom-chevron" aria-hidden="true">⌄</span></summary><p class="muted">长按卡片或下方列表的 ⠿ 拖动排序，也可使用上移、下移。布局按账号与访客分别保存在本机。</p><div class="home-config-toggles"><label><input id="homeShowMatches" type="checkbox"> 显示对局模块</label><label><input id="homeShowCollections" type="checkbox"> 显示收藏摘要</label></div><div class="field"><label for="homePinGroup">置顶专项收集</label><select id="homePinGroup"></select></div><button class="btn" id="homePinAdd">添加到主页</button><p class="muted">自定义专项：在收藏物品的编辑页填写「专项收集」，然后在这里置顶。主题合集按内置目录统计，部分物品来自历史活动，不代表目前仍可获取。最多置顶 12 项。</p><div id="homePinManage"></div></details>
+  <details class="card home-custom"><summary>自定义主页<span class="custom-chevron" aria-hidden="true">⌄</span></summary><p class="muted">长按 ⠿ 拖动排序，或使用上移、下移。</p><div class="home-config-toggles"><label><input id="homeShowMatches" type="checkbox"> 显示对局模块</label><label><input id="homeShowCollections" type="checkbox"> 显示收藏摘要</label></div><div class="home-add-set"><div class="field"><label for="homePinGroup">置顶专项收集</label><select id="homePinGroup"></select></div><button class="btn" id="homePinAdd">添加到主页</button></div><details class="home-help"><summary>合集与保存说明</summary><p class="muted">可在收藏物品编辑页填写「专项收集」来创建自定义合集。主题合集按内置目录统计，历史活动物品不代表目前仍可获取。最多置顶 12 项；布局按账号与访客分别保存在本机。</p></details><div id="homePinManage"></div></details>
 </section>
 
 <section id="add" class="section">
@@ -708,7 +708,7 @@ body{min-height:100vh;min-height:100svh}
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
-<script src="./home-dashboard.js?rev=home-collections-1"></script>
+<script src="./home-dashboard.js?rev=home-collections-2"></script>
 <script src="./collection-duplicates.js"></script>
 <script src="./cloud-config.js"></script>
 <script>
@@ -1131,12 +1131,24 @@ function homeModuleName(key){return {matches:'对局表现',collections:'收藏�
 function homeDragHandle(key){return '<button class="home-drag-handle" data-home-drag="'+esc(key)+'" aria-label="长按拖动 '+esc(homeModuleName(key))+'">⠿</button>'}
 function applyHomeOrder(keys){document.querySelectorAll('[data-home-module],[data-home-order-row]').forEach(function(e){var key=e.getAttribute('data-home-module')||e.getAttribute('data-home-order-row');e.style.order=String(keys.indexOf(key))})}
 function addThemeCatalog(name){var t=window.FPSHome.theme(name);if(!t)return;var next=records.slice(),stamp=isoNow(),added=0;t.items.forEach(function(item){if(next.some(function(r){return r.kind==='collection'&&/^(三角洲行动|三角洲|delta force)$/i.test(String(r.game||'').trim())&&(r.catalog_item_id?r.catalog_item_id===item.id:r.name===item.name)}))return;next.push(migrateRecord({id:uid(),kind:'collection',game:'三角洲行动',name:item.name,catalog_item_id:item.id,target:1,starting_quantity:0,acquisitions:[],inventory_events:[],import_source:'theme-catalog',updated_at:stamp}));added++});if(!added){showToast('该合集目录已齐全');return}try{localStorage.setItem(workspaceRecordsKey(),JSON.stringify(next))}catch(e){showToast('目录添加失败，未修改库存');return}records=next;renderAll();scheduleCloudSync();showToast('已添加 '+added+' 项未获得目录')}
+function homeCollectionIcon(name){
+ var drawings={
+  '德小兰组装':['model','<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9M8 5.3l8 4.5"/>'],
+  '炫彩收藏':['spark','<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z"/><path d="M20 3v4m-2-2h4"/>'],
+  '角色手办':['figure','<circle cx="12" cy="6.5" r="3.5"/><path d="M5.5 19v-2a6.5 6.5 0 0 1 13 0v2M4 21h16M9 13v6m6-6v6"/>'],
+  '海盗钱币':['coins','<circle cx="10" cy="10" r="7"/><path d="M16.5 7.5a7 7 0 1 1-9 9M8 7.5h3.5m-3.5 5h3.5M10 6v8"/>'],
+  '建筑图纸':['blueprint','<path d="M5 3h12a2 2 0 0 1 2 2v16H7a3 3 0 0 1-3-3V5a2 2 0 0 1 1-2Z"/><path d="M4 18a3 3 0 0 1 3-3h12M8 7h7M8 11h3m3-1v3"/>'],
+  '阵营勋章':['medal','<circle cx="12" cy="9" r="6"/><path d="m8 14-2 7 6-3 6 3-2-7"/><path d="m12 6 .9 1.8 2 .3-1.5 1.4.4 2-1.8-1-1.8 1 .4-2-1.5-1.4 2-.3L12 6Z"/>'],
+  '载具与机械模型':['vehicle','<rect x="3" y="14" width="18" height="6" rx="3"/><path d="M6 14v-4h11l2 4M10 10V6h6v4M16 7h6M7 17h10"/>']
+ },icon=drawings[name]||['custom','<path d="M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v10H3V7Z"/><path d="M8 12h8m-8 4h5"/>'];
+ return '<div class="theme-art theme-art-'+icon[0]+'" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round">'+icon[1]+'</svg></div>';
+}
 function renderHomePins(prefs,list){
  $('homeShowMatches').checked=prefs.matches;$('homeShowCollections').checked=prefs.collections;
  var groups=uniq(['阿萨拉牌'].concat(window.FPSHome.themes.map(function(t){return t.name}),list.map(function(r){return window.FPSCatalog.group(r)})).filter(Boolean));populate('homePinGroup',groups,'选择要展示的合集');
  var order=window.FPSHome.layout(prefs);
  $('homePinManage').innerHTML=order.map(function(key,i){return '<div class="home-pin-manage" data-home-order-row="'+esc(key)+'">'+homeDragHandle(key)+'<b>'+esc(homeModuleName(key))+'</b><button class="btn ghost" data-home-step="-1" data-home-key="'+esc(key)+'" '+(i===0?'disabled':'')+' aria-label="上移 '+esc(homeModuleName(key))+'">上移</button><button class="btn ghost" data-home-step="1" data-home-key="'+esc(key)+'" '+(i===order.length-1?'disabled':'')+' aria-label="下移 '+esc(homeModuleName(key))+'">下移</button>'+(key.indexOf('pin:')===0?'<button class="btn ghost" data-home-remove="'+esc(key.slice(4))+'" aria-label="移除 '+esc(homeModuleName(key))+'">移除</button>':'')+'</div>'}).join('');
- $('homePinnedCollections').innerHTML=prefs.pins.map(function(g,i){var key='pin:'+g;if(g==='阿萨拉牌')return '<article class="card home-pin deck-book" data-home-module="'+esc(key)+'"><div class="pin-sort-bar">'+homeDragHandle(key)+'</div>'+deckBookHTML()+'</article>';var theme=window.FPSHome.theme(g),subset=list.filter(function(r){return window.FPSCatalog.group(r)===g}),p=theme?window.FPSHome.themeProgress(g,list,collectionQuantity):window.FPSHome.progress(subset,collectionQuantity),missing=p.missing||[];return '<article class="card home-pin" data-home-module="'+esc(key)+'"><div class="section-title-row"><h3>'+esc(g)+'</h3>'+homeDragHandle(key)+'</div><p class="home-pin-progress">'+p.complete+' / '+p.total+' 种已集齐</p><div class="collection-progress"><span style="width:'+pct(p.complete,p.total)+'%"></span></div><p class="muted">'+(theme?esc(theme.kind)+' · 按当前内置目录统计':'按你添加到此专项的物品目标统计')+'</p><div class="actions"><button class="btn ghost" data-home-group="'+i+'">查看合集</button>'+(theme?'<button class="btn ghost" data-home-import-set="'+i+'">添加缺失目录</button>':'')+'</div>'+(missing.length?'<details><summary>还缺 '+missing.length+' 种</summary><div class="home-missing">'+missing.map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(n)+'</button>'}).join('')+'</div></details>':'<p class="muted">'+(p.total?'已集齐当前合集':'在收藏编辑中将物品加入此专项')+'</p>')+'</article>'}).join('');
+ $('homePinnedCollections').innerHTML=prefs.pins.map(function(g,i){var key='pin:'+g;if(g==='阿萨拉牌')return '<article class="card home-pin deck-book" data-home-module="'+esc(key)+'"><div class="pin-sort-bar">'+homeDragHandle(key)+'</div>'+deckBookHTML()+'</article>';var theme=window.FPSHome.theme(g),subset=list.filter(function(r){return window.FPSCatalog.group(r)===g}),p=theme?window.FPSHome.themeProgress(g,list,collectionQuantity):window.FPSHome.progress(subset,collectionQuantity),missing=p.missing||[];return '<article class="card home-pin theme-book" data-home-module="'+esc(key)+'"><div class="pin-sort-bar">'+homeDragHandle(key)+'</div><div class="theme-overview">'+homeCollectionIcon(g)+'<div class="theme-copy"><h3>'+esc(g)+'</h3><p class="home-pin-progress"><strong>'+p.complete+'</strong><span> / '+p.total+' 种</span></p><span class="theme-state">'+(missing.length?'还缺 '+missing.length+' 种':p.total?'已集齐当前合集':'尚未添加物品')+'</span></div></div><div class="collection-progress"><span style="width:'+pct(p.complete,p.total)+'%"></span></div><details class="theme-disclosure"><summary><span>查看合集与缺项</span><span class="disclosure-chevron" aria-hidden="true">›</span></summary><div class="theme-details"><div class="theme-actions"><button class="btn" data-home-group="'+i+'">查看合集</button>'+(theme?'<button class="btn" data-home-import-set="'+i+'">添加缺失目录</button>':'')+'</div><p class="muted">'+(theme?esc(theme.kind)+'；按当前内置目录统计。':'按你添加到此专项的物品目标统计。')+'</p>'+(missing.length?'<div class="home-missing">'+missing.map(function(n){return '<button class="btn" data-home-missing-group="'+i+'" data-home-name="'+esc(n)+'">'+esc(n)+'</button>'}).join('')+'</div>':'')+'</div></details></article>'}).join('');
  document.querySelectorAll('[data-home-step]').forEach(function(b){b.onclick=function(){var p=homePreferences(),keys=window.FPSHome.layout(p),key=b.dataset.homeKey,i=keys.indexOf(key),j=i+Number(b.dataset.homeStep);if(j<0||j>=keys.length)return;p.order=window.FPSHome.move(keys,key,keys[j]);saveHomePreferences(p)}});
  document.querySelectorAll('[data-home-remove]').forEach(function(b){b.onclick=function(){var p=homePreferences();p.pins=p.pins.filter(function(g){return g!==b.dataset.homeRemove});saveHomePreferences(p)}});
  document.querySelectorAll('[data-home-group]').forEach(function(b){b.onclick=function(){openHomeCollection(prefs.pins[Number(b.dataset.homeGroup)],'')}});

@@ -304,3 +304,68 @@ tbody tr:hover td{background:#29292d}
 .deck-selected{outline:2px solid var(--accent);outline-offset:-2px;background:#25354a}
 .deck-selected:after{content:'✓';position:absolute;right:4px;top:3px;color:var(--accent);font-size:10px}
 @media(max-width:360px){.home-pin-manage .btn{padding:7px 4px;font-size:10px}.home-pin-manage .home-drag-handle{width:26px;min-width:26px}}
+
+/* Collection books share a visual header; editing and import controls get their own rhythm. */
+.theme-book{position:relative;padding:22px}
+.theme-overview{display:flex;align-items:center;gap:20px;padding-right:30px;min-height:92px}
+.theme-art{width:51px;height:65px;flex:0 0 51px;display:grid;place-items:center;transform:rotate(-7deg);border-radius:9px;background:#30343f;color:#b6c8ec;box-shadow:4px 3px 0 #3d4350}
+.theme-art svg{width:31px;height:31px}
+.theme-art-spark{background:#352d43;color:#d0b5ed;box-shadow:4px 3px 0 #494055}
+.theme-art-coins,.theme-art-medal{background:#393329;color:#d8c08d;box-shadow:4px 3px 0 #4a4439}
+.theme-art-figure{background:#39303a;color:#deb6d3;box-shadow:4px 3px 0 #4c404c}
+.theme-art-blueprint,.theme-art-vehicle{background:#293840;color:#adcfdc;box-shadow:4px 3px 0 #3a4a52}
+.theme-copy{min-width:0;flex:1}
+.home-pin .theme-copy h3{font-size:16px;margin:0 0 4px;line-height:1.5}
+.theme-copy .home-pin-progress{margin:8px 0 4px;line-height:1.25}
+.theme-copy .home-pin-progress strong{font-size:29px;font-weight:600;color:var(--text)}
+.theme-copy .home-pin-progress span{font-size:12px;font-weight:400;color:var(--muted);letter-spacing:0}
+.theme-state{font-size:11px;color:var(--muted)}
+.theme-book>.collection-progress{height:3px;background:#37373c;margin:20px 0 4px}
+.theme-book>.collection-progress>span{background:var(--accent)}
+.home-pin .theme-disclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:14px;min-height:48px;padding:10px 0 0;list-style:none;cursor:pointer;color:var(--accent);font-size:12px}
+.theme-disclosure>summary::-webkit-details-marker{display:none}
+.theme-disclosure[open] .disclosure-chevron{transform:rotate(90deg)}
+.theme-details{padding-top:18px}
+.theme-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.theme-actions .btn{min-height:44px;font-size:12px;padding:9px}
+.theme-details>p.muted{font-size:11px;line-height:1.8;margin:18px 0 0}
+.theme-details .home-missing{margin:18px 0 0;gap:10px}
+.home-custom[open]{padding:20px}
+.home-custom[open]>summary{padding-bottom:14px;border-bottom:1px solid #ffffff0c}
+.home-custom>p.muted{margin:18px 0;font-size:12px;line-height:1.8}
+.home-config-toggles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0 24px}
+.home-config-toggles label{display:flex;align-items:center;gap:10px;min-width:0;min-height:44px;font-size:12px}
+.home-config-toggles input[type=checkbox],.toggle-row input[type=checkbox]{width:18px;height:18px;min-height:18px;max-height:18px;flex:0 0 18px;margin:0;align-self:center}
+.home-add-set{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;margin:0 0 22px}
+.home-custom .home-add-set .field{margin:0}
+.home-add-set .field label{margin-bottom:9px}
+.home-add-set #homePinAdd{min-height:44px;padding:11px 16px}
+.home-help{margin:0 0 24px}
+.home-help>summary{min-height:38px;padding:8px 0;cursor:pointer;color:var(--muted);font-size:12px}
+.home-help p{font-size:11px;line-height:1.9;margin:12px 0 0}
+#homePinManage{margin-top:0}
+.home-pin-manage{column-gap:10px;padding:12px 0}
+#ocrTool>.collection-fields{margin:20px 0;gap:18px}
+#ocrTool>.toggle-row{margin:20px 0;gap:12px;padding:15px;align-items:center;font-size:13px;line-height:1.7}
+#ocrTool>.actions{margin:20px 0;gap:12px}
+#ocrTool>#ocrStatus{font-size:12px;line-height:1.8;margin:18px 0}
+#ocrTool>.field{margin-top:22px}
+#ocrTool input[type=file],#warehouseTool input[type=file]{min-width:0;width:100%;padding:12px;font-size:12px;line-height:1.7;overflow:hidden;text-overflow:ellipsis}
+input[type=file]::file-selector-button{border:0;border-radius:7px;padding:7px 10px;margin-right:12px;background:#414147;color:var(--text);font:inherit;cursor:pointer}
+#data .tool-panel[open]>p.muted{line-height:1.8;margin:18px 0;font-size:12px}
+@media(max-width:600px){
+ .home-add-set{grid-template-columns:minmax(0,1fr);gap:12px}
+ .home-add-set #homePinAdd{width:100%;min-height:44px}
+ .home-pin-manage{display:grid;grid-template-columns:30px repeat(3,minmax(0,1fr));gap:5px 10px;padding:14px 0}
+ .home-pin-manage .home-drag-handle{grid-column:1;grid-row:1/3;align-self:center}
+ .home-pin-manage b{grid-column:2/-1;font-size:13px;line-height:1.6;white-space:normal;overflow-wrap:anywhere}
+ .home-pin-manage>.btn{grid-row:2;min-height:36px;padding:5px 8px;text-align:left;font-size:11px}
+ #ocrTool .collection-fields{grid-template-columns:minmax(0,1fr);gap:18px}
+ #ocrTool>.toggle-row{margin-top:22px}
+ #data .tool-panel .field label{line-height:1.6;margin-bottom:9px}
+}
+@media(max-width:360px){
+ .home-config-toggles{grid-template-columns:minmax(0,1fr);gap:8px}
+ .theme-overview{gap:16px;padding-right:24px}
+ .theme-actions{grid-template-columns:minmax(0,1fr)}
+}
