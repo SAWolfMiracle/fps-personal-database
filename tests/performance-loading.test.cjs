@@ -44,6 +44,7 @@ test("recognition handlers initialize on first expansion, once, with error recov
   const status={textContent:""},file={disabled:false};
   const panel={open:false,addEventListener:(name,fn)=>{assert.equal(name,"toggle");toggle=fn}};
   const ctx={
+    $:id=>({panel,status,file}[id]),
     document:{getElementById:id=>({panel,status,file}[id]),createElement:()=>({}),head:{appendChild:s=>{script=s}}}
   };
   vm.runInNewContext(slice+"\nthis.lazyTool=lazyTool;",ctx);
