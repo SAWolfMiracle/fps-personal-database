@@ -31,3 +31,34 @@ test('scrolling before hold, pointer cancellation and workspace changes do not s
 test('failed drag persistence restores its original presentation',()=>{
  const g=gesture();g.fail();g.fire('pointerdown');g.hold();g.fire('pointermove');g.fire('pointerup');assert.equal(g.saves,1);assert.deepEqual(g.previews.at(-1),['matches','collections','recent']);
 });
+
+function smoothGesture(reduce=false){
+ const frames=new Map(),timers=new Map(),children=new Set(),scrolls=[],animations=[];let counter=0,epoch=1,keys=['matches','collections','recent'],visual=keys.slice(),saves=0,fail=false;
+ const classes=()=>{const values=new Set();return {add:x=>values.add(x),remove:x=>values.delete(x),has:x=>values.has(x)}};
+ const row=(key)=>({classList:classes(),style:{},getAttribute:n=>n==='data-home-module'?key:null,closest(){return this},getBoundingClientRect(){const top=100+visual.indexOf(key)*120;return {left:20,top,bottom:top+100,width:300,height:100}},cloneNode(){const ghost={style:{},classList:classes(),removed:[],querySelectorAll:()=>[{removeAttribute:n=>ghost.removed.push('child:'+n)}],removeAttribute:n=>ghost.removed.push(n),setAttribute(){},remove(){children.delete(ghost)},animate(steps,config){animations.push({steps,config});return {finished:Promise.resolve()}}};return ghost}});
+ const a=row('matches'),b=row('collections'),handle={getAttribute:()=> 'matches',closest:s=>s==='[data-home-drag]'?handle:a,setPointerCapture(){},hasPointerCapture:()=>false};
+ const win={innerHeight:700,matchMedia:()=>({matches:reduce}),setTimeout:f=>{timers.set(++counter,f);return counter},clearTimeout:id=>timers.delete(id),requestAnimationFrame:f=>{frames.set(++counter,f);return counter},cancelAnimationFrame:id=>frames.delete(id),scrollBy:(x,y)=>scrolls.push(y)};
+ const events={},root={contains:()=>true,getBoundingClientRect:()=>({top:0,bottom:1000}),ownerDocument:{defaultView:win,body:{appendChild:g=>children.add(g)},elementFromPoint:()=>b},addEventListener:(n,f)=>events[n]=f,removeEventListener:n=>delete events[n]};
+ home.bindSort(root,{read:()=>({keys:keys.slice(),epoch}),preview:k=>{visual=k.slice()},save:k=>{saves++;if(fail)return false;keys=k.slice();return true}});
+ return {fire:(n,x=50,y=150)=>events[n]({pointerId:3,button:0,target:handle,clientX:x,clientY:y,preventDefault(){}}),hold(){const tasks=[...timers.values()];timers.clear();tasks.forEach(f=>f())},frame(t=16){const jobs=[...frames.values()];frames.clear();jobs.forEach(f=>f(t))},changeWorkspace:()=>epoch++,fail:()=>fail=true,cleanup:()=>root._fpsSortCleanup(),children,frames,scrolls,animations,get keys(){return keys},get visual(){return visual},get saves(){return saves}};
+}
+test('drag overlay follows the pointer on animation frames and lands without duplicate IDs',async()=>{
+ const g=smoothGesture();g.fire('pointerdown');g.hold();assert.equal(g.children.size,1);const ghost=[...g.children][0];assert.ok(ghost.removed.includes('id'));assert.ok(ghost.removed.includes('data-home-module'));assert.ok(ghost.removed.includes('child:id'));assert.equal(ghost.inert,true);
+ g.fire('pointermove',60,280);g.frame();assert.match(ghost.style.transform,/translate3d\(10px,130px,0\)/);assert.deepEqual(g.visual,['collections','matches','recent']);g.frame(32);assert.deepEqual(g.visual,['collections','matches','recent']);g.fire('pointerup',60,280);assert.equal(g.saves,1);assert.equal(g.frames.size,0);assert.equal(g.animations[0].config.duration,180);await Promise.resolve();assert.equal(g.children.size,0);
+});
+test('drag auto-scroll continues between pointer events and cancellation removes transient state',()=>{
+ const g=smoothGesture();g.fire('pointerdown');g.hold();g.fire('pointermove',50,670);g.frame(16);g.frame(32);assert.equal(g.scrolls.length,2);assert.ok(g.scrolls.every(n=>n>0));g.fire('pointercancel');assert.equal(g.children.size,0);assert.equal(g.frames.size,0);assert.equal(g.saves,0);assert.deepEqual(g.visual,['matches','collections','recent']);
+});
+test('failed smooth drops and mid-drag workspace changes restore layout and remove overlays',async()=>{
+ const g=smoothGesture();g.fail();g.fire('pointerdown');g.hold();g.fire('pointermove',60,280);g.frame();g.fire('pointerup',60,280);assert.deepEqual(g.visual,['matches','collections','recent']);await Promise.resolve();assert.equal(g.children.size,0);
+ const changed=smoothGesture();changed.fire('pointerdown');changed.hold();changed.changeWorkspace();changed.frame();assert.equal(changed.children.size,0);assert.equal(changed.frames.size,0);assert.equal(changed.saves,0);
+ const disposed=smoothGesture();disposed.fire('pointerdown');disposed.hold();disposed.cleanup();assert.equal(disposed.children.size,0);assert.equal(disposed.frames.size,0);
+});
+test('reduced-motion drag keeps direct manipulation but skips lift scaling and landing animation',()=>{
+ const g=smoothGesture(true);g.fire('pointerdown');g.hold();const ghost=[...g.children][0];assert.match(ghost.style.transform,/scale\(1\)/);g.fire('pointermove',60,280);g.frame();g.fire('pointerup',60,280);assert.equal(g.animations.length,0);assert.equal(g.children.size,0);assert.equal(g.saves,1);
+});
+test('order preview animates neighbouring slots while leaving the dragged placeholder unanimated',()=>{
+ const fs=require('fs'),vm=require('vm'),html=fs.readFileSync(require('path').join(__dirname,'../index.html'),'utf8');const source=html.slice(html.indexOf('function applyHomeOrder('),html.indexOf('\nfunction addThemeCatalog('));const calls=[];
+ const make=(key,initial)=>({style:{order:String(initial)},getAttribute:n=>n==='data-home-module'?key:null,getBoundingClientRect(){return {left:0,top:Number(this.style.order)*120,width:300,height:100}},animate(steps,config){calls.push({key,steps,config});return {cancel(){}}}});
+ const nodes=[make('matches',0),make('collections',1)],ctx={document:{querySelectorAll:()=>nodes},window:{matchMedia:()=>({matches:false})}};vm.createContext(ctx);vm.runInContext(source,ctx);ctx.applyHomeOrder(['collections','matches'],{animate:true,dragKey:'matches'});assert.equal(calls.length,1);assert.equal(calls[0].key,'collections');assert.match(calls[0].steps[0].transform,/120px/);assert.equal(calls[0].config.duration,210);
+});

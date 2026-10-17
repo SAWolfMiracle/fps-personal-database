@@ -15,14 +15,83 @@ function bindSort(root,options){
  if(!root||!root.addEventListener)return;
  if(root._fpsSortCleanup)root._fpsSortCleanup();
  var doc=root.ownerDocument,win=doc.defaultView,state=null,timer=null;
- function cleanup(restore){win.clearTimeout(timer);timer=null;var old=state;state=null;if(!old)return;if(old.row)old.row.classList.remove('is-sorting');if(old.handle.hasPointerCapture&&old.handle.hasPointerCapture(old.id))old.handle.releasePointerCapture(old.id);if(restore)options.preview(old.original)}
- function down(e){var handle=e.target.closest('[data-home-drag]');if(!handle||!root.contains(handle)||(e.button!=null&&e.button!==0))return;cleanup(true);var current=options.read(),key=handle.getAttribute('data-home-drag');if(current.keys.indexOf(key)<0)return;state={id:e.pointerId,key:key,x:e.clientX,y:e.clientY,original:current.keys.slice(),keys:current.keys.slice(),epoch:current.epoch,handle:handle,row:handle.closest('[data-home-module],[data-home-order-row]'),held:false};timer=win.setTimeout(function(){if(!state||options.read().epoch!==state.epoch){cleanup(true);return}state.held=true;state.row.classList.add('is-sorting');if(handle.setPointerCapture)handle.setPointerCapture(state.id)},340)}
- function moving(e){if(!state||e.pointerId!==state.id)return;if(options.read().epoch!==state.epoch){cleanup(true);return}if(!state.held){if(Math.hypot(e.clientX-state.x,e.clientY-state.y)>10)cleanup(true);return}e.preventDefault();var hit=doc.elementFromPoint(e.clientX,e.clientY),row=hit&&hit.closest('[data-home-module],[data-home-order-row]');if(row&&root.contains(row)){var key=row.getAttribute('data-home-order-row')||row.getAttribute('data-home-module');if(key&&key!==state.key){state.keys=move(state.keys,state.key,key);options.preview(state.keys)}}var rect=root.getBoundingClientRect(),top=Math.max(50,rect.top),bottom=Math.min(win.innerHeight-80,rect.bottom);if(e.clientY<top+35)win.scrollBy(0,-14);else if(e.clientY>bottom-35)win.scrollBy(0,14)}
- function up(e){if(!state||state.id!==e.pointerId)return;var saved=state,commit=saved.held&&options.read().epoch===saved.epoch;cleanup(!commit);if(commit&&options.save(saved.keys,saved.epoch)===false)options.preview(saved.original)}
- function cancel(e){if(state&&(!e||e.pointerId===state.id))cleanup(true)}
+ var reduced=!!(win.matchMedia&&win.matchMedia('(prefers-reduced-motion: reduce)').matches);
+ function preview(keys,key){options.preview(keys,{animate:!reduced,dragKey:key})}
+ function removeGhost(ghost){if(ghost&&ghost.remove)ghost.remove()}
+ function land(ghost,rect){
+  if(!ghost)return;
+  if(reduced||!rect||!ghost.animate){removeGhost(ghost);return}
+  var end='translate3d('+(rect.left-ghost._origin.left)+'px,'+(rect.top-ghost._origin.top)+'px,0) scale(1)';
+  var animation=ghost.animate([{transform:ghost.style.transform},{transform:end}],{duration:180,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+  animation.finished.then(function(){removeGhost(ghost)},function(){removeGhost(ghost)});
+ }
+ function cleanup(restore,keepGhost){
+  win.clearTimeout(timer);timer=null;var old=state;state=null;if(!old)return null;
+  if(old.frame!=null&&win.cancelAnimationFrame)win.cancelAnimationFrame(old.frame);
+  if(old.row)old.row.classList.remove('is-sorting');
+  if(old.handle.hasPointerCapture&&old.handle.hasPointerCapture(old.id))old.handle.releasePointerCapture(old.id);
+  if(restore)preview(old.original,old.key);
+  if(!keepGhost)removeGhost(old.ghost);
+  return old;
+ }
+ function lift(){
+  if(!state||options.read().epoch!==state.epoch){cleanup(true,false);return}
+  state.held=true;state.row.classList.add('is-sorting');
+  if(state.row.cloneNode&&doc.body){
+   var rect=state.row.getBoundingClientRect(),ghost=state.row.cloneNode(true);
+   [ghost].concat(Array.from(ghost.querySelectorAll('*'))).forEach(function(e){['id','data-home-module','data-home-order-row','data-home-drag'].forEach(function(name){e.removeAttribute(name)})});
+   ghost.classList.remove('is-sorting');ghost.classList.add('home-drag-ghost');ghost.setAttribute('aria-hidden','true');ghost.inert=true;
+   Object.assign(ghost.style,{left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px',margin:'0',transform:'translate3d(0,0,0) scale('+ (reduced?'1':'1.015') +')'});
+   ghost._origin={left:rect.left,top:rect.top};doc.body.appendChild(ghost);state.ghost=ghost;
+  }
+  if(state.handle.setPointerCapture)state.handle.setPointerCapture(state.id);
+  if(win.requestAnimationFrame)state.frame=win.requestAnimationFrame(frame);
+ }
+ function down(e){
+  var handle=e.target.closest('[data-home-drag]');if(!handle||!root.contains(handle)||(e.button!=null&&e.button!==0))return;
+  cleanup(true,false);var current=options.read(),key=handle.getAttribute('data-home-drag');if(current.keys.indexOf(key)<0)return;
+  state={id:e.pointerId,key:key,pressX:e.clientX,pressY:e.clientY,x:e.clientX,y:e.clientY,original:current.keys.slice(),keys:current.keys.slice(),epoch:current.epoch,handle:handle,row:handle.closest('[data-home-module],[data-home-order-row]'),held:false,frame:null,previousTime:null,ghost:null};
+  timer=win.setTimeout(lift,280);
+ }
+ function track(){
+  if(!state)return;
+  if(state.ghost)state.ghost.style.transform='translate3d('+(state.x-state.pressX)+'px,'+(state.y-state.pressY)+'px,0) scale('+(reduced?'1':'1.015')+')';
+  var hit=doc.elementFromPoint(state.x,state.y),row=hit&&hit.closest('[data-home-module],[data-home-order-row]');
+  if(!row||!root.contains(row))return;
+  var key=row.getAttribute('data-home-order-row')||row.getAttribute('data-home-module');if(!key||key===state.key||state.keys.indexOf(key)<0)return;if(key===state.lastTarget&&Math.abs(state.y-state.swapY)<16)return;
+  if(row.getBoundingClientRect){var rect=row.getBoundingClientRect(),threshold=Math.min(56,rect.height*.35),downward=state.keys.indexOf(state.key)<state.keys.indexOf(key);if(downward&&state.y<rect.top+threshold||!downward&&state.y>rect.bottom-threshold)return}
+  state.lastTarget=key;state.swapY=state.y;state.keys=move(state.keys,state.key,key);preview(state.keys,state.key);
+ }
+ function frame(time){
+  if(!state||!state.held)return;
+  if(options.read().epoch!==state.epoch){cleanup(true,false);return}
+  var elapsed=state.previousTime==null?16:Math.min(32,Math.max(0,time-state.previousTime));state.previousTime=time;
+  var rect=root.getBoundingClientRect(),top=Math.max(64,rect.top),bottom=Math.min(win.innerHeight-90,rect.bottom),edge=64,speed=0;
+  if(state.y<top+edge)speed=-Math.min(12,(top+edge-state.y)*.2);else if(state.y>bottom-edge)speed=Math.min(12,(state.y-bottom+edge)*.2);
+  if(speed)win.scrollBy(0,speed*elapsed/16);
+  track();if(state)state.frame=win.requestAnimationFrame(frame);
+ }
+ function moving(e){
+  if(!state||e.pointerId!==state.id)return;
+  if(options.read().epoch!==state.epoch){cleanup(true,false);return}
+  state.x=e.clientX;state.y=e.clientY;
+  if(!state.held){if(Math.hypot(state.x-state.pressX,state.y-state.pressY)>10)cleanup(true,false);return}
+  e.preventDefault();if(!win.requestAnimationFrame)track();
+ }
+ function up(e){
+  if(!state||state.id!==e.pointerId)return;
+  if(!state.held||options.read().epoch!==state.epoch){cleanup(true,false);return}
+  state.x=e.clientX;state.y=e.clientY;track();
+  // Release the pointer before a successful save re-renders the source card.
+  var saved=cleanup(false,true),ghost=saved.ghost,rect=saved.row.getBoundingClientRect?saved.row.getBoundingClientRect():null;
+  var result=options.save(saved.keys,saved.epoch);
+  if(result===false){preview(saved.original,saved.key);rect=saved.row.getBoundingClientRect?saved.row.getBoundingClientRect():null}
+  land(ghost,rect);
+ }
+ function cancel(e){if(state&&(!e||e.pointerId===state.id))cleanup(true,false)}
  function context(e){if(e.target.closest('[data-home-drag]'))e.preventDefault()}
  root.addEventListener('pointerdown',down);root.addEventListener('pointermove',moving,{passive:false});root.addEventListener('pointerup',up);root.addEventListener('pointercancel',cancel);root.addEventListener('lostpointercapture',cancel);root.addEventListener('contextmenu',context);
- root._fpsSortCleanup=function(){cleanup(false);root.removeEventListener('pointerdown',down);root.removeEventListener('pointermove',moving);root.removeEventListener('pointerup',up);root.removeEventListener('pointercancel',cancel);root.removeEventListener('lostpointercapture',cancel);root.removeEventListener('contextmenu',context)};
+ root._fpsSortCleanup=function(){cleanup(false,false);root.removeEventListener('pointerdown',down);root.removeEventListener('pointermove',moving);root.removeEventListener('pointerup',up);root.removeEventListener('pointercancel',cancel);root.removeEventListener('lostpointercapture',cancel);root.removeEventListener('contextmenu',context)};
 }
 
 return {settings:settings,progress:progress,deck:deck,layout:layout,move:move,themes:themes,theme:theme,inTheme:inTheme,themeProgress:themeProgress,bindSort:bindSort};
