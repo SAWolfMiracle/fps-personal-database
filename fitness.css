@@ -451,3 +451,5 @@ input[type=file]::file-selector-button{border:0;border-radius:7px;padding:7px 10
 
 .personal-panel[hidden]{display:none}
 .personal-launchers .btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
+
+.stock-count{display:inline-block;transform-origin:center}

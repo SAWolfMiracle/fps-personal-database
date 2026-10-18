@@ -1,15 +1,23 @@
 {
-  "name": "FPS 个人数据库",
-  "short_name": "FPS 数据库",
+  "name": "Arca",
+  "short_name": "Arca",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#000000",
   "lang": "zh-CN",
-  "description": "个人 FPS 战绩与复盘数据库",
+  "description": "个人对局复盘、收藏展柜与武器方案夹",
   "icons": [
-    {"src": "./icon-192.png", "sizes": "192x192", "type": "image/png"},
-    {"src": "./icon-512.png", "sizes": "512x512", "type": "image/png"}
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }

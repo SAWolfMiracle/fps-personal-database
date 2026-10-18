@@ -20,11 +20,11 @@ test('screenshot compression revokes temporary URLs on success and read failure'
  let revoked=0;const win={URL:{createObjectURL:()=> 'blob:test',revokeObjectURL:()=>revoked++},Image:class{constructor(){this.width=2400;this.height=1200}set src(v){this.onload()}},document:{createElement:()=>({getContext:()=>({drawImage(){}}),toDataURL:()=> 'data:image/jpeg;base64,YQ=='})}};
  assert.equal(await p.compress({type:'image/png',size:100},win),'data:image/jpeg;base64,YQ==');assert.equal(revoked,1);win.Image=class{set src(v){this.onerror()}};await assert.rejects(()=>p.compress({type:'image/png',size:100},win));assert.equal(revoked,2);await assert.rejects(()=>p.compress({type:'image/svg+xml',size:100},win));
 });
-function mounted(){
+function mounted(motion){
  const fields=new Map();let rows=[],epoch=0,homeShown=false,toast='';
  function el(id){if(!fields.has(id))fields.set(id,{value:'',innerHTML:'',hidden:false,disabled:false,dataset:{},files:[],attributes:{},setAttribute(k,v){this.attributes[k]=v},listeners:{},addEventListener(k,fn){this.listeners[k]=fn},removeAttribute(k){delete this[k]},focus(){},scrollIntoView(){},reset(){for(const [key,v] of fields)if(key.startsWith(id==='weaponPlanForm'?'weaponPlan':'showcase')&&key!==id)v.value=''}});return fields.get(id)}
  const win={confirm:()=>true,navigator:{clipboard:{writeText:async()=>{}}},prompt(){}};const doc={getElementById:el,defaultView:win};let ids=0;
- const api=p.mount({document:doc,escape:s=>String(s==null?'':s).replaceAll('<','&lt;'),records:()=>rows,epoch:()=>epoch,quantity:r=>r.starting_quantity||0,uid:()=>String(++ids),commit:changes=>{for(const r of changes){const i=rows.findIndex(x=>x.id===r.id),value={...r,updated_at:'stamp'+ids};if(i<0)rows.push(value);else rows[i]=value}api.render();return true},remove:id=>{rows=rows.filter(r=>r.id!==id);api.render();return true},toast:msg=>toast=msg,openCollections(){},homeShown:()=>homeShown,showHome:()=>{homeShown=true;api.render()}});
+ const api=p.mount({motion:motion,document:doc,escape:s=>String(s==null?'':s).replaceAll('<','&lt;'),records:()=>rows,epoch:()=>epoch,quantity:r=>r.starting_quantity||0,uid:()=>String(++ids),commit:changes=>{for(const r of changes){const i=rows.findIndex(x=>x.id===r.id),value={...r,updated_at:'stamp'+ids};if(i<0)rows.push(value);else rows[i]=value}api.render();return true},remove:id=>{rows=rows.filter(r=>r.id!==id);api.render();return true},toast:msg=>toast=msg,openCollections(){},homeShown:()=>homeShown,showHome:()=>{homeShown=true;api.render()}});
  const submit=id=>el(id).onsubmit({preventDefault(){}});const click=dataset=>el('personalFeatures').listeners.click({target:{closest:()=>({dataset})}});
  return {api,el,submit,click,win,setRows:r=>rows=r,rows:()=>rows,switchWorkspace(){rows=[];epoch++;api.render()},toast:()=>toast};
 }
@@ -49,4 +49,9 @@ test('top launchers are the only disclosure controls and toggle one panel at a t
  f.el('showcaseCaption').value='未保存寄语';f.click({personalOpen:'showcaseEditor'});assert.equal(f.el('showcaseEditor').hidden,true);assert.equal(f.el('showcaseLauncher').attributes['aria-expanded'],'false');
  f.click({personalOpen:'weaponFolder'});assert.equal(f.el('weaponFolder').hidden,false);f.click({personalOpen:'showcaseEditor'});assert.equal(f.el('weaponFolder').hidden,true);assert.equal(f.el('showcaseCaption').value,'未保存寄语');
  f.switchWorkspace();assert.equal(f.el('showcaseEditor').hidden,true);assert.equal(f.el('weaponFolder').hidden,true);f.el('homeManageShowcase').onclick();assert.equal(f.el('showcaseEditor').hidden,false);
+});
+
+test('launcher follows desired state during a delayed close and can reopen immediately',()=>{
+ const states=[],motion={reduced:()=>false,disclose(node,open,animated){states.push({node,open,animated});if(open||!animated)node.hidden=!open}};
+ const f=mounted(motion);f.click({personalOpen:'showcaseEditor'});f.click({personalOpen:'showcaseEditor'});assert.equal(f.el('showcaseEditor').hidden,false);f.click({personalOpen:'showcaseEditor'});assert.equal(states.filter(s=>s.node===f.el('showcaseEditor')).at(-1).open,true);assert.equal(f.el('showcaseLauncher').attributes['aria-expanded'],'true');
 });

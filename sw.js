@@ -1,10 +1,10 @@
 // Static shell is small; screenshots, recognition templates and JSON catalogs are loaded on demand.
-const CACHE="fps-db-v6-42-personal-space-2";
+const CACHE="fps-db-v6-42-arca-1";
 const CORE=[
-  "./","./index.html","./fitness.css?rev=personal-space-2","./manifest.webmanifest","./cloud-config.js",
+  "./","./index.html","./fitness.css?rev=arca-1","./manifest.webmanifest?rev=arca-1","./cloud-config.js",
   "./collection-model.js","./collection-guides.js","./collection-catalog.js",
-  "./personal-features.js?rev=personal-space-2","./inventory.js","./home-dashboard.js?rev=personal-space-2","./collection-duplicates.js?rev=personal-space-2",
-  "./app-updates.js?rev=personal-space-2","./icon-192.png","./icon-512.png","./icon-180.png"
+  "./arca-motion.js?rev=arca-1","./personal-features.js?rev=arca-1","./inventory.js","./home-dashboard.js?rev=arca-1","./collection-duplicates.js?rev=arca-1",
+  "./app-updates.js?rev=arca-1","./icon-192.png","./icon-512.png","./icon-180.png"
 ];
 const OPTIONAL=["./ocr-import.js","./warehouse-import.js","./warehouse-templates.json","./collection-catalog.json"];
 const MODEL_VIEWER_URL="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js";
