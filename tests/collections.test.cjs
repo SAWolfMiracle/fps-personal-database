@@ -308,9 +308,9 @@ test('module orders persist per workspace and drop removed pin identities',()=>{
 });
 
 test('weapon plans survive migration, cloud payload and backup without entering match or collection totals',async()=>{
- const {api}=app();api.workspace('personal');const r=api.migrateRecord({id:'plan',kind:'weapon_plan',name:'机密 MCX',weapon:'MCX',game:'三角洲行动',budget:270000,code:'code\nline',note:'50 米',screenshot:'data:image/jpeg;base64,YWJj'});
+ const {api}=app();api.workspace('personal');const r=api.migrateRecord({id:'plan',kind:'weapon_plan',name:'机密 MCX',weapon:'MCX',game:'三角洲行动',budget:270000,loadout:[{slot:'弹药',name:'蓝弹',quantity:120,unit_price:100}],code:'code\nline',note:'50 米',screenshot:'data:image/jpeg;base64,YWJj'});
  api.setRecords([r,api.migrateRecord({id:'match',kind:'match',kills:2}),api.migrateRecord({id:'item',kind:'collection',showcase:{enabled:true,caption:'喜欢它',order:1}})]);api.persist();api.workspace('other');assert.equal(api.getRecords().length,0);api.workspace('personal');assert.equal(api.matchRecords().length,1);assert.equal(api.collectionRecords().length,1);
- const copy=api.remoteToLocal({id:r.id,revision:3,payload:api.cloudPayload(r)});assert.equal(copy.kind,'weapon_plan');assert.equal(copy.code,'code\nline');assert.equal(copy.screenshot,r.screenshot);assert.equal(copy.budget,270000);
+ const copy=api.remoteToLocal({id:r.id,revision:3,payload:api.cloudPayload(r)});assert.equal(copy.kind,'weapon_plan');assert.equal(copy.code,'code\nline');assert.equal(copy.screenshot,r.screenshot);assert.equal(copy.budget,270000);assert.equal(copy.loadout[0].quantity,120);assert.equal(copy.loadout[0].unit_price,100);
  const backup=api.planBackupImport({workspace:'foreign',records:JSON.parse(JSON.stringify(api.getRecords()))});api.applyBackupImport(backup);assert.equal(api.getRecords().filter(r=>r.kind==='weapon_plan').length,2);assert.ok(api.collectionRecords().every(r=>r.showcase.caption==='喜欢它'));
  let sent;api.setClient({rpc:async(name,args)=>{sent=args;return {data:[{}]}}});await api.pushRecordWithRevision(r,true);assert.equal(sent.p_share_community,false);
 });
@@ -321,7 +321,7 @@ test('personal writes preserve revisions and roll back on quota failure; plan de
  assert.equal(api.commitPersonal([{id:'plan',kind:'weapon_plan',name:'test',weapon:'MCX'}]),true);assert.equal(api.commitPersonal([],'item'),false);assert.equal(api.collectionRecords().length,1);assert.equal(api.commitPersonal([],'plan'),true);assert.equal(api.getRecords().length,1);assert.equal(JSON.parse(store.get('fps_cloud_tombstones_v2_personal'))[0].id,'plan');
 });
 test('incomplete imported weapon plans stay plans and sanitize invalid fields',()=>{
- const {api}=app();const r=api.migrateRecord({kind:'weapon_plan',budget:-3,screenshot:'javascript:alert(1)'});assert.equal(r.kind,'weapon_plan');assert.equal(r.budget,null);assert.equal(r.screenshot,'');assert.ok(r.name);
+ const {api}=app();const r=api.migrateRecord({kind:'weapon_plan',budget:-3,screenshot:'javascript:alert(1)',loadout:[{name:'旧装备',quantity:-1,unit_price:-3}]});assert.equal(r.loadout[0].quantity,1);assert.equal(r.loadout[0].unit_price,null);assert.equal(r.kind,'weapon_plan');assert.equal(r.budget,null);assert.equal(r.screenshot,'');assert.ok(r.name);
 });
 
 test('personal commit restores persisted records if tombstone write fails after the records write',()=>{

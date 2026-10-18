@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Arca">
-<link rel="manifest" href="./manifest.webmanifest?rev=arca-1">
+<link rel="manifest" href="./manifest.webmanifest?rev=arca-2">
 <link rel="apple-touch-icon" href="./icon-180.png">
 <title>Arca</title>
 <style>
@@ -322,7 +322,7 @@ body{min-height:100vh;min-height:100svh}
 .guide-sections{display:grid;gap:14px;margin-top:14px}.guide-sections section{border-top:1px solid var(--line);padding-top:12px}.guide-sections h4{font-size:14px;margin:0 0 10px;color:var(--text)}.guide-sections p{font-size:14px;line-height:1.65;margin:8px 0}.guide-chips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}.guide-chips span{border:1px solid var(--line);background:var(--panel3);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.4}.guide-date{font-size:12px!important;line-height:1.6!important;border-top:1px solid var(--line);padding-top:12px}.guide-exchange{margin-bottom:12px}.collection-guide>summary{font-size:15px;line-height:1.6}
 #collectionDetailParking{display:none!important}#collectionDetail{margin:14px 0 0;padding:14px}.collection-detail-slot{min-width:0}
 </style>
-<link rel="stylesheet" href="./fitness.css?rev=arca-1">
+<link rel="stylesheet" href="./fitness.css?rev=arca-2">
 </head>
 <body>
 <div class="wrap">
@@ -704,18 +704,21 @@ body{min-height:100vh;min-height:100svh}
 
 <nav class="mobile-nav" id="mobileNav"></nav>
 <div id="deleteConfirm" class="delete-confirm" hidden><section class="card" role="dialog" aria-modal="true" aria-labelledby="deleteConfirmTitle"><h2 id="deleteConfirmTitle">确认删除</h2><p id="deleteConfirmText"></p><p class="muted">仅影响当前工作区。删除后可在 10 秒内撤销；账号开启同步时，删除也会同步到云端。</p><div class="actions"><button class="btn" id="deleteConfirmCancel">取消删除</button><button class="btn danger" id="deleteConfirmAccept">确认删除</button></div></section></div>
+<div id="arcaShareMount"></div>
 <div class="toast" id="toast"><span id="toastText"></span><button id="toastAction" hidden>撤销</button></div>
 
 <script src="./collection-model.js"></script>
 <script src="./collection-guides.js"></script>
 <script src="./collection-catalog.js"></script>
 <script src="./inventory.js"></script>
-<script src="./home-dashboard.js?rev=arca-1"></script>
-<script src="./collection-duplicates.js?rev=arca-1"></script>
-<script src="./arca-motion.js?rev=arca-1"></script>
-<script src="./personal-features.js?rev=arca-1"></script>
+<script src="./home-dashboard.js?rev=arca-2"></script>
+<script src="./collection-duplicates.js?rev=arca-2"></script>
+<script src="./arca-motion.js?rev=arca-2"></script>
+<script src="./arca-kit.js?rev=arca-2"></script>
+<script src="./arca-share.js?rev=arca-2"></script>
+<script src="./personal-features.js?rev=arca-2"></script>
 <script src="./cloud-config.js"></script>
-<script src="./app-updates.js?rev=arca-1"></script>
+<script src="./app-updates.js?rev=arca-2"></script>
 <script>
 (function(){
 "use strict";
@@ -732,7 +735,7 @@ var CLOUD_AUTO_KEY="fps_cloud_auto_v1";
 var tabs=[
   ["dashboard","home","总览"],["add","plus","录入"],["records","list","记录"],["analytics","chart","分析"],["collections","collection","收藏"],["data","settings","数据"]
 ];
-var records=[],personalFeatures=null,arcaMotion=window.ArcaMotion?window.ArcaMotion.create(window):null,activeTabId="dashboard",motionWorkspaceEpoch=-1,homeMotionSnapshot=null;
+var records=[],personalFeatures=null,shareCards=null,arcaMotion=window.ArcaMotion?window.ArcaMotion.create(window):null,activeTabId="dashboard",motionWorkspaceEpoch=-1,homeMotionSnapshot=null;
 var screenshotImporter=null,warehouseImporter=null,collectionSelection=new Set(),pendingEmailOtp=null;
 var collectionEditingId=null,collectionSelectedId=null,acquisitionEditingId=null,inventoryEditingId=null;
 var collectionCatalog=null,collectionCatalogPromise=null,catalogLoading=false,collectionVisibleLimit=24;
@@ -790,7 +793,7 @@ function migrateRecord(r){
   if(x.cloud_server_updated_at==null)x.cloud_server_updated_at="";
   if(x.local_dirty==null)x.local_dirty=x.cloud_revision?false:true;
   x.kind=x.kind==="collection"?"collection":x.kind==="weapon_plan"?"weapon_plan":"match";
-  if(x.kind==="weapon_plan"){Object.assign(x,window.FPSPersonal.normalizePlan(Object.assign({},x,{name:x.name||"未命名方案",weapon:x.weapon||"未填写武器",budget:x.budget!=null&&Number.isFinite(Number(x.budget))&&Number(x.budget)>=0&&Number(x.budget)<=1e12?x.budget:null})))}
+  if(x.kind==="weapon_plan"){Object.assign(x,window.FPSPersonal.normalizePlan(Object.assign({},x,{name:x.name||"未命名方案",weapon:x.weapon||"未填写武器",loadout:window.FPSPersonal.restoreLoadout(x.loadout),budget:x.budget!=null&&Number.isFinite(Number(x.budget))&&Number(x.budget)>=0&&Number(x.budget)<=1e12?x.budget:null})))}
   if(x.kind==="collection"){
     x.target=Math.max(1,Math.floor(num(x.target)||1));x.image=imageURL(x.image);
     x.starting_quantity=Number.isSafeInteger(Number(x.starting_quantity))&&Number(x.starting_quantity)>=0?Number(x.starting_quantity):0;
@@ -1911,7 +1914,7 @@ function renderCollections(){
   var filterCount=["collectionFilterGame","collectionFilterCategory","collectionFilterGroup","collectionFilterStatus"].filter(function(id){return $(id).value}).length;$("collectionFilterSummary").textContent="更多筛选"+(filterCount?"（已选 "+filterCount+" 项）":"");
   $("deleteFilteredCollectionsBtn").disabled=!shown.length;$("deleteFilteredCollectionsBtn").textContent="删除筛选结果（"+shown.length+" 件）";
   $("deleteAllCollectionsBtn").disabled=!list.length;
-$("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card collection-item">'+($("collectionManage").open?'<label class="collection-select"><input type="checkbox" data-collection-select="'+esc(r.id)+'" '+(collectionSelection.has(r.id)?'checked':'')+'> 选择此物品</label>':'')+'<div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3><button class="collection-title-button" data-collection-detail="'+esc(r.id)+'">'+esc(r.name)+'</button></h3><div class="muted">'+esc(collectionGradeText(r))+' · '+esc(r.game)+' · '+esc(r.category)+' · '+esc(window.FPSCatalog.group(r)||'普通库存')+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 <b class="stock-count" data-stock-count="'+esc(r.id)+'" data-stock-value="'+n+'">'+n+'</b> / 目标 '+r.target+'</div><div class="collection-progress"><span data-collection-progress="'+esc(r.id)+'" style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+'<p class="collection-guide-brief">获取方式：'+esc(window.FPSCatalog.acquisitionGuide(r).summary)+'</p>'+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">详情</button><details class="collection-more"><summary>更多</summary><div class="actions"><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></details></div>'+(collectionSelectedId===r.id?'<div class="collection-detail-slot" id="collectionDetailSlot"></div>':'')+'</article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
+$("collectionList").innerHTML=shown.slice(0,collectionVisibleLimit).map(function(r){var n=collectionQuantity(r);return '<article class="card collection-item">'+($("collectionManage").open?'<label class="collection-select"><input type="checkbox" data-collection-select="'+esc(r.id)+'" '+(collectionSelection.has(r.id)?'checked':'')+'> 选择此物品</label>':'')+'<div class="collection-top">'+(imageURL(r.image)?'<img class="collection-thumb" loading="lazy" referrerpolicy="no-referrer" src="'+esc(imageURL(r.image))+'" alt="'+esc(r.name)+'">':'')+'<div><h3><button class="collection-title-button" data-collection-detail="'+esc(r.id)+'">'+esc(r.name)+'</button></h3><div class="muted">'+esc(collectionGradeText(r))+' · '+esc(r.game)+' · '+esc(r.category)+' · '+esc(window.FPSCatalog.group(r)||'普通库存')+'</div></div></div><div>'+collectionStatus(r)+' · 当前库存 <b class="stock-count" data-stock-count="'+esc(r.id)+'" data-stock-value="'+n+'">'+n+'</b> / 目标 '+r.target+'</div><div class="collection-progress"><span data-collection-progress="'+esc(r.id)+'" style="width:'+Math.min(100,pct(n,r.target))+'%"></span></div>'+'<p class="collection-guide-brief">获取方式：'+esc(window.FPSCatalog.acquisitionGuide(r).summary)+'</p>'+'<div class="actions"><button class="btn primary" data-acquire="'+esc(r.id)+'">获取 +1</button><button class="btn" data-collection-detail="'+esc(r.id)+'">详情</button><details class="collection-more"><summary>更多</summary><div class="actions"><button class="btn" data-collection-share="'+esc(r.id)+'">生成分享卡</button><button class="btn" data-stock="'+esc(r.id)+'">库存变动</button><button class="btn" data-correct="'+esc(r.id)+'">校正库存</button><button class="btn" data-collection-edit="'+esc(r.id)+'">编辑</button><button class="btn danger" data-collection-delete="'+esc(r.id)+'">删除</button></div></details></div>'+(collectionSelectedId===r.id?'<div class="collection-detail-slot" id="collectionDetailSlot"></div>':'')+'</article>'}).join("")||'<div class="card empty">暂无符合条件的物品。添加一件物品，开始记录收藏进度。</div>';
   document.querySelectorAll("[data-collection-select]").forEach(function(b){b.onchange=function(){if(b.checked)collectionSelection.add(b.dataset.collectionSelect);else collectionSelection.delete(b.dataset.collectionSelect);renderCollections()}});
   document.querySelectorAll("[data-stock]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.stock,false)}});
   document.querySelectorAll("[data-correct]").forEach(function(b){b.onclick=function(){openInventory(b.dataset.correct,true)}});
@@ -2020,7 +2023,7 @@ function renderAll(){
   var previousProgress=new Map(),previousStock=new Map();
   if(arcaMotion&&motionWorkspaceEpoch===workspaceEpoch)document.querySelectorAll('[data-collection-progress]').forEach(function(node){previousProgress.set(node.getAttribute('data-collection-progress'),node.style.width)});
   if(arcaMotion&&motionWorkspaceEpoch===workspaceEpoch)document.querySelectorAll('[data-stock-count]').forEach(function(node){previousStock.set(node.getAttribute('data-stock-count'),Number(node.getAttribute('data-stock-value')))});
-  renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel();if(personalFeatures)personalFeatures.render();
+  renderCollections();renderDashboard();renderRecords();renderAnalytics();renderDatalists();renderCloudPanel();if(personalFeatures)personalFeatures.render();if(shareCards)shareCards.sync();
   if(arcaMotion)document.querySelectorAll('[data-collection-progress]').forEach(function(node){var from=previousProgress.get(node.getAttribute('data-collection-progress'));if(from!=null)arcaMotion.progress(node,from,node.style.width)});
   if(arcaMotion)document.querySelectorAll('[data-stock-count]').forEach(function(node){var before=previousStock.get(node.getAttribute('data-stock-count'));if(before!=null&&Number(node.getAttribute('data-stock-value'))>before)arcaMotion.pulse(node)});
   motionWorkspaceEpoch=workspaceEpoch;
@@ -2126,11 +2129,12 @@ lazyTool("ocrTool","./ocr-import.js","ocrStatus","ocrFile",function(){
 }});
 });
 
+shareCards=window.ArcaShare.mount({records:function(){return records},epoch:function(){return workspaceEpoch},quantity:collectionQuantity,toast:showToast});
 personalFeatures=window.FPSPersonal.mount({motion:arcaMotion,escape:esc,records:function(){return records},epoch:function(){return workspaceEpoch},quantity:collectionQuantity,uid:uid,commit:function(rows){return commitPersonal(rows)},remove:function(id){return commitPersonal([],id)},toast:showToast,openCollections:function(){switchTab("collections")},homeShown:function(){return !!homePreferences().showcase},showHome:function(){var p=homePreferences();p.showcase=true;saveHomePreferences(p);personalFeatures.render()}});
 $("homeShowcaseToggle").onchange=function(){var p=homePreferences();p.showcase=this.checked;saveHomePreferences(p);personalFeatures.render()};
 migrateLegacyWorkspace();loadWorkspace("guest");makeTabs();bindOtherSelect("result","resultOther");bindOtherSelect("style","styleOther");bindOtherSelect("cause","causeOther");bindChoiceGroups();renderAll();bindPreview();restoreDraft();bootCloudSdk();
 
-window.FPSUpdates.start({build:"fps-db-v6-42-arca-1",beforeReload:saveDraftNow});
+window.FPSUpdates.start({build:"fps-db-v6-42-arca-2",beforeReload:saveDraftNow});
 })();
 </script>
 </body>

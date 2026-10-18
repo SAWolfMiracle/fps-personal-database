@@ -55,3 +55,15 @@ test('launcher follows desired state during a delayed close and can reopen immed
  const states=[],motion={reduced:()=>false,disclose(node,open,animated){states.push({node,open,animated});if(open||!animated)node.hidden=!open}};
  const f=mounted(motion);f.click({personalOpen:'showcaseEditor'});f.click({personalOpen:'showcaseEditor'});assert.equal(f.el('showcaseEditor').hidden,false);f.click({personalOpen:'showcaseEditor'});assert.equal(states.filter(s=>s.node===f.el('showcaseEditor')).at(-1).open,true);assert.equal(f.el('showcaseLauncher').attributes['aria-expanded'],'true');
 });
+
+test('loadout template is saved with the plan and quantities are independent of the weapon budget',()=>{
+ const f=mounted();f.el('weaponPlanName').value='机密';f.el('weaponPlanWeapon').value='MCX';f.el('weaponPlanBudget').value='270000';f.el('loadoutSeed').onclick();assert.match(f.el('loadoutDraftTotal').textContent,/270,000/);assert.match(f.el('loadoutDraftTotal').textContent,/4 项单价未填/);
+ f.el('personalFeatures').listeners.input({target:{dataset:{loadoutIndex:'3',loadoutField:'quantity'},value:'120'}});f.el('personalFeatures').listeners.input({target:{dataset:{loadoutIndex:'3',loadoutField:'unit_price'},value:'100'}});f.submit('weaponPlanForm');assert.equal(f.rows()[0].loadout.length,5);assert.equal(f.rows()[0].loadout[3].quantity,120);assert.equal(f.rows()[0].budget,270000);assert.match(f.el('weaponPlanList').innerHTML,/282,000/);
+ const id=f.rows()[0].id;f.click({planEdit:id});f.api.render();f.submit('weaponPlanForm');assert.equal(f.rows()[0].loadout[3].unit_price,100);
+});
+test('comparison is scoped to available plans and resets stale selections on deletion or account switch',()=>{
+ const f=mounted();f.setRows([{id:'a',kind:'weapon_plan',name:'A',weapon:'MCX',game:'三角洲行动',budget:10},{id:'b',kind:'weapon_plan',name:'B',weapon:'HK',game:'CS2',budget:20}]);f.api.render();f.el('comparePlanA').value='a';f.el('comparePlanB').value='b';f.el('comparePlanA').onchange();assert.match(f.el('weaponCompareResult').innerHTML,/不同游戏/);f.setRows([f.rows()[0]]);f.api.render();assert.equal(f.el('comparePlanB').value,'');assert.doesNotMatch(f.el('weaponCompareResult').innerHTML,/class="compare-row"/);f.switchWorkspace();assert.equal(f.el('comparePlanA').value,'');
+});
+test('packing readiness is temporary and does not commit inventory or leak across accounts',()=>{
+ const f=mounted();const plan={id:'a',kind:'weapon_plan',name:'A',weapon:'MCX',loadout:[{slot:'弹药',name:'蓝弹',quantity:120,unit_price:100}]};f.setRows([plan]);const key=JSON.stringify(['a',0,'弹药','蓝弹',120,100]);f.el('personalFeatures').listeners.change({target:{dataset:{readyKey:key},checked:true}});f.api.render();assert.match(f.el('weaponPlanList').innerHTML,/checked/);assert.equal(f.rows()[0],plan);f.click({loadoutUncheck:'a'});assert.doesNotMatch(f.el('weaponPlanList').innerHTML,/ checked/);f.el('personalFeatures').listeners.change({target:{dataset:{readyKey:key},checked:true}});f.switchWorkspace();f.setRows([plan]);f.api.render();assert.doesNotMatch(f.el('weaponPlanList').innerHTML,/ checked/);
+});

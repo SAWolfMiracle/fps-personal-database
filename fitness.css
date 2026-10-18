@@ -453,3 +453,40 @@ input[type=file]::file-selector-button{border:0;border-radius:7px;padding:7px 10
 .personal-launchers .btn[aria-expanded="true"]{background:var(--accent-soft);border-color:var(--accent);color:var(--text)}
 
 .stock-count{display:inline-block;transform-origin:center}
+
+/* Comparison and packing stay inside the existing weapon folder. */
+.plan-compare{border-top:1px solid var(--line);margin:20px 0;min-width:0}
+.compare-row{display:grid;grid-template-columns:80px repeat(2,minmax(0,1fr));gap:16px;padding:16px 0;border-bottom:1px solid var(--line);align-items:start}
+.compare-row>div{min-width:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.compare-row p{margin:0}
+.compare-image{width:100%;max-height:240px;object-fit:contain;border-radius:10px;background:#151517}
+.loadout-rows{display:grid;gap:16px;margin:20px 0}
+.loadout-edit-row{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr) minmax(0,.6fr) minmax(0,.9fr) auto;gap:12px;align-items:end;padding:16px;background:var(--panel2);border-radius:12px;min-width:0}
+.loadout-edit-row label{min-width:0;color:var(--muted);font-size:12px}
+.loadout-edit-row input{display:block;width:100%;min-width:0;margin-top:8px;min-height:44px;background:#29292c;border:1px solid transparent;border-radius:10px;padding:10px}
+.loadout-checks{display:grid;gap:12px;margin:18px 0}
+.loadout-checks label{display:flex;align-items:flex-start;gap:12px;padding:14px;background:#1c1c1f;border-radius:12px;overflow-wrap:anywhere}
+.loadout-checks input{width:18px!important;min-height:18px!important;height:18px!important;flex:0 0 18px;margin:3px 0 0}
+.loadout-checks span{min-width:0}.loadout-checks small{display:block;margin-top:5px}
+.loadout-checks input:checked+span{opacity:.6}
+.arca-share-dialog{color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:24px;width:min(560px,calc(100vw - 28px - env(safe-area-inset-left) - env(safe-area-inset-right)));max-height:calc(100vh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));max-height:calc(100dvh - 28px - env(safe-area-inset-top) - env(safe-area-inset-bottom));overflow:auto;overscroll-behavior:contain;position:fixed;inset:calc(14px + env(safe-area-inset-top)) env(safe-area-inset-right) calc(14px + env(safe-area-inset-bottom)) env(safe-area-inset-left);margin:auto;z-index:2000}
+.arca-share-dialog::backdrop{background:#000b;backdrop-filter:blur(6px)}
+.arca-share-dialog:not([open]){display:none}
+.arca-share-dialog[open]{display:block}
+.share-dialog-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.share-dialog-heading h2{margin:0;font-size:20px}
+.share-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:20px 0}
+.share-options label{display:flex;align-items:center;gap:10px;min-height:44px;font-size:13px}
+.share-options input{width:18px!important;min-height:18px!important;height:18px!important;flex:0 0 18px;margin:0}
+.share-help{font-size:12px}.share-card-preview{display:block;width:min(100%,330px);height:auto;margin:20px auto;border-radius:16px}
+.share-card-preview[hidden]{display:none}
+.share-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:20px}
+.share-actions .btn{flex:1;min-width:120px}
+@media(max-width:700px){
+ .loadout-edit-row{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .loadout-item-name{grid-column:1/-1;grid-row:1}
+ .loadout-edit-row .btn{justify-self:end}
+ .compare-row{grid-template-columns:52px repeat(2,minmax(0,1fr));gap:10px;font-size:13px}
+ .arca-share-dialog{padding:20px}
+}
+@media(max-width:360px){.share-options{grid-template-columns:minmax(0,1fr)}}
